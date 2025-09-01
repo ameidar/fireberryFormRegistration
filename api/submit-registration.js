@@ -127,7 +127,9 @@ export default async function handler(req, res) {
     const registrationPayload = {
       accountid: customerId,
       pcfsystemfield204: childName,
-      pcfsystemfield53: programCycle
+      pcfsystemfield53: programCycle,
+      pcfsystemfield298: childBirthDate,
+      productid: '01333c9a-fb67-4b3f-b293-e71ec55c42b4'
     };
 
     const registrationResponse = await fetch('https://api.fireberry.com/api/record/33', {
