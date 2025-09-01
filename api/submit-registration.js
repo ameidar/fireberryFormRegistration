@@ -41,6 +41,9 @@ export default async function handler(req, res) {
       query: `telephone1 = '${phoneNumber}'`
     };
 
+    console.log('Checking email query:', JSON.stringify(checkEmailQuery));
+    console.log('Checking phone query:', JSON.stringify(checkPhoneQuery));
+
     const [emailResponse, phoneResponse] = await Promise.all([
       fetch('https://api.fireberry.com/api/query', {
         method: 'POST',
@@ -62,8 +65,18 @@ export default async function handler(req, res) {
       })
     ]);
 
+    if (!emailResponse.ok) {
+      console.error('Email check failed:', await emailResponse.text());
+    }
+    if (!phoneResponse.ok) {
+      console.error('Phone check failed:', await phoneResponse.text());
+    }
+
     const emailData = await emailResponse.json();
     const phoneData = await phoneResponse.json();
+    
+    console.log('Email check result:', JSON.stringify(emailData));
+    console.log('Phone check result:', JSON.stringify(phoneData));
 
     let customerId = null;
     let customerExists = false;
