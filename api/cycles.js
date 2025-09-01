@@ -23,8 +23,8 @@ export default async function handler(req, res) {
     const queryPayload = {
       objecttype: 1000,
       page_size: 500,
-      fields: "customobject1000id,name,pcfsystemfield548,pcfsystemfield550,pcfsystemfield192,pcfsystemfield552,pcfsystemfield551,pcfsystemfield37",
-      query: "pcfsystemfield37 = 3"
+      fields: "customobject1000id,name,pcfsystemfield548,pcfsystemfield550,pcfsystemfield192,pcfsystemfield552,pcfsystemfield551,pcfsystemfield37,pcfsystemfield549",
+      query: "pcfsystemfield37 = 3 AND pcfsystemfield192 = 2 AND pcfsystemfield549 != 1 AND pcfsystemfield549 != 4"
     };
 
     const response = await fetch('https://api.fireberry.com/api/query', {
