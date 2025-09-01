@@ -30,14 +30,14 @@ export default async function handler(req, res) {
     const checkEmailQuery = {
       objecttype: 1,
       page_size: 50,
-      fields: "customobject1id,accountname,emailaddress1,telephone1",
+      fields: "accountid,accountname,emailaddress1,telephone1",
       query: `emailaddress1 = '${email}'`
     };
 
     const checkPhoneQuery = {
       objecttype: 1,
       page_size: 50,
-      fields: "customobject1id,accountname,emailaddress1,telephone1",
+      fields: "accountid,accountname,emailaddress1,telephone1",
       query: `telephone1 = '${phoneNumber}'`
     };
 
@@ -83,11 +83,13 @@ export default async function handler(req, res) {
 
     // Check if customer exists by email or phone
     if (emailData.data && emailData.data.Data && emailData.data.Data.length > 0) {
-      customerId = emailData.data.Data[0].customobject1id;
+      customerId = emailData.data.Data[0].accountid;
       customerExists = true;
+      console.log('Found existing customer by email:', customerId);
     } else if (phoneData.data && phoneData.data.Data && phoneData.data.Data.length > 0) {
-      customerId = phoneData.data.Data[0].customobject1id;
+      customerId = phoneData.data.Data[0].accountid;
       customerExists = true;
+      console.log('Found existing customer by phone:', customerId);
     }
 
     // If customer doesn't exist, create new customer
@@ -115,7 +117,7 @@ export default async function handler(req, res) {
       }
 
       const customerData = await customerResponse.json();
-      customerId = customerData.data?.Record?.customobject1id;
+      customerId = customerData.data?.Record?.accountid;
       console.log('New customer created:', customerId);
     } else {
       console.log('Using existing customer:', customerId);
