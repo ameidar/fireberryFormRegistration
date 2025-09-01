@@ -145,28 +145,14 @@
         // Replace with your actual Fireberry token
         const token = '8a7dfba2-1e98-4771-9a99-9557ce5db9dd';
         
-        // Fetch active cycles from Fireberry API
+        // Fetch active cycles from our API proxy (avoids CORS issues)
         async function fetchActiveCycles() {
             const cycleSelect = document.getElementById('programCycle');
             const cycleError = document.getElementById('cycleError');
             
             try {
-                // Fireberry API query for cycles using correct endpoint and structure
-                const queryPayload = {
-                    objecttype: 1000,
-                    page_size: 500,
-                    fields: "customobject1000id,name,pcfsystemfield548,pcfsystemfield550,pcfsystemfield192,pcfsystemfield552,pcfsystemfield551"
-                };
-
-                const response = await fetch('https://api.fireberry.com/api/query', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'tokenid': token,
-                        'accept': 'application/json'
-                    },
-                    body: JSON.stringify(queryPayload)
-                });
+                // Call our Vercel API endpoint that proxies Fireberry API
+                const response = await fetch('/api/cycles');
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -177,11 +163,11 @@
                 // Clear loading option
                 cycleSelect.innerHTML = '<option value="">בחר מחזור תוכנית</option>';
                 
-                // Populate dropdown with cycles from Fireberry response structure
-                if (data.data && data.data.Data && data.data.Data.length > 0) {
-                    data.data.Data.forEach(cycle => {
+                // Populate dropdown with cycles
+                if (data.cycles && data.cycles.length > 0) {
+                    data.cycles.forEach(cycle => {
                         const option = document.createElement('option');
-                        option.value = cycle.customobject1000id;
+                        option.value = cycle.id;
                         option.textContent = cycle.name;
                         cycleSelect.appendChild(option);
                     });
