@@ -18,7 +18,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const FIREBERRY_API_KEY = '8a7dfba2-1e98-4771-9a99-9557ce5db9dd';
+    const FIREBERRY_API_KEY = process.env.FIREBERRY_API_KEY;
     const { parentName, phoneNumber, email, childName, childBirthDate, programCycle } = req.body;
 
     // Validate required fields
