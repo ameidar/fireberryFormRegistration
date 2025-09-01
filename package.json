@@ -1,5 +1,5 @@
 {
-  "name": "fireberry-registration-form",
+  "name": "fireberry-form",
   "version": "1.0.0",
   "description": "Training coordinator registration form with Fireberry API integration",
   "main": "index.html",

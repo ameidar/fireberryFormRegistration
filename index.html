@@ -151,23 +151,21 @@
             const cycleError = document.getElementById('cycleError');
             
             try {
-                // Fireberry API query for active cycles
-                const response = await fetch('https://api.fireberry.co.il/objects/query', {
+                // Fireberry API query for cycles using correct endpoint and structure
+                const queryPayload = {
+                    objecttype: 1000,
+                    page_size: 500,
+                    fields: "customobject1000id,name,pcfsystemfield548,pcfsystemfield550,pcfsystemfield192,pcfsystemfield552,pcfsystemfield551"
+                };
+
+                const response = await fetch('https://api.fireberry.com/api/query', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
+                        'tokenid': token,
+                        'accept': 'application/json'
                     },
-                    body: JSON.stringify({
-                        objectType: 240,
-                        filters: [
-                            {
-                                field: 'isActive',
-                                operator: 'equals',
-                                value: true
-                            }
-                        ]
-                    })
+                    body: JSON.stringify(queryPayload)
                 });
 
                 if (!response.ok) {
@@ -179,16 +177,16 @@
                 // Clear loading option
                 cycleSelect.innerHTML = '<option value="">בחר מחזור תוכנית</option>';
                 
-                // Populate dropdown with active cycles
-                if (data.data && data.data.length > 0) {
-                    data.data.forEach(cycle => {
+                // Populate dropdown with cycles from Fireberry response structure
+                if (data.data && data.data.Data && data.data.Data.length > 0) {
+                    data.data.Data.forEach(cycle => {
                         const option = document.createElement('option');
-                        option.value = cycle.id;
+                        option.value = cycle.customobject1000id;
                         option.textContent = cycle.name;
                         cycleSelect.appendChild(option);
                     });
                 } else {
-                    cycleSelect.innerHTML = '<option value="">אין מחזורים פעילים כרגע</option>';
+                    cycleSelect.innerHTML = '<option value="">אין מחזורים זמינים כרגע</option>';
                 }
                 
                 cycleError.style.display = 'none';
