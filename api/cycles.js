@@ -20,14 +20,13 @@ export default async function handler(req, res) {
   try {
     const FIREBERRY_API_KEY = '8a7dfba2-1e98-4771-9a99-9557ce5db9dd';
     
-    // Start with a simple query to test basic functionality
+    // Query for active cycles only
     const queryPayload = {
       objecttype: 1000,
-      page_size: 50,
-      fields: "customobject1000id,name"
+      page_size: 500,
+      fields: "customobject1000id,name,pcfsystemfield37",
+      query: "pcfsystemfield37 = 3"
     };
-
-    console.log('Sending query:', JSON.stringify(queryPayload));
 
     const response = await fetch('https://api.fireberry.com/api/query', {
       method: 'POST',
@@ -39,16 +38,11 @@ export default async function handler(req, res) {
       body: JSON.stringify(queryPayload)
     });
 
-    console.log('Response status:', response.status);
-    
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('API error response:', errorText);
-      throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log('API response data:', JSON.stringify(data, null, 2));
     
     // Transform data for frontend
     const cycles = data.data && data.data.Data ? data.data.Data.map(cycle => ({
