@@ -21,31 +21,24 @@ export default async function handler(req, res) {
     const FIREBERRY_API_KEY = process.env.FIREBERRY_API_KEY;
     const { parentName, phoneNumber, email, childName, childBirthDate, programCycle } = req.body;
 
-    // Validate required fields
-    if (!parentName || !phoneNumber || !email || !childName || !childBirthDate || !programCycle) {
+    // Validate required fields (email and childBirthDate are optional)
+    if (!parentName || !phoneNumber || !childName || !programCycle) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    // Check if customer already exists by email or phone
-    const checkEmailQuery = {
-      objecttype: 1,
-      page_size: 50,
-      fields: "accountid,accountname,emailaddress1,telephone1",
-      query: `emailaddress1 = '${email}'`
-    };
+    let customerId = null;
+    let customerExists = false;
 
-    const checkPhoneQuery = {
-      objecttype: 1,
-      page_size: 50,
-      fields: "accountid,accountname,emailaddress1,telephone1",
-      query: `telephone1 = '${phoneNumber}'`
-    };
+    // Check if customer already exists by email or phone (only if email is provided)
+    if (email) {
+      const checkEmailQuery = {
+        objecttype: 1,
+        page_size: 50,
+        fields: "accountid,accountname,emailaddress1,telephone1",
+        query: `emailaddress1 = '${email}'`
+      };
 
-    console.log('Checking email query:', JSON.stringify(checkEmailQuery));
-    console.log('Checking phone query:', JSON.stringify(checkPhoneQuery));
-
-    const [emailResponse, phoneResponse] = await Promise.all([
-      fetch('https://api.fireberry.com/api/query', {
+      const emailResponse = await fetch('https://api.fireberry.com/api/query', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,8 +46,28 @@ export default async function handler(req, res) {
           'accept': 'application/json'
         },
         body: JSON.stringify(checkEmailQuery)
-      }),
-      fetch('https://api.fireberry.com/api/query', {
+      });
+
+      if (emailResponse.ok) {
+        const emailData = await emailResponse.json();
+        if (emailData.data && emailData.data.Data && emailData.data.Data.length > 0) {
+          customerId = emailData.data.Data[0].accountid;
+          customerExists = true;
+          console.log('Found existing customer by email:', customerId);
+        }
+      }
+    }
+
+    // If not found by email, check by phone
+    if (!customerExists) {
+      const checkPhoneQuery = {
+        objecttype: 1,
+        page_size: 50,
+        fields: "accountid,accountname,emailaddress1,telephone1",
+        query: `telephone1 = '${phoneNumber}'`
+      };
+
+      const phoneResponse = await fetch('https://api.fireberry.com/api/query', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -62,43 +75,29 @@ export default async function handler(req, res) {
           'accept': 'application/json'
         },
         body: JSON.stringify(checkPhoneQuery)
-      })
-    ]);
+      });
 
-    if (!emailResponse.ok) {
-      console.error('Email check failed:', await emailResponse.text());
-    }
-    if (!phoneResponse.ok) {
-      console.error('Phone check failed:', await phoneResponse.text());
-    }
-
-    const emailData = await emailResponse.json();
-    const phoneData = await phoneResponse.json();
-    
-    console.log('Email check result:', JSON.stringify(emailData));
-    console.log('Phone check result:', JSON.stringify(phoneData));
-
-    let customerId = null;
-    let customerExists = false;
-
-    // Check if customer exists by email or phone
-    if (emailData.data && emailData.data.Data && emailData.data.Data.length > 0) {
-      customerId = emailData.data.Data[0].accountid;
-      customerExists = true;
-      console.log('Found existing customer by email:', customerId);
-    } else if (phoneData.data && phoneData.data.Data && phoneData.data.Data.length > 0) {
-      customerId = phoneData.data.Data[0].accountid;
-      customerExists = true;
-      console.log('Found existing customer by phone:', customerId);
+      if (phoneResponse.ok) {
+        const phoneData = await phoneResponse.json();
+        if (phoneData.data && phoneData.data.Data && phoneData.data.Data.length > 0) {
+          customerId = phoneData.data.Data[0].accountid;
+          customerExists = true;
+          console.log('Found existing customer by phone:', customerId);
+        }
+      }
     }
 
     // If customer doesn't exist, create new customer
     if (!customerExists) {
       const customerPayload = {
         accountname: parentName,
-        telephone1: phoneNumber,
-        emailaddress1: email
+        telephone1: phoneNumber
       };
+      
+      // Only add email if provided
+      if (email) {
+        customerPayload.emailaddress1 = email;
+      }
 
       const customerResponse = await fetch('https://api.fireberry.com/api/record/1', {
         method: 'POST',
@@ -128,9 +127,13 @@ export default async function handler(req, res) {
       accountid: customerId,
       pcfsystemfield204: childName,
       pcfsystemfield53: programCycle,
-      pcfsystemfield298: childBirthDate,
       productid: '01333c9a-fb67-4b3f-b293-e71ec55c42b4'
     };
+    
+    // Only add birth date if provided
+    if (childBirthDate) {
+      registrationPayload.pcfsystemfield298 = childBirthDate;
+    }
 
     const registrationResponse = await fetch('https://api.fireberry.com/api/record/33', {
       method: 'POST',
