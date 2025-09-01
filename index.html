@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>טופס רישום לפעילויות חינוכיות</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+
+        .submit-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>טופס רישום לפעילויות חינוכיות</h1>
+        
+        <form id="registrationForm">
+            <div class="form-group">
+                <label for="parentName">שם ההורה *</label>
+                <input type="text" id="parentName" name="parentName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phoneNumber">מספר טלפון *</label>
+                <input type="tel" id="phoneNumber" name="phoneNumber" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">כתובת אימייל *</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="childName">שם הילד/ה *</label>
+                <input type="text" id="childName" name="childName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="childBirthDate">תאריך לידת הילד/ה *</label>
+                <input type="date" id="childBirthDate" name="childBirthDate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="programCycle">מחזור תוכנית *</label>
+                <select id="programCycle" name="programCycle" required>
+                    <option value="">טוען מחזורים...</option>
+                </select>
+                <div id="cycleError" class="error" style="display: none;"></div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">שלח רישום</button>
+        </form>
+    </div>
+
+    <script>
+        // Replace with your actual Fireberry token
+        const token = '8a7dfba2-1e98-4771-9a99-9557ce5db9dd';
+        
+        // Fetch active cycles from Fireberry API
+        async function fetchActiveCycles() {
+            const cycleSelect = document.getElementById('programCycle');
+            const cycleError = document.getElementById('cycleError');
+            
+            try {
+                // Fireberry API query for active cycles
+                const response = await fetch('https://api.fireberry.co.il/objects/query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        objectType: 240,
+                        filters: [
+                            {
+                                field: 'isActive',
+                                operator: 'equals',
+                                value: true
+                            }
+                        ]
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                // Clear loading option
+                cycleSelect.innerHTML = '<option value="">בחר מחזור תוכנית</option>';
+                
+                // Populate dropdown with active cycles
+                if (data.data && data.data.length > 0) {
+                    data.data.forEach(cycle => {
+                        const option = document.createElement('option');
+                        option.value = cycle.id;
+                        option.textContent = cycle.name;
+                        cycleSelect.appendChild(option);
+                    });
+                } else {
+                    cycleSelect.innerHTML = '<option value="">אין מחזורים פעילים כרגע</option>';
+                }
+                
+                cycleError.style.display = 'none';
+                
+            } catch (error) {
+                console.error('Error fetching cycles:', error);
+                
+                // Fallback with dummy data for development
+                cycleSelect.innerHTML = `
+                    <option value="">בחר מחזור תוכנית</option>
+                    <option value="cycle1">מחזור קיץ 2024</option>
+                    <option value="cycle2">מחזור סתיו 2024</option>
+                    <option value="cycle3">מחזור חורף 2024</option>
+                `;
+                
+                cycleError.textContent = 'שגיאה בטעינת המחזורים. מוצגים נתונים לדוגמה.';
+                cycleError.style.display = 'block';
+            }
+        }
+
+        // Form submission handler
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const registrationData = {
+                parentName: formData.get('parentName'),
+                phoneNumber: formData.get('phoneNumber'),
+                email: formData.get('email'),
+                childName: formData.get('childName'),
+                childBirthDate: formData.get('childBirthDate'),
+                programCycle: formData.get('programCycle')
+            };
+            
+            console.log('Registration data:', registrationData);
+            alert('הרישום נשלח בהצלחה! (זהו הודעה לדוגמה)');
+            
+            // Here you would typically send the data to your backend
+            // Example:
+            // submitRegistration(registrationData);
+        });
+
+        // Initialize the form
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchActiveCycles();
+        });
+    </script>
+</body>
+</html>

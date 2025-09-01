@@ -1,0 +1,13 @@
+{
+  "name": "fireberry-registration-form",
+  "version": "1.0.0",
+  "description": "Training coordinator registration form with Fireberry API integration",
+  "main": "index.html",
+  "scripts": {
+    "start": "http-server",
+    "dev": "http-server -p 3000"
+  },
+  "keywords": ["registration", "form", "fireberry", "training"],
+  "author": "Training Coordinator",
+  "license": "MIT"
+}
