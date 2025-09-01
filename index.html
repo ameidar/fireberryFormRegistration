@@ -225,7 +225,24 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    alert('הרישום נשלח בהצלחה! הלקוח נרשם במערכת Fireberry.');
+                    // Create detailed success message
+                    const details = [
+                        `✅ ${result.message}`,
+                        '',
+                        '📋 פרטי הרישום:',
+                        `🆔 מזהה לקוח: ${result.customerId}`,
+                        `📝 מזהה רישום: ${result.registrationId}`,
+                        `🎯 מחזור: ${result.registrationData.programCycle}`,
+                        `👤 שם ההורה: ${result.registrationData.parentName}`,
+                        `📧 אימייל: ${result.registrationData.email}`,
+                        `📞 טלפון: ${result.registrationData.phoneNumber}`,
+                        `👶 שם הילד/ה: ${result.registrationData.childName}`,
+                        `🎂 תאריך לידה: ${result.registrationData.childBirthDate}`,
+                        '',
+                        result.customerExists ? '👥 נעשה שימוש בלקוח קיים' : '🆕 נוצר לקוח חדש'
+                    ];
+                    
+                    alert(details.join('\n'));
                     this.reset(); // Clear the form
                     
                     // Reload cycles dropdown
