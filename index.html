@@ -194,8 +194,15 @@
         }
 
         // Form submission handler
-        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.textContent;
+            
+            // Disable submit button and show loading state
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'שולח...';
             
             const formData = new FormData(this);
             const registrationData = {
@@ -207,12 +214,35 @@
                 programCycle: formData.get('programCycle')
             };
             
-            console.log('Registration data:', registrationData);
-            alert('הרישום נשלח בהצלחה! (זהו הודעה לדוגמה)');
-            
-            // Here you would typically send the data to your backend
-            // Example:
-            // submitRegistration(registrationData);
+            try {
+                const response = await fetch('/api/submit-registration', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(registrationData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert('הרישום נשלח בהצלחה! הלקוח נרשם במערכת Fireberry.');
+                    this.reset(); // Clear the form
+                    
+                    // Reload cycles dropdown
+                    fetchActiveCycles();
+                } else {
+                    throw new Error(result.message || 'שגיאה בשליחת הרישום');
+                }
+                
+            } catch (error) {
+                console.error('Registration error:', error);
+                alert('שגיאה בשליחת הרישום: ' + error.message);
+            } finally {
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
         });
 
         // Initialize the form
