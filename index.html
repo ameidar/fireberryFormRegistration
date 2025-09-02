@@ -79,6 +79,28 @@
             cursor: not-allowed;
         }
 
+        .payment-btn {
+            display: inline-block;
+            background-color: #2196F3;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .payment-btn:hover {
+            background-color: #1976D2;
+            text-decoration: none;
+        }
+
+        .payment-btn:visited {
+            color: white;
+        }
+
         .loading {
             text-align: center;
             color: #666;
@@ -143,6 +165,14 @@
             </div>
 
             <button type="submit" class="submit-btn" id="submitBtn">שלח רישום</button>
+            
+            <div style="margin-top: 20px; text-align: center;">
+                <a href="https://pages.greeninvoice.co.il/payments/links/a81eeaab-4b27-4910-8ffe-864ded9a0567" 
+                   target="_blank" 
+                   class="payment-btn">
+                   💳 עבור לתשלום
+                </a>
+            </div>
         </form>
     </div>
 
