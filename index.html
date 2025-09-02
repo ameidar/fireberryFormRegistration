@@ -130,6 +130,11 @@
             </div>
 
             <div class="form-group">
+                <label for="cycleSearch">חיפוש מחזור תוכנית</label>
+                <input type="text" id="cycleSearch" name="cycleSearch" placeholder="הקלד לחיפוש מחזור...">
+            </div>
+
+            <div class="form-group">
                 <label for="programCycle">מחזור תוכנית *</label>
                 <select id="programCycle" name="programCycle" required>
                     <option value="">טוען מחזורים...</option>
@@ -143,6 +148,7 @@
 
     <script>
         // Token is now handled securely on the server-side
+        let allCycles = []; // Store all cycles for filtering
         
         // Fetch active cycles from our API proxy (avoids CORS issues)
         async function fetchActiveCycles() {
@@ -159,17 +165,9 @@
 
                 const data = await response.json();
                 
-                // Clear loading option
-                cycleSelect.innerHTML = '<option value="">בחר מחזור תוכנית</option>';
-                
-                // Populate dropdown with cycles
                 if (data.cycles && data.cycles.length > 0) {
-                    data.cycles.forEach(cycle => {
-                        const option = document.createElement('option');
-                        option.value = cycle.id;
-                        option.textContent = cycle.name;
-                        cycleSelect.appendChild(option);
-                    });
+                    allCycles = data.cycles; // Store all cycles
+                    populateCyclesDropdown(allCycles); // Populate with all cycles initially
                 } else {
                     cycleSelect.innerHTML = '<option value="">אין מחזורים זמינים כרגע</option>';
                 }
@@ -180,16 +178,45 @@
                 console.error('Error fetching cycles:', error);
                 
                 // Fallback with dummy data for development
-                cycleSelect.innerHTML = `
-                    <option value="">בחר מחזור תוכנית</option>
-                    <option value="cycle1">מחזור קיץ 2024</option>
-                    <option value="cycle2">מחזור סתיו 2024</option>
-                    <option value="cycle3">מחזור חורף 2024</option>
-                `;
+                allCycles = [
+                    { id: 'cycle1', name: 'מחזור קיץ 2024' },
+                    { id: 'cycle2', name: 'מחזור סתיו 2024' },
+                    { id: 'cycle3', name: 'מחזור חורף 2024' }
+                ];
+                populateCyclesDropdown(allCycles);
                 
                 cycleError.textContent = 'שגיאה בטעינת המחזורים. מוצגים נתונים לדוגמה.';
                 cycleError.style.display = 'block';
             }
+        }
+
+        // Populate cycles dropdown with filtered results
+        function populateCyclesDropdown(cycles) {
+            const cycleSelect = document.getElementById('programCycle');
+            cycleSelect.innerHTML = '<option value="">בחר מחזור תוכנית</option>';
+            
+            cycles.forEach(cycle => {
+                const option = document.createElement('option');
+                option.value = cycle.id;
+                option.textContent = cycle.name;
+                cycleSelect.appendChild(option);
+            });
+        }
+
+        // Filter cycles based on search input
+        function filterCycles(searchTerm) {
+            if (!searchTerm) {
+                // Show all cycles if search is empty
+                populateCyclesDropdown(allCycles);
+                return;
+            }
+            
+            // Filter cycles that contain the search term (case-insensitive)
+            const filteredCycles = allCycles.filter(cycle => 
+                cycle.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            
+            populateCyclesDropdown(filteredCycles);
         }
 
         // Form submission handler
@@ -264,6 +291,20 @@
         // Initialize the form
         document.addEventListener('DOMContentLoaded', function() {
             fetchActiveCycles();
+            
+            // Add search functionality
+            const cycleSearch = document.getElementById('cycleSearch');
+            cycleSearch.addEventListener('input', function(e) {
+                filterCycles(e.target.value);
+            });
+            
+            // Clear search when cycles dropdown changes
+            const cycleSelect = document.getElementById('programCycle');
+            cycleSelect.addEventListener('change', function() {
+                if (this.value) {
+                    cycleSearch.value = ''; // Clear search when selection is made
+                }
+            });
         });
     </script>
 </body>
