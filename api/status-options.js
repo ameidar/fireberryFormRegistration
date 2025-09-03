@@ -82,18 +82,14 @@ export default async function handler(req, res) {
     console.log('Using manual status mapping based on Fireberry status list...');
     
     statusOptions = [
-      { value: 1, label: 'חדש', color: '#2196F3' },
-      { value: 2, label: 'אין מענה', color: '#9C27B0' },
-      { value: 3, label: 'פולואפ', color: '#8BC34A' },
-      { value: 4, label: 'נרשם', color: '#4CAF50' },
-      { value: 5, label: 'בטיל', color: '#F44336' },
-      { value: 6, label: 'נקבע יעוד', color: '#FFEB3B' },
-      { value: 7, label: 'ממתין לשיבוץ', color: '#00BCD4' },
-      { value: 8, label: 'ממתינים לקורס פרונטלי', color: '#8BC34A' },
-      { value: 9, label: 'ממתינים לקבוצה באונליין', color: '#2196F3' },
-      { value: 10, label: 'המתין לשיבור ניסיון', color: '#000000' },
-      { value: 11, label: 'רלוונטי למשמר', color: '#000000' },
-      { value: 12, label: 'לא רלוונטי', color: '#000000' }
+      { value: 4, label: 'חדש', color: '#2196F3' },
+      { value: 8, label: 'נרשם', color: '#4CAF50' },
+      { value: 22, label: 'נרשם חיצוני', color: '#4CAF50' },
+      { value: 9, label: 'ביטל', color: '#F44336' },
+      { value: 23, label: 'מחכה לשיבוץ', color: '#00BCD4' },
+      { value: 10, label: 'פולואפ', color: '#8BC34A' },
+      { value: 11, label: 'הוזמנו לשיעור נסיון', color: '#FF9800' },
+      { value: 18, label: 'סיים', color: '#9C27B0' }
     ];
 
     console.log('Using manual status options:', statusOptions);
