@@ -70,7 +70,7 @@ export default async function handler(req, res) {
         objecttype: 33,
         page_size: 100,
         fields: "statuscode",
-        query: "statuscode IS NOT NULL"
+        query: "(statuscode is-not-null)"
       };
       
       console.log('Query payload:', JSON.stringify(queryPayload));
