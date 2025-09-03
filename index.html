@@ -314,7 +314,8 @@
                 if (response.ok) {
                     const selectedCycle = allCycles.find(c => c.id == cycleId);
                     titleEl.textContent = `רישומים למחזור: ${selectedCycle ? selectedCycle.name : cycleId}`;
-                    countEl.textContent = `📈 סה"כ רישומים: ${data.count}`;
+                    const registrationCount = data.count || data.registrations.length || 0;
+                    countEl.textContent = `📈 סה"כ רישומים: ${registrationCount}`;
 
                     if (data.registrations.length === 0) {
                         listEl.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">אין רישומים למחזור זה</div>';
