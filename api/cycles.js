@@ -44,28 +44,23 @@ export default async function handler(req, res) {
 
     const registrationsData = await registrationsResponse.json();
     
-    // Get unique cycle IDs that have registrations and count them
-    const cycleRegistrationCounts = new Map();
+    // Get unique cycle IDs that have registrations
+    const cycleIdsWithRegistrations = new Set();
     if (registrationsData.data && registrationsData.data.Data) {
       registrationsData.data.Data.forEach(registration => {
         if (registration.pcfsystemfield53) {
-          const cycleId = registration.pcfsystemfield53;
-          cycleRegistrationCounts.set(cycleId, (cycleRegistrationCounts.get(cycleId) || 0) + 1);
+          cycleIdsWithRegistrations.add(registration.pcfsystemfield53);
         }
       });
     }
 
-    if (cycleRegistrationCounts.size === 0) {
+    if (cycleIdsWithRegistrations.size === 0) {
       return res.status(200).json({ cycles: [] });
     }
 
-    // Only include cycles that have at least 1 registration
-    const cycleIdsWithRegistrations = Array.from(cycleRegistrationCounts.keys()).filter(cycleId => 
-      cycleRegistrationCounts.get(cycleId) > 0
-    );
-
     // Step 2: Get cycles that have registrations AND are active
-    const cycleConditions = cycleIdsWithRegistrations.map(id => `customobject1000id = '${id}'`).join(' OR ');
+    const cycleIdsArray = Array.from(cycleIdsWithRegistrations);
+    const cycleConditions = cycleIdsArray.map(id => `customobject1000id = '${id}'`).join(' OR ');
     
     const cyclesQuery = {
       objecttype: 1000,
