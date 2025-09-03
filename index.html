@@ -337,16 +337,15 @@
         function createRegistrationsTable(registrations) {
             let html = `
                 <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px;">
                         <thead>
                             <tr style="background-color: #f5f5f5;">
-                                <th style="border: 1px solid #ddd; padding: 12px; text-align: right;">#</th>
-                                <th style="border: 1px solid #ddd; padding: 12px; text-align: right;">👤 שם ההורה</th>
-                                <th style="border: 1px solid #ddd; padding: 12px; text-align: right;">📞 טלפון</th>
-                                <th style="border: 1px solid #ddd; padding: 12px; text-align: right;">👶 שם הילד/ה</th>
-                                <th style="border: 1px solid #ddd; padding: 12px; text-align: right;">📋 סטטוס</th>
-                                <th style="border: 1px solid #ddd; padding: 12px; text-align: right;">🆔 מזהה רישום</th>
-                                <th style="border: 1px solid #ddd; padding: 12px; text-align: right;">⚙️ פעולות</th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: right; width: 5%;">#</th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: right; width: 25%;">👤 שם ההורה</th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: right; width: 18%;">📞 טלפון</th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: right; width: 25%;">👶 שם הילד/ה</th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: right; width: 20%;">📋 סטטוס</th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: center; width: 7%;">⚙️ פעולות</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -356,30 +355,31 @@
                 const statusText = getStatusText(registration.statusCode);
                 html += `
                     <tr id="row-${registration.registrationId}" data-account-id="${registration.accountId}">
-                        <td style="border: 1px solid #ddd; padding: 12px; text-align: right;">${index + 1}</td>
-                        <td style="border: 1px solid #ddd; padding: 12px; text-align: right; font-weight: bold;">
-                            <span class="display-mode account-name">${registration.accountName}</span>
-                            <input type="text" class="edit-mode account-name-input" value="${registration.accountName}" style="display: none; width: 100%; border: 1px solid #ccc; padding: 4px;">
+                        <td style="border: 1px solid #ddd; padding: 8px; text-align: right; vertical-align: middle;">${index + 1}</td>
+                        <td style="border: 1px solid #ddd; padding: 8px; text-align: right; vertical-align: middle;">
+                            <span class="display-mode account-name" style="font-weight: bold;">${registration.accountName}</span>
+                            <input type="text" class="edit-mode account-name-input" value="${registration.accountName}" style="display: none; width: 100%; border: 1px solid #ccc; padding: 6px; font-size: 13px; border-radius: 4px;">
                         </td>
-                        <td style="border: 1px solid #ddd; padding: 12px; text-align: right;">
+                        <td style="border: 1px solid #ddd; padding: 8px; text-align: right; vertical-align: middle;">
                             <span class="display-mode phone-number">${registration.phoneNumber}</span>
-                            <input type="text" class="edit-mode phone-number-input" value="${registration.phoneNumber}" style="display: none; width: 100%; border: 1px solid #ccc; padding: 4px;">
+                            <input type="text" class="edit-mode phone-number-input" value="${registration.phoneNumber}" style="display: none; width: 100%; border: 1px solid #ccc; padding: 6px; font-size: 13px; border-radius: 4px;">
                         </td>
-                        <td style="border: 1px solid #ddd; padding: 12px; text-align: right;">
+                        <td style="border: 1px solid #ddd; padding: 8px; text-align: right; vertical-align: middle;">
                             <span class="display-mode child-name">${registration.childName}</span>
-                            <input type="text" class="edit-mode child-name-input" value="${registration.childName}" style="display: none; width: 100%; border: 1px solid #ccc; padding: 4px;">
+                            <input type="text" class="edit-mode child-name-input" value="${registration.childName}" style="display: none; width: 100%; border: 1px solid #ccc; padding: 6px; font-size: 13px; border-radius: 4px;">
                         </td>
-                        <td style="border: 1px solid #ddd; padding: 12px; text-align: right;">
-                            <span class="display-mode">${statusText}</span>
-                            <select class="edit-mode" style="display: none; width: 100%; border: 1px solid #ccc; padding: 4px;">
+                        <td style="border: 1px solid #ddd; padding: 8px; text-align: right; vertical-align: middle;">
+                            <span class="display-mode status-text">${statusText}</span>
+                            <select class="edit-mode status-select" style="display: none; width: 100%; border: 1px solid #ccc; padding: 6px; font-size: 13px; border-radius: 4px;">
                                 ${generateStatusOptions(registration.statusCode)}
                             </select>
                         </td>
-                        <td style="border: 1px solid #ddd; padding: 12px; text-align: right; font-family: monospace; font-size: 12px;">${registration.registrationId}</td>
-                        <td style="border: 1px solid #ddd; padding: 12px; text-align: center;">
-                            <button class="edit-btn" onclick="editRegistration('${registration.registrationId}')" style="background: #2196F3; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin: 2px;">✏️ ערוך</button>
-                            <button class="save-btn" onclick="saveRegistration('${registration.registrationId}')" style="background: #4CAF50; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin: 2px; display: none;">💾 שמור</button>
-                            <button class="cancel-btn" onclick="cancelEdit('${registration.registrationId}')" style="background: #f44336; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin: 2px; display: none;">❌ בטל</button>
+                        <td style="border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;">
+                            <div style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
+                                <button class="edit-btn" onclick="editRegistration('${registration.registrationId}')" style="background: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; min-width: 60px;">✏️ ערוך</button>
+                                <button class="save-btn" onclick="saveRegistration('${registration.registrationId}')" style="background: #4CAF50; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; min-width: 60px; display: none;">💾 שמור</button>
+                                <button class="cancel-btn" onclick="cancelEdit('${registration.registrationId}')" style="background: #f44336; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; min-width: 60px; display: none;">❌ בטל</button>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -473,7 +473,7 @@
             const accountNameInput = row.querySelector('.account-name-input');
             const phoneNumberInput = row.querySelector('.phone-number-input');
             const childNameInput = row.querySelector('.child-name-input');
-            const statusSelect = row.querySelector('select');
+            const statusSelect = row.querySelector('.status-select');
             
             const saveBtn = row.querySelector('.save-btn');
             const originalText = saveBtn.textContent;
@@ -497,7 +497,7 @@
                 
                 // Check if registration fields have changed
                 const originalChildName = row.querySelector('.child-name').textContent;
-                const originalStatus = row.querySelectorAll('.display-mode')[3].textContent;
+                const originalStatus = row.querySelector('.status-text').textContent;
                 const newStatus = getStatusText(parseInt(statusSelect.value));
                 
                 if (childNameInput.value !== originalChildName || newStatus !== originalStatus) {
@@ -548,7 +548,7 @@
                 row.querySelector('.account-name').textContent = accountNameInput.value;
                 row.querySelector('.phone-number').textContent = phoneNumberInput.value;
                 row.querySelector('.child-name').textContent = childNameInput.value;
-                row.querySelectorAll('.display-mode')[3].textContent = getStatusText(parseInt(statusSelect.value));
+                row.querySelector('.status-text').textContent = getStatusText(parseInt(statusSelect.value));
                 
                 // Exit edit mode
                 cancelEdit(registrationId);
