@@ -201,6 +201,7 @@
     <script>
         // Token is now handled securely on the server-side
         let allCycles = []; // Store all cycles for filtering
+        let statusOptions = []; // Store status options from Fireberry
         
         // Fetch active cycles from our API proxy (avoids CORS issues)
         async function fetchActiveCycles() {
@@ -365,11 +366,7 @@
                         <td style="border: 1px solid #ddd; padding: 12px; text-align: right;">
                             <span class="display-mode">${statusText}</span>
                             <select class="edit-mode" style="display: none; width: 100%; border: 1px solid #ccc; padding: 4px;">
-                                <option value="1" ${registration.statusCode == 1 ? 'selected' : ''}>✅ פעיל</option>
-                                <option value="2" ${registration.statusCode == 2 ? 'selected' : ''}>⏸️ לא פעיל</option>
-                                <option value="3" ${registration.statusCode == 3 ? 'selected' : ''}>❌ בוטל</option>
-                                <option value="4" ${registration.statusCode == 4 ? 'selected' : ''}>⏳ ממתין</option>
-                                <option value="5" ${registration.statusCode == 5 ? 'selected' : ''}>✅ מושלם</option>
+                                ${generateStatusOptions(registration.statusCode)}
                             </select>
                         </td>
                         <td style="border: 1px solid #ddd; padding: 12px; text-align: right; font-family: monospace; font-size: 12px;">${registration.registrationId}</td>
@@ -391,8 +388,14 @@
             return html;
         }
 
-        // Get status text based on status code
+        // Get status text based on status code using dynamic options
         function getStatusText(statusCode) {
+            const statusOption = statusOptions.find(option => option.value == statusCode);
+            if (statusOption) {
+                return statusOption.label;
+            }
+            
+            // Fallback to hardcoded if not found
             const statusMap = {
                 1: '✅ פעיל',
                 2: '⏸️ לא פעיל',
@@ -401,6 +404,32 @@
                 5: '✅ מושלם'
             };
             return statusMap[statusCode] || `(${statusCode})`;
+        }
+
+        // Generate status dropdown options
+        function generateStatusOptions(currentValue) {
+            let options = '';
+            statusOptions.forEach(option => {
+                const selected = option.value == currentValue ? 'selected' : '';
+                options += `<option value="${option.value}" ${selected}>${option.label}</option>`;
+            });
+            
+            // If no options loaded, use fallback
+            if (options === '') {
+                const fallbackOptions = [
+                    { value: 1, label: '✅ פעיל' },
+                    { value: 2, label: '⏸️ לא פעיל' },
+                    { value: 3, label: '❌ בוטל' },
+                    { value: 4, label: '⏳ ממתין' },
+                    { value: 5, label: '✅ מושלם' }
+                ];
+                fallbackOptions.forEach(option => {
+                    const selected = option.value == currentValue ? 'selected' : '';
+                    options += `<option value="${option.value}" ${selected}>${option.label}</option>`;
+                });
+            }
+            
+            return options;
         }
 
         // Edit registration functions
@@ -548,9 +577,40 @@
             }
         });
 
+        // Fetch status options from Fireberry
+        async function fetchStatusOptions() {
+            try {
+                const response = await fetch('/api/status-options');
+                if (response.ok) {
+                    const data = await response.json();
+                    statusOptions = data.statusOptions || [];
+                } else {
+                    // Fallback to hardcoded options
+                    statusOptions = [
+                        { value: 1, label: 'פעיל', color: null },
+                        { value: 2, label: 'לא פעיל', color: null },
+                        { value: 3, label: 'בוטל', color: null },
+                        { value: 4, label: 'ממתין', color: null },
+                        { value: 5, label: 'מושלם', color: null }
+                    ];
+                }
+            } catch (error) {
+                console.error('Error fetching status options:', error);
+                // Fallback to hardcoded options
+                statusOptions = [
+                    { value: 1, label: 'פעיל', color: null },
+                    { value: 2, label: 'לא פעיל', color: null },
+                    { value: 3, label: 'בוטל', color: null },
+                    { value: 4, label: 'ממתין', color: null },
+                    { value: 5, label: 'מושלם', color: null }
+                ];
+            }
+        }
+
         // Initialize the form
         document.addEventListener('DOMContentLoaded', function() {
             fetchActiveCycles();
+            fetchStatusOptions();
             
             // Add search functionality
             const cycleSearch = document.getElementById('cycleSearch');
