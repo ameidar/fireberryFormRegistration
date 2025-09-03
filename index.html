@@ -329,6 +329,7 @@
                                     <p><strong>Customer Query:</strong></p>
                                     <pre style="background: white; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 12px;">${JSON.stringify(data.debug.customersQuery, null, 2)}</pre>
                                     <p><strong>Customer Map:</strong> ${JSON.stringify(data.debug.customerMap)}</p>
+                                    <p><strong>Phone Map:</strong> ${JSON.stringify(data.debug.phoneMap)}</p>
                                 </div>
                             `;
                         }
@@ -356,6 +357,7 @@
                             <tr style="background-color: #f5f5f5;">
                                 <th style="border: 1px solid #ddd; padding: 12px; text-align: right;">#</th>
                                 <th style="border: 1px solid #ddd; padding: 12px; text-align: right;">👤 שם ההורה</th>
+                                <th style="border: 1px solid #ddd; padding: 12px; text-align: right;">📞 טלפון</th>
                                 <th style="border: 1px solid #ddd; padding: 12px; text-align: right;">👶 שם הילד/ה</th>
                                 <th style="border: 1px solid #ddd; padding: 12px; text-align: right;">📋 סטטוס</th>
                                 <th style="border: 1px solid #ddd; padding: 12px; text-align: right;">🆔 מזהה רישום</th>
@@ -370,6 +372,7 @@
                     <tr>
                         <td style="border: 1px solid #ddd; padding: 12px; text-align: right;">${index + 1}</td>
                         <td style="border: 1px solid #ddd; padding: 12px; text-align: right; font-weight: bold;">${registration.accountName}</td>
+                        <td style="border: 1px solid #ddd; padding: 12px; text-align: right;">${registration.phoneNumber}</td>
                         <td style="border: 1px solid #ddd; padding: 12px; text-align: right;">${registration.childName}</td>
                         <td style="border: 1px solid #ddd; padding: 12px; text-align: right;">${statusText}</td>
                         <td style="border: 1px solid #ddd; padding: 12px; text-align: right; font-family: monospace; font-size: 12px;">${registration.registrationId}</td>

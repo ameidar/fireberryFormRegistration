@@ -69,7 +69,7 @@ export default async function handler(req, res) {
     const customersQuery = {
       objecttype: 1,
       page_size: 500,
-      fields: "accountid,accountname",
+      fields: "accountid,accountname,telephone1",
       query: `accountid in (${accountIds.map(id => `'${id}'`).join(',')})`
     };
 
@@ -88,14 +88,19 @@ export default async function handler(req, res) {
     console.log('Customer query response status:', customersResponse.status);
 
     let customerMap = {};
+    let phoneMap = {};
     if (customersResponse.ok) {
       const customersData = await customersResponse.json();
       console.log('Customer query response:', JSON.stringify(customersData, null, 2));
       
       if (customersData.data && customersData.data.Data) {
         customersData.data.Data.forEach(customer => {
+          console.log(`Customer ${customer.accountid}: accountname="${customer.accountname}", telephone1="${customer.telephone1}"`);
           customerMap[customer.accountid] = customer.accountname;
+          phoneMap[customer.accountid] = customer.telephone1;
         });
+        console.log('Final customerMap:', customerMap);
+        console.log('Final phoneMap:', phoneMap);
       }
     } else {
       const errorText = await customersResponse.text();
@@ -107,6 +112,7 @@ export default async function handler(req, res) {
       registrationId: registration.accountproductid,
       accountId: registration.accountid,
       accountName: customerMap[registration.accountid] || registration.accountid,
+      phoneNumber: phoneMap[registration.accountid] || 'לא נמצא',
       childName: registration.pcfsystemfield204 || 'לא נמצא',
       statusCode: registration.statuscode,
       cycleId: registration.pcfsystemfield53
@@ -122,7 +128,8 @@ export default async function handler(req, res) {
       debug: {
         accountIds: accountIds,
         customersQuery: customersQuery,
-        customerMap: customerMap
+        customerMap: customerMap,
+        phoneMap: phoneMap
       }
     });
 
