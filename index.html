@@ -587,22 +587,28 @@
                 } else {
                     // Fallback to hardcoded options
                     statusOptions = [
-                        { value: 1, label: 'פעיל', color: null },
-                        { value: 2, label: 'לא פעיל', color: null },
-                        { value: 3, label: 'בוטל', color: null },
-                        { value: 4, label: 'ממתין', color: null },
-                        { value: 5, label: 'מושלם', color: null }
+                        { value: 4, label: 'חדש', color: '#2196F3' },
+                        { value: 8, label: 'נרשם', color: '#4CAF50' },
+                        { value: 22, label: 'נרשם חיצוני', color: '#4CAF50' },
+                        { value: 9, label: 'ביטל', color: '#F44336' },
+                        { value: 23, label: 'מחכה לשיבוץ', color: '#00BCD4' },
+                        { value: 10, label: 'פולואפ', color: '#8BC34A' },
+                        { value: 11, label: 'הוזמנו לשיעור נסיון', color: '#FF9800' },
+                        { value: 18, label: 'סיים', color: '#9C27B0' }
                     ];
                 }
             } catch (error) {
                 console.error('Error fetching status options:', error);
                 // Fallback to hardcoded options
                 statusOptions = [
-                    { value: 1, label: 'פעיל', color: null },
-                    { value: 2, label: 'לא פעיל', color: null },
-                    { value: 3, label: 'בוטל', color: null },
-                    { value: 4, label: 'ממתין', color: null },
-                    { value: 5, label: 'מושלם', color: null }
+                    { value: 4, label: 'חדש', color: '#2196F3' },
+                    { value: 8, label: 'נרשם', color: '#4CAF50' },
+                    { value: 22, label: 'נרשם חיצוני', color: '#4CAF50' },
+                    { value: 9, label: 'ביטל', color: '#F44336' },
+                    { value: 23, label: 'מחכה לשיבוץ', color: '#00BCD4' },
+                    { value: 10, label: 'פולואפ', color: '#8BC34A' },
+                    { value: 11, label: 'הוזמנו לשיעור נסיון', color: '#FF9800' },
+                    { value: 18, label: 'סיים', color: '#9C27B0' }
                 ];
             }
         }
