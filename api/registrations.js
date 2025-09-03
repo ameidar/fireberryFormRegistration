@@ -63,14 +63,17 @@ export default async function handler(req, res) {
       return res.status(200).json({ registrations: [] });
     }
 
-    // Query customer names for all account IDs
+    // Query customer names for all account IDs - using correct Fireberry query format
     console.log('Account IDs to query:', accountIds);
+    
+    // Build OR conditions for each account ID
+    const accountConditions = accountIds.map(id => `(accountid = '${id}')`).join(' OR ');
     
     const customersQuery = {
       objecttype: 1,
       page_size: 500,
       fields: "accountid,accountname,telephone1",
-      query: `accountid in (${accountIds.map(id => `'${id}'`).join(',')})`
+      query: `(${accountConditions})`
     };
 
     console.log('Customer query:', JSON.stringify(customersQuery));
