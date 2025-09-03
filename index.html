@@ -221,7 +221,15 @@
                 if (data.cycles && data.cycles.length > 0) {
                     allCycles = data.cycles; // Store all cycles
                     populateCyclesDropdown(allCycles); // Populate with all cycles initially
-                    await populateAdminCyclesDropdown(allCycles); // Also populate admin dropdown (async)
+                    
+                    // Populate admin dropdown in background (don't await to avoid blocking)
+                    populateAdminCyclesDropdown(allCycles).catch(error => {
+                        console.log('Error populating admin cycles:', error);
+                        const adminCycleSelect = document.getElementById('adminCycleSelect');
+                        if (adminCycleSelect) {
+                            adminCycleSelect.innerHTML = '<option value="">שגיאה בטעינת מחזורים</option>';
+                        }
+                    });
                 } else {
                     cycleSelect.innerHTML = '<option value="">אין מחזורים זמינים כרגע</option>';
                 }
@@ -238,7 +246,11 @@
                     { id: 'cycle3', name: 'מחזור חורף 2024' }
                 ];
                 populateCyclesDropdown(allCycles);
-                await populateAdminCyclesDropdown(allCycles);
+                
+                // Populate admin dropdown in background
+                populateAdminCyclesDropdown(allCycles).catch(error => {
+                    console.log('Error populating admin cycles:', error);
+                });
                 
                 cycleError.textContent = 'שגיאה בטעינת המחזורים. מוצגים נתונים לדוגמה.';
                 cycleError.style.display = 'block';
@@ -274,25 +286,44 @@
             populateCyclesDropdown(filteredCycles);
         }
 
-        // Populate admin cycles dropdown
+        // Populate admin cycles dropdown - only show cycles with registrations
         async function populateAdminCyclesDropdown(cycles) {
             const adminCycleSelect = document.getElementById('adminCycleSelect');
-            adminCycleSelect.innerHTML = '<option value="">בחר מחזור...</option>';
+            if (!adminCycleSelect) return;
+            
+            adminCycleSelect.innerHTML = '<option value="">טוען מחזורים...</option>';
+            
+            const cyclesWithRegistrations = [];
             
             // Check each cycle for registrations and only add cycles with registrations
             for (const cycle of cycles) {
                 try {
                     const response = await fetch(`/api/registrations?cycleId=${cycle.id}`);
-                    const data = await response.json();
-                    if (response.ok && data.registrations && data.registrations.length > 0) {
-                        const option = document.createElement('option');
-                        option.value = cycle.id;
-                        option.textContent = `${cycle.name} (${data.registrations.length} רישומים)`;
-                        adminCycleSelect.appendChild(option);
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.registrations && data.registrations.length > 0) {
+                            cyclesWithRegistrations.push({
+                                ...cycle,
+                                count: data.registrations.length
+                            });
+                        }
                     }
                 } catch (error) {
                     console.log(`Error checking cycle ${cycle.id}:`, error);
                 }
+            }
+            
+            // Update dropdown
+            adminCycleSelect.innerHTML = '<option value="">בחר מחזור...</option>';
+            if (cyclesWithRegistrations.length === 0) {
+                adminCycleSelect.innerHTML = '<option value="">אין מחזורים עם רישומים</option>';
+            } else {
+                cyclesWithRegistrations.forEach(cycle => {
+                    const option = document.createElement('option');
+                    option.value = cycle.id;
+                    option.textContent = `${cycle.name} (${cycle.count} רישומים)`;
+                    adminCycleSelect.appendChild(option);
+                });
             }
         }
 
