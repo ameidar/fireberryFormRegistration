@@ -95,11 +95,14 @@ export default async function handler(req, res) {
     const transformedRegistrations = registrations.map(registration => ({
       registrationId: registration.accountproductid,
       accountId: registration.accountid,
-      accountName: customerMap[registration.accountid] || 'לא נמצא',
+      accountName: customerMap[registration.accountid] || registration.accountid,
       childName: registration.pcfsystemfield204 || 'לא נמצא',
       statusCode: registration.statuscode,
       cycleId: registration.pcfsystemfield53
     }));
+
+    console.log('Customer map:', customerMap);
+    console.log('Transformed registrations:', transformedRegistrations);
 
     res.status(200).json({ 
       registrations: transformedRegistrations,
