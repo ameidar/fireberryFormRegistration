@@ -355,13 +355,19 @@
             registrations.forEach((registration, index) => {
                 const statusText = getStatusText(registration.statusCode);
                 html += `
-                    <tr id="row-${registration.registrationId}">
+                    <tr id="row-${registration.registrationId}" data-account-id="${registration.accountId}">
                         <td style="border: 1px solid #ddd; padding: 12px; text-align: right;">${index + 1}</td>
-                        <td style="border: 1px solid #ddd; padding: 12px; text-align: right; font-weight: bold;">${registration.accountName}</td>
-                        <td style="border: 1px solid #ddd; padding: 12px; text-align: right;">${registration.phoneNumber}</td>
+                        <td style="border: 1px solid #ddd; padding: 12px; text-align: right; font-weight: bold;">
+                            <span class="display-mode account-name">${registration.accountName}</span>
+                            <input type="text" class="edit-mode account-name-input" value="${registration.accountName}" style="display: none; width: 100%; border: 1px solid #ccc; padding: 4px;">
+                        </td>
                         <td style="border: 1px solid #ddd; padding: 12px; text-align: right;">
-                            <span class="display-mode">${registration.childName}</span>
-                            <input type="text" class="edit-mode" value="${registration.childName}" style="display: none; width: 100%; border: 1px solid #ccc; padding: 4px;">
+                            <span class="display-mode phone-number">${registration.phoneNumber}</span>
+                            <input type="text" class="edit-mode phone-number-input" value="${registration.phoneNumber}" style="display: none; width: 100%; border: 1px solid #ccc; padding: 4px;">
+                        </td>
+                        <td style="border: 1px solid #ddd; padding: 12px; text-align: right;">
+                            <span class="display-mode child-name">${registration.childName}</span>
+                            <input type="text" class="edit-mode child-name-input" value="${registration.childName}" style="display: none; width: 100%; border: 1px solid #ccc; padding: 4px;">
                         </td>
                         <td style="border: 1px solid #ddd; padding: 12px; text-align: right;">
                             <span class="display-mode">${statusText}</span>
@@ -461,7 +467,12 @@
 
         async function saveRegistration(registrationId) {
             const row = document.getElementById(`row-${registrationId}`);
-            const childNameInput = row.querySelector('input[type="text"]');
+            const accountId = row.getAttribute('data-account-id');
+            
+            // Get all input values
+            const accountNameInput = row.querySelector('.account-name-input');
+            const phoneNumberInput = row.querySelector('.phone-number-input');
+            const childNameInput = row.querySelector('.child-name-input');
             const statusSelect = row.querySelector('select');
             
             const saveBtn = row.querySelector('.save-btn');
@@ -472,36 +483,91 @@
             saveBtn.textContent = '⏳ שומר...';
             
             try {
-                const response = await fetch('/api/update-registration', {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        registrationId: registrationId,
-                        childName: childNameInput.value,
-                        statusCode: parseInt(statusSelect.value)
-                    })
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    // Update display text
-                    row.querySelector('.display-mode').textContent = childNameInput.value;
-                    row.querySelectorAll('.display-mode')[1].textContent = getStatusText(parseInt(statusSelect.value));
-                    
-                    // Exit edit mode
-                    cancelEdit(registrationId);
-                    
-                    alert('✅ רישום עודכן בהצלחה!');
-                } else {
-                    throw new Error(result.message || 'שגיאה בעדכון הרישום');
+                // Check if customer fields (account name or phone) have changed
+                const originalAccountName = row.querySelector('.account-name').textContent;
+                const originalPhoneNumber = row.querySelector('.phone-number').textContent;
+                
+                let customerUpdateNeeded = false;
+                let registrationUpdateNeeded = false;
+                
+                // Prepare customer update if needed
+                if (accountNameInput.value !== originalAccountName || phoneNumberInput.value !== originalPhoneNumber) {
+                    customerUpdateNeeded = true;
                 }
+                
+                // Check if registration fields have changed
+                const originalChildName = row.querySelector('.child-name').textContent;
+                const originalStatus = row.querySelectorAll('.display-mode')[3].textContent;
+                const newStatus = getStatusText(parseInt(statusSelect.value));
+                
+                if (childNameInput.value !== originalChildName || newStatus !== originalStatus) {
+                    registrationUpdateNeeded = true;
+                }
+                
+                // Update customer information if needed
+                if (customerUpdateNeeded) {
+                    const customerResponse = await fetch('/api/update-customer', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            accountId: accountId,
+                            accountName: accountNameInput.value,
+                            phoneNumber: phoneNumberInput.value
+                        })
+                    });
+
+                    const customerResult = await customerResponse.json();
+                    if (!customerResponse.ok) {
+                        throw new Error(customerResult.message || 'שגיאה בעדכון פרטי הלקוח');
+                    }
+                }
+                
+                // Update registration information if needed
+                if (registrationUpdateNeeded) {
+                    const registrationResponse = await fetch('/api/update-registration', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            registrationId: registrationId,
+                            childName: childNameInput.value,
+                            statusCode: parseInt(statusSelect.value)
+                        })
+                    });
+
+                    const registrationResult = await registrationResponse.json();
+                    if (!registrationResponse.ok) {
+                        throw new Error(registrationResult.message || 'שגיאה בעדכון הרישום');
+                    }
+                }
+
+                // Update display text for all fields
+                row.querySelector('.account-name').textContent = accountNameInput.value;
+                row.querySelector('.phone-number').textContent = phoneNumberInput.value;
+                row.querySelector('.child-name').textContent = childNameInput.value;
+                row.querySelectorAll('.display-mode')[3].textContent = getStatusText(parseInt(statusSelect.value));
+                
+                // Exit edit mode
+                cancelEdit(registrationId);
+                
+                let successMessage = '✅ ';
+                if (customerUpdateNeeded && registrationUpdateNeeded) {
+                    successMessage += 'פרטי הלקוח והרישום עודכנו בהצלחה!';
+                } else if (customerUpdateNeeded) {
+                    successMessage += 'פרטי הלקוח עודכנו בהצלחה!';
+                } else if (registrationUpdateNeeded) {
+                    successMessage += 'הרישום עודכן בהצלחה!';
+                } else {
+                    successMessage += 'לא נדרש עדכון';
+                }
+                alert(successMessage);
                 
             } catch (error) {
                 console.error('Update error:', error);
-                alert('❌ שגיאה בעדכון הרישום: ' + error.message);
+                alert('❌ שגיאה בעדכון: ' + error.message);
             } finally {
                 saveBtn.disabled = false;
                 saveBtn.textContent = originalText;
