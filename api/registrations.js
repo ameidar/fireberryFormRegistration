@@ -64,12 +64,16 @@ export default async function handler(req, res) {
     }
 
     // Query customer names for all account IDs
+    console.log('Account IDs to query:', accountIds);
+    
     const customersQuery = {
       objecttype: 1,
       page_size: 500,
       fields: "accountid,accountname",
       query: `accountid in (${accountIds.map(id => `'${id}'`).join(',')})`
     };
+
+    console.log('Customer query:', JSON.stringify(customersQuery));
 
     const customersResponse = await fetch('https://api.fireberry.com/api/query', {
       method: 'POST',
@@ -81,14 +85,21 @@ export default async function handler(req, res) {
       body: JSON.stringify(customersQuery)
     });
 
+    console.log('Customer query response status:', customersResponse.status);
+
     let customerMap = {};
     if (customersResponse.ok) {
       const customersData = await customersResponse.json();
+      console.log('Customer query response:', JSON.stringify(customersData, null, 2));
+      
       if (customersData.data && customersData.data.Data) {
         customersData.data.Data.forEach(customer => {
           customerMap[customer.accountid] = customer.accountname;
         });
       }
+    } else {
+      const errorText = await customersResponse.text();
+      console.error('Customer query failed:', errorText);
     }
 
     // Transform registrations with customer names
