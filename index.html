@@ -221,7 +221,7 @@
                 if (data.cycles && data.cycles.length > 0) {
                     allCycles = data.cycles; // Store all cycles
                     populateCyclesDropdown(allCycles); // Populate with all cycles initially
-                    populateAdminCyclesDropdown(allCycles); // Also populate admin dropdown
+                    await populateAdminCyclesDropdown(allCycles); // Also populate admin dropdown (async)
                 } else {
                     cycleSelect.innerHTML = '<option value="">אין מחזורים זמינים כרגע</option>';
                 }
@@ -238,7 +238,7 @@
                     { id: 'cycle3', name: 'מחזור חורף 2024' }
                 ];
                 populateCyclesDropdown(allCycles);
-                populateAdminCyclesDropdown(allCycles);
+                await populateAdminCyclesDropdown(allCycles);
                 
                 cycleError.textContent = 'שגיאה בטעינת המחזורים. מוצגים נתונים לדוגמה.';
                 cycleError.style.display = 'block';
@@ -275,16 +275,25 @@
         }
 
         // Populate admin cycles dropdown
-        function populateAdminCyclesDropdown(cycles) {
+        async function populateAdminCyclesDropdown(cycles) {
             const adminCycleSelect = document.getElementById('adminCycleSelect');
             adminCycleSelect.innerHTML = '<option value="">בחר מחזור...</option>';
             
-            cycles.forEach(cycle => {
-                const option = document.createElement('option');
-                option.value = cycle.id;
-                option.textContent = cycle.name;
-                adminCycleSelect.appendChild(option);
-            });
+            // Check each cycle for registrations and only add cycles with registrations
+            for (const cycle of cycles) {
+                try {
+                    const response = await fetch(`/api/registrations?cycleId=${cycle.id}`);
+                    const data = await response.json();
+                    if (response.ok && data.registrations && data.registrations.length > 0) {
+                        const option = document.createElement('option');
+                        option.value = cycle.id;
+                        option.textContent = `${cycle.name} (${data.registrations.length} רישומים)`;
+                        adminCycleSelect.appendChild(option);
+                    }
+                } catch (error) {
+                    console.log(`Error checking cycle ${cycle.id}:`, error);
+                }
+            }
         }
 
         // Fetch registrations for selected cycle
