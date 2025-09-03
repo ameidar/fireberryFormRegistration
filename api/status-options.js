@@ -20,93 +20,83 @@ export default async function handler(req, res) {
   try {
     const FIREBERRY_API_KEY = process.env.FIREBERRY_API_KEY;
 
-    console.log('Attempting to fetch metadata for object type 33...');
+    console.log('Attempting to fetch status options...');
     console.log('API Key available:', !!FIREBERRY_API_KEY);
 
-    // Try different approaches to get status options
-    // Method 1: Try getting object metadata
+    // Since metadata endpoint doesn't exist, and we need all possible status options
+    // (not just ones currently in use), let's try different API endpoints
     let statusOptions = [];
-    let metadataUrl = 'https://api.fireberry.com/api/metadata/33';
     
-    console.log('Making request to:', metadataUrl);
+    // Method 1: Try objects endpoint to get object definition
+    console.log('Trying objects endpoint for object 33...');
     
-    const metadataResponse = await fetch(metadataUrl, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'tokenid': FIREBERRY_API_KEY,
-        'accept': 'application/json'
-      }
-    });
-
-    console.log('Metadata response status:', metadataResponse.status);
-    
-    if (metadataResponse.ok) {
-      const metadataData = await metadataResponse.json();
-      console.log('Metadata response:', JSON.stringify(metadataData, null, 2));
-      
-      // Find the statuscode field and extract its options
-      if (metadataData.data && metadataData.data.Fields) {
-        const statusField = metadataData.data.Fields.find(field => field.FieldName === 'statuscode');
-        console.log('Status field found:', statusField);
-        
-        if (statusField && statusField.Options) {
-          statusOptions = statusField.Options.map(option => ({
-            value: option.Value,
-            label: option.Label,
-            color: option.Color || null
-          }));
-          console.log('Status options extracted:', statusOptions);
-        }
-      }
-    } else {
-      const errorText = await metadataResponse.text();
-      console.error('Metadata request failed:', errorText);
-      
-      // Method 2: Try a query approach to get distinct status values
-      console.log('Trying alternative query approach...');
-      
-      const queryPayload = {
-        objecttype: 33,
-        page_size: 100,
-        fields: "statuscode",
-        query: "(statuscode is-not-null)"
-      };
-      
-      console.log('Query payload:', JSON.stringify(queryPayload));
-      
-      const queryResponse = await fetch('https://api.fireberry.com/api/query', {
-        method: 'POST',
+    try {
+      const objectsResponse = await fetch('https://api.fireberry.com/api/objects/33', {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           'tokenid': FIREBERRY_API_KEY,
           'accept': 'application/json'
-        },
-        body: JSON.stringify(queryPayload)
-      });
-      
-      console.log('Query response status:', queryResponse.status);
-      
-      if (queryResponse.ok) {
-        const queryData = await queryResponse.json();
-        console.log('Query response:', JSON.stringify(queryData, null, 2));
-        
-        // Extract unique status codes
-        if (queryData.data && queryData.data.Data) {
-          const uniqueStatuses = [...new Set(queryData.data.Data.map(record => record.statuscode))];
-          console.log('Unique status codes found:', uniqueStatuses);
-          
-          statusOptions = uniqueStatuses.map(status => ({
-            value: status,
-            label: `Status ${status}`,
-            color: null
-          }));
         }
+      });
+
+      console.log('Objects response status:', objectsResponse.status);
+      
+      if (objectsResponse.ok) {
+        const objectsData = await objectsResponse.json();
+        console.log('Objects response:', JSON.stringify(objectsData, null, 2));
       } else {
-        const queryError = await queryResponse.text();
-        console.error('Query request also failed:', queryError);
+        console.log('Objects endpoint failed');
       }
+    } catch (error) {
+      console.log('Objects endpoint error:', error.message);
     }
+
+    // Method 2: Try schema or definition endpoint
+    console.log('Trying schema endpoint...');
+    
+    try {
+      const schemaResponse = await fetch('https://api.fireberry.com/api/schema/33', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'tokenid': FIREBERRY_API_KEY,
+          'accept': 'application/json'
+        }
+      });
+
+      console.log('Schema response status:', schemaResponse.status);
+      
+      if (schemaResponse.ok) {
+        const schemaData = await schemaResponse.json();
+        console.log('Schema response:', JSON.stringify(schemaData, null, 2));
+      } else {
+        console.log('Schema endpoint failed');
+      }
+    } catch (error) {
+      console.log('Schema endpoint error:', error.message);
+    }
+
+    // Method 3: Since API endpoints for metadata don't seem available, 
+    // create manual mapping based on the status list from the image
+    console.log('Using manual status mapping based on Fireberry status list...');
+    
+    statusOptions = [
+      { value: 1, label: 'חדש', color: '#2196F3' },
+      { value: 2, label: 'אין מענה', color: '#9C27B0' },
+      { value: 3, label: 'פולואפ', color: '#8BC34A' },
+      { value: 4, label: 'נרשם', color: '#4CAF50' },
+      { value: 5, label: 'בטיל', color: '#F44336' },
+      { value: 6, label: 'נקבע יעוד', color: '#FFEB3B' },
+      { value: 7, label: 'ממתין לשיבוץ', color: '#00BCD4' },
+      { value: 8, label: 'ממתינים לקורס פרונטלי', color: '#8BC34A' },
+      { value: 9, label: 'ממתינים לקבוצה באונליין', color: '#2196F3' },
+      { value: 10, label: 'המתין לשיבור ניסיון', color: '#000000' },
+      { value: 11, label: 'רלוונטי למשמר', color: '#000000' },
+      { value: 12, label: 'לא רלוונטי', color: '#000000' }
+    ];
+
+    console.log('Using manual status options:', statusOptions);
 
     // If no options found, fall back to common status values
     if (statusOptions.length === 0) {
