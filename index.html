@@ -318,7 +318,22 @@
                     if (data.registrations.length === 0) {
                         listEl.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">אין רישומים למחזור זה</div>';
                     } else {
-                        listEl.innerHTML = createRegistrationsTable(data.registrations);
+                        let html = createRegistrationsTable(data.registrations);
+                        
+                        // Add debug information
+                        if (data.debug) {
+                            html += `
+                                <div style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 5px;">
+                                    <h4>🔍 Debug Info:</h4>
+                                    <p><strong>Account IDs found:</strong> ${JSON.stringify(data.debug.accountIds)}</p>
+                                    <p><strong>Customer Query:</strong></p>
+                                    <pre style="background: white; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 12px;">${JSON.stringify(data.debug.customersQuery, null, 2)}</pre>
+                                    <p><strong>Customer Map:</strong> ${JSON.stringify(data.debug.customerMap)}</p>
+                                </div>
+                            `;
+                        }
+                        
+                        listEl.innerHTML = html;
                     }
                 } else {
                     throw new Error(data.message || 'שגיאה בטעינת הרישומים');

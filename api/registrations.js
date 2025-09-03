@@ -118,7 +118,12 @@ export default async function handler(req, res) {
     res.status(200).json({ 
       registrations: transformedRegistrations,
       cycleId: cycleId,
-      count: transformedRegistrations.length 
+      count: transformedRegistrations.length,
+      debug: {
+        accountIds: accountIds,
+        customersQuery: customersQuery,
+        customerMap: customerMap
+      }
     });
 
   } catch (error) {
