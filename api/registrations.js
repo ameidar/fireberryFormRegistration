@@ -48,7 +48,6 @@ export default async function handler(req, res) {
     }
 
     const registrationsData = await registrationsResponse.json();
-    console.log('Registrations response:', JSON.stringify(registrationsData, null, 2));
 
     if (!registrationsData.data || !registrationsData.data.Data) {
       return res.status(200).json({ registrations: [] });
@@ -63,10 +62,7 @@ export default async function handler(req, res) {
       return res.status(200).json({ registrations: [] });
     }
 
-    // Query customer names for all account IDs - using correct Fireberry query format
-    console.log('Account IDs to query:', accountIds);
-    
-    // Build OR conditions for each account ID
+    // Query customer names for all account IDs
     const accountConditions = accountIds.map(id => `(accountid = '${id}')`).join(' OR ');
     
     const customersQuery = {
@@ -75,8 +71,6 @@ export default async function handler(req, res) {
       fields: "accountid,accountname,telephone1",
       query: `(${accountConditions})`
     };
-
-    console.log('Customer query:', JSON.stringify(customersQuery));
 
     const customersResponse = await fetch('https://api.fireberry.com/api/query', {
       method: 'POST',
@@ -88,26 +82,17 @@ export default async function handler(req, res) {
       body: JSON.stringify(customersQuery)
     });
 
-    console.log('Customer query response status:', customersResponse.status);
-
     let customerMap = {};
     let phoneMap = {};
     if (customersResponse.ok) {
       const customersData = await customersResponse.json();
-      console.log('Customer query response:', JSON.stringify(customersData, null, 2));
       
       if (customersData.data && customersData.data.Data) {
         customersData.data.Data.forEach(customer => {
-          console.log(`Customer ${customer.accountid}: accountname="${customer.accountname}", telephone1="${customer.telephone1}"`);
           customerMap[customer.accountid] = customer.accountname;
           phoneMap[customer.accountid] = customer.telephone1;
         });
-        console.log('Final customerMap:', customerMap);
-        console.log('Final phoneMap:', phoneMap);
       }
-    } else {
-      const errorText = await customersResponse.text();
-      console.error('Customer query failed:', errorText);
     }
 
     // Transform registrations with customer names
@@ -121,19 +106,10 @@ export default async function handler(req, res) {
       cycleId: registration.pcfsystemfield53
     }));
 
-    console.log('Customer map:', customerMap);
-    console.log('Transformed registrations:', transformedRegistrations);
-
     res.status(200).json({ 
       registrations: transformedRegistrations,
       cycleId: cycleId,
-      count: transformedRegistrations.length,
-      debug: {
-        accountIds: accountIds,
-        customersQuery: customersQuery,
-        customerMap: customerMap,
-        phoneMap: phoneMap
-      }
+      count: transformedRegistrations.length
     });
 
   } catch (error) {
