@@ -20,8 +20,17 @@ export default async function handler(req, res) {
   try {
     const FIREBERRY_API_KEY = process.env.FIREBERRY_API_KEY;
 
-    // Get object metadata for registration object (type 33) to fetch status field options
-    const metadataResponse = await fetch('https://api.fireberry.com/api/metadata/33', {
+    console.log('Attempting to fetch metadata for object type 33...');
+    console.log('API Key available:', !!FIREBERRY_API_KEY);
+
+    // Try different approaches to get status options
+    // Method 1: Try getting object metadata
+    let statusOptions = [];
+    let metadataUrl = 'https://api.fireberry.com/api/metadata/33';
+    
+    console.log('Making request to:', metadataUrl);
+    
+    const metadataResponse = await fetch(metadataUrl, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -30,24 +39,72 @@ export default async function handler(req, res) {
       }
     });
 
-    if (!metadataResponse.ok) {
-      throw new Error(`Failed to fetch metadata: ${metadataResponse.status}`);
-    }
-
-    const metadataData = await metadataResponse.json();
+    console.log('Metadata response status:', metadataResponse.status);
     
-    // Find the statuscode field and extract its options
-    let statusOptions = [];
-    
-    if (metadataData.data && metadataData.data.Fields) {
-      const statusField = metadataData.data.Fields.find(field => field.FieldName === 'statuscode');
+    if (metadataResponse.ok) {
+      const metadataData = await metadataResponse.json();
+      console.log('Metadata response:', JSON.stringify(metadataData, null, 2));
       
-      if (statusField && statusField.Options) {
-        statusOptions = statusField.Options.map(option => ({
-          value: option.Value,
-          label: option.Label,
-          color: option.Color || null
-        }));
+      // Find the statuscode field and extract its options
+      if (metadataData.data && metadataData.data.Fields) {
+        const statusField = metadataData.data.Fields.find(field => field.FieldName === 'statuscode');
+        console.log('Status field found:', statusField);
+        
+        if (statusField && statusField.Options) {
+          statusOptions = statusField.Options.map(option => ({
+            value: option.Value,
+            label: option.Label,
+            color: option.Color || null
+          }));
+          console.log('Status options extracted:', statusOptions);
+        }
+      }
+    } else {
+      const errorText = await metadataResponse.text();
+      console.error('Metadata request failed:', errorText);
+      
+      // Method 2: Try a query approach to get distinct status values
+      console.log('Trying alternative query approach...');
+      
+      const queryPayload = {
+        objecttype: 33,
+        page_size: 100,
+        fields: "statuscode",
+        query: "statuscode IS NOT NULL"
+      };
+      
+      console.log('Query payload:', JSON.stringify(queryPayload));
+      
+      const queryResponse = await fetch('https://api.fireberry.com/api/query', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'tokenid': FIREBERRY_API_KEY,
+          'accept': 'application/json'
+        },
+        body: JSON.stringify(queryPayload)
+      });
+      
+      console.log('Query response status:', queryResponse.status);
+      
+      if (queryResponse.ok) {
+        const queryData = await queryResponse.json();
+        console.log('Query response:', JSON.stringify(queryData, null, 2));
+        
+        // Extract unique status codes
+        if (queryData.data && queryData.data.Data) {
+          const uniqueStatuses = [...new Set(queryData.data.Data.map(record => record.statuscode))];
+          console.log('Unique status codes found:', uniqueStatuses);
+          
+          statusOptions = uniqueStatuses.map(status => ({
+            value: status,
+            label: `Status ${status}`,
+            color: null
+          }));
+        }
+      } else {
+        const queryError = await queryResponse.text();
+        console.error('Query request also failed:', queryError);
       }
     }
 
