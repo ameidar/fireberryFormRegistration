@@ -295,18 +295,10 @@
             
             const cyclesWithRegistrations = [];
             
-            // Debug: Log all cycle pcfsystemfield549 values
-            console.log('All cycles with pcfsystemfield549 values:');
-            cycles.forEach(cycle => {
-                console.log(`Cycle: ${cycle.name}, pcfsystemfield549: ${cycle.pcfsystemfield549} (type: ${typeof cycle.pcfsystemfield549})`);
-            });
-            
-            // Filter cycles by pcfsystemfield549 != 1 first
-            const validCycles = cycles.filter(cycle => {
-                const isValid = cycle.pcfsystemfield549 !== 1;
-                console.log(`Cycle ${cycle.name}: pcfsystemfield549=${cycle.pcfsystemfield549}, isValid=${isValid}`);
-                return isValid;
-            });
+            // Filter cycles by pcfsystemfield549 != "פרטי" first
+            const validCycles = cycles.filter(cycle => 
+                cycle.pcfsystemfield549 !== "פרטי"
+            );
             
             // Check each valid cycle for registrations
             for (const cycle of validCycles) {
