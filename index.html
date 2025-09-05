@@ -196,12 +196,31 @@
             <div id="registrationsCount" style="margin-bottom: 15px; font-weight: bold;"></div>
             <div id="registrationsList"></div>
         </div>
+        
+        <!-- Registration Details Modal -->
+        <div id="registrationModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 10px; max-width: 500px; width: 90%; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 15px;">
+                    <h3 style="margin: 0; color: #2c3e50;">פרטי רישום</h3>
+                    <button onclick="closeRegistrationModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #e74c3c;">&times;</button>
+                </div>
+                
+                <div id="modalContent">
+                    <!-- Content will be populated dynamically -->
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
+                    <button onclick="closeRegistrationModal()" style="background: #95a5a6; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">סגור</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
         // Token is now handled securely on the server-side
         let allCycles = []; // Store all cycles for filtering
         let statusOptions = []; // Store status options from Fireberry
+        let currentRegistrations = []; // Store current registrations for modal access
         
         // Fetch active cycles from our API proxy (avoids CORS issues)
         async function fetchActiveCycles() {
@@ -425,6 +444,9 @@
                     titleEl.textContent = `רישומים למחזור: ${selectedCycle ? selectedCycle.name : cycleId}`;
                     countEl.textContent = `📈 סה"כ רישומים: ${data.count}`;
 
+                    // Store registrations for modal access
+                    currentRegistrations = data.registrations;
+
                     if (data.registrations.length === 0) {
                         listEl.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">אין רישומים למחזור זה</div>';
                     } else {
@@ -463,7 +485,8 @@
             registrations.forEach((registration, index) => {
                 const statusText = getStatusText(registration.statusCode);
                 html += `
-                    <tr id="row-${registration.registrationId}" data-account-id="${registration.accountId}">
+                    <tr id="row-${registration.registrationId}" data-account-id="${registration.accountId}" onclick="showRegistrationDetails('${registration.registrationId}')" style="cursor: pointer;" 
+                        onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
                         <td style="border: 1px solid #ddd; padding: 8px; text-align: right; vertical-align: middle;">${index + 1}</td>
                         <td style="border: 1px solid #ddd; padding: 8px; text-align: right; vertical-align: middle;">
                             <span class="display-mode account-name" style="font-weight: bold;">${registration.accountName}</span>
@@ -485,9 +508,9 @@
                         </td>
                         <td style="border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;">
                             <div style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
-                                <button class="edit-btn" onclick="editRegistration('${registration.registrationId}')" style="background: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; min-width: 60px;">✏️ ערוך</button>
-                                <button class="save-btn" onclick="saveRegistration('${registration.registrationId}')" style="background: #4CAF50; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; min-width: 60px; display: none;">💾 שמור</button>
-                                <button class="cancel-btn" onclick="cancelEdit('${registration.registrationId}')" style="background: #f44336; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; min-width: 60px; display: none;">❌ בטל</button>
+                                <button class="edit-btn" onclick="event.stopPropagation(); editRegistration('${registration.registrationId}')" style="background: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; min-width: 60px;">✏️ ערוך</button>
+                                <button class="save-btn" onclick="event.stopPropagation(); saveRegistration('${registration.registrationId}')" style="background: #4CAF50; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; min-width: 60px; display: none;">💾 שמור</button>
+                                <button class="cancel-btn" onclick="event.stopPropagation(); cancelEdit('${registration.registrationId}')" style="background: #f44336; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; min-width: 60px; display: none;">❌ בטל</button>
                             </div>
                         </td>
                     </tr>
@@ -828,6 +851,77 @@
                     }
                 }
             });
+        });
+        
+        // Modal functions for registration details
+        function showRegistrationDetails(registrationId) {
+            const registration = currentRegistrations.find(r => r.registrationId === registrationId);
+            if (!registration) {
+                console.error('Registration not found:', registrationId);
+                return;
+            }
+            
+            // Format payment status
+            const paymentStatusText = getPaymentStatusText(registration.paymentStatus);
+            const paymentAmountText = registration.paymentAmount ? `₪${registration.paymentAmount}` : 'לא צוין';
+            
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <div style="text-align: right; line-height: 1.6;">
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 10px 0; color: #495057;">👤 פרטי לקוח</h4>
+                        <p style="margin: 5px 0;"><strong>שם ההורה:</strong> ${registration.accountName}</p>
+                        <p style="margin: 5px 0;"><strong>טלפון:</strong> ${registration.phoneNumber}</p>
+                        <p style="margin: 5px 0;"><strong>שם הילד/ה:</strong> ${registration.childName}</p>
+                    </div>
+                    
+                    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 10px 0; color: #1976d2;">📋 פרטי רישום</h4>
+                        <p style="margin: 5px 0;"><strong>סטטוס:</strong> ${getStatusText(registration.statusCode)}</p>
+                        <p style="margin: 5px 0;"><strong>מזהה רישום:</strong> ${registration.registrationId}</p>
+                    </div>
+                    
+                    <div style="background: #e8f5e8; padding: 15px; border-radius: 8px;">
+                        <h4 style="margin: 0 0 10px 0; color: #388e3c;">💰 פרטי תשלום</h4>
+                        <p style="margin: 5px 0;"><strong>סטטוס תשלום:</strong> <span style="padding: 3px 8px; border-radius: 4px; background: ${getPaymentStatusColor(registration.paymentStatus)}; color: white;">${paymentStatusText}</span></p>
+                        <p style="margin: 5px 0;"><strong>סכום ששולם:</strong> ${paymentAmountText}</p>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('registrationModal').style.display = 'block';
+        }
+        
+        function closeRegistrationModal() {
+            document.getElementById('registrationModal').style.display = 'none';
+        }
+        
+        function getPaymentStatusText(paymentStatus) {
+            // You can customize these based on your actual payment status values
+            switch(paymentStatus) {
+                case 1: return 'שולם';
+                case 2: return 'לא שולם';
+                case 3: return 'תשלום חלקי';
+                case 4: return 'החזר';
+                default: return paymentStatus || 'לא צוין';
+            }
+        }
+        
+        function getPaymentStatusColor(paymentStatus) {
+            switch(paymentStatus) {
+                case 1: return '#4CAF50'; // Green for paid
+                case 2: return '#f44336'; // Red for unpaid
+                case 3: return '#FF9800'; // Orange for partial
+                case 4: return '#9C27B0'; // Purple for refund
+                default: return '#95a5a6'; // Gray for unknown
+            }
+        }
+        
+        // Close modal when clicking outside
+        document.getElementById('registrationModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeRegistrationModal();
+            }
         });
     </script>
 </body>

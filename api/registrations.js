@@ -29,7 +29,7 @@ export default async function handler(req, res) {
     const registrationsQuery = {
       objecttype: 33,
       page_size: 500,
-      fields: "accountproductid,accountid,pcfsystemfield204,pcfsystemfield53,statuscode",
+      fields: "accountproductid,accountid,pcfsystemfield204,pcfsystemfield53,statuscode,pcfsystemfield56,pcfsystemfield289",
       query: `pcfsystemfield53 = ${cycleId}`
     };
 
@@ -103,7 +103,9 @@ export default async function handler(req, res) {
       phoneNumber: phoneMap[registration.accountid] || 'לא נמצא',
       childName: registration.pcfsystemfield204 || 'לא נמצא',
       statusCode: registration.statuscode,
-      cycleId: registration.pcfsystemfield53
+      cycleId: registration.pcfsystemfield53,
+      paymentStatus: registration.pcfsystemfield56,
+      paymentAmount: registration.pcfsystemfield289
     }));
 
     res.status(200).json({ 
