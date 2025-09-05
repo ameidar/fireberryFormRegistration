@@ -223,7 +223,7 @@
                     populateCyclesDropdown(allCycles); // Populate with all cycles initially
                     
                     // Populate admin dropdown in background (don't await to avoid blocking)
-                    populateAdminCyclesDropdown(allCycles).catch(error => {
+                    populateAdminCyclesDropdown().catch(error => {
                         console.log('Error populating admin cycles:', error);
                         const adminCycleSelect = document.getElementById('adminCycleSelect');
                         if (adminCycleSelect) {
@@ -248,7 +248,7 @@
                 populateCyclesDropdown(allCycles);
                 
                 // Populate admin dropdown in background
-                populateAdminCyclesDropdown(allCycles).catch(error => {
+                populateAdminCyclesDropdown().catch(error => {
                     console.log('Error populating admin cycles:', error);
                 });
                 
@@ -286,61 +286,41 @@
             populateCyclesDropdown(filteredCycles);
         }
 
-        // Populate admin cycles dropdown - only show cycles with registrations and pcfsystemfield549 = 2 or 3
-        async function populateAdminCyclesDropdown(cycles) {
+        // Populate admin cycles dropdown using optimized backend endpoint
+        async function populateAdminCyclesDropdown() {
             const adminCycleSelect = document.getElementById('adminCycleSelect');
             if (!adminCycleSelect) return;
             
             adminCycleSelect.innerHTML = '<option value="">טוען מחזורים...</option>';
             
-            const cyclesWithRegistrations = [];
-            
-            // Filter cycles by pcfsystemfield549 != "פרטי" first
-            const validCycles = cycles.filter(cycle => {
-                const fieldValue = cycle.pcfsystemfield549;
-                const trimmedValue = fieldValue ? fieldValue.toString().trim() : '';
-                const isPrivate = trimmedValue === "פרטי";
-                const isValid = !isPrivate;
+            try {
+                // Use optimized backend endpoint that does all filtering server-side
+                const response = await fetch('/api/admin-cycles');
                 
-                console.log(`Cycle ${cycle.name}: pcfsystemfield549="${fieldValue}" (trimmed: "${trimmedValue}"), isPrivate=${isPrivate}, isValid=${isValid}`);
-                return isValid;
-            });
-            
-            // Check each valid cycle for registrations
-            for (const cycle of validCycles) {
-                try {
-                    const response = await fetch(`/api/registrations?cycleId=${cycle.id}`);
-                    if (response.ok) {
-                        const data = await response.json();
-                        if (data.registrations && data.registrations.length > 0) {
-                            cyclesWithRegistrations.push({
-                                ...cycle,
-                                count: data.registrations.length
-                            });
-                        }
+                if (response.ok) {
+                    const data = await response.json();
+                    const cyclesWithRegistrations = data.cycles || [];
+                    
+                    console.log(`Loaded ${cyclesWithRegistrations.length} admin cycles in optimized way`);
+                    
+                    // Update dropdown
+                    adminCycleSelect.innerHTML = '<option value="">בחר מחזור...</option>';
+                    if (cyclesWithRegistrations.length === 0) {
+                        adminCycleSelect.innerHTML = '<option value="">אין מחזורים מתאימים</option>';
+                    } else {
+                        cyclesWithRegistrations.forEach(cycle => {
+                            const option = document.createElement('option');
+                            option.value = cycle.id;
+                            option.textContent = `${cycle.name} (${cycle.count} רישומים)`;
+                            adminCycleSelect.appendChild(option);
+                        });
                     }
-                } catch (error) {
-                    console.log(`Error checking registrations for cycle ${cycle.id}:`, error);
+                } else {
+                    throw new Error(`Failed to load admin cycles: ${response.status}`);
                 }
-            }
-            
-            // Debug: Log final cycles that will appear in dropdown
-            console.log('Final cycles with registrations that will appear in dropdown:');
-            cyclesWithRegistrations.forEach(cycle => {
-                console.log(`- ${cycle.name}: pcfsystemfield549="${cycle.pcfsystemfield549}", count=${cycle.count}`);
-            });
-            
-            // Update dropdown
-            adminCycleSelect.innerHTML = '<option value="">בחר מחזור...</option>';
-            if (cyclesWithRegistrations.length === 0) {
-                adminCycleSelect.innerHTML = '<option value="">אין מחזורים מתאימים</option>';
-            } else {
-                cyclesWithRegistrations.forEach(cycle => {
-                    const option = document.createElement('option');
-                    option.value = cycle.id;
-                    option.textContent = `${cycle.name} (${cycle.count} רישומים)`;
-                    adminCycleSelect.appendChild(option);
-                });
+            } catch (error) {
+                console.error('Error loading admin cycles:', error);
+                adminCycleSelect.innerHTML = '<option value="">שגיאה בטעינת מחזורים</option>';
             }
         }
 
