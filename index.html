@@ -403,7 +403,10 @@
             const fetchBtn = document.getElementById('fetchRegistrationsBtn');
 
             if (!cycleId) {
-                alert('אנא בחר מחזור');
+                // Only show alert if called manually (button still visible)
+                if (fetchBtn.style.display !== 'none') {
+                    alert('אנא בחר מחזור');
+                }
                 return;
             }
 
@@ -807,6 +810,24 @@
             // Add admin functionality
             const fetchRegistrationsBtn = document.getElementById('fetchRegistrationsBtn');
             fetchRegistrationsBtn.addEventListener('click', fetchRegistrations);
+            
+            // Add auto-load functionality to admin cycle dropdown
+            const adminCycleSelect = document.getElementById('adminCycleSelect');
+            adminCycleSelect.addEventListener('change', function() {
+                if (this.value) {
+                    // Hide the manual fetch button since we're auto-loading
+                    fetchRegistrationsBtn.style.display = 'none';
+                    fetchRegistrations();
+                } else {
+                    // Show the fetch button when no cycle is selected
+                    fetchRegistrationsBtn.style.display = 'inline-block';
+                    // Clear results
+                    const resultsDiv = document.getElementById('registrationsResults');
+                    if (resultsDiv) {
+                        resultsDiv.style.display = 'none';
+                    }
+                }
+            });
         });
     </script>
 </body>
