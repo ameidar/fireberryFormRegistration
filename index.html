@@ -296,9 +296,15 @@
             const cyclesWithRegistrations = [];
             
             // Filter cycles by pcfsystemfield549 != "פרטי" first
-            const validCycles = cycles.filter(cycle => 
-                cycle.pcfsystemfield549 !== "פרטי"
-            );
+            const validCycles = cycles.filter(cycle => {
+                const fieldValue = cycle.pcfsystemfield549;
+                const trimmedValue = fieldValue ? fieldValue.toString().trim() : '';
+                const isPrivate = trimmedValue === "פרטי";
+                const isValid = !isPrivate;
+                
+                console.log(`Cycle ${cycle.name}: pcfsystemfield549="${fieldValue}" (trimmed: "${trimmedValue}"), isPrivate=${isPrivate}, isValid=${isValid}`);
+                return isValid;
+            });
             
             // Check each valid cycle for registrations
             for (const cycle of validCycles) {
