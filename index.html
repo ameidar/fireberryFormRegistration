@@ -286,7 +286,7 @@
             populateCyclesDropdown(filteredCycles);
         }
 
-        // Populate admin cycles dropdown - only show cycles with registrations
+        // Populate admin cycles dropdown - only show cycles with registrations and pcfsystemfield549 = 2 or 3
         async function populateAdminCyclesDropdown(cycles) {
             const adminCycleSelect = document.getElementById('adminCycleSelect');
             if (!adminCycleSelect) return;
@@ -295,8 +295,13 @@
             
             const cyclesWithRegistrations = [];
             
-            // Check each cycle for registrations and only add cycles with registrations
-            for (const cycle of cycles) {
+            // Filter cycles by pcfsystemfield549 = 2 or 3 first
+            const validCycles = cycles.filter(cycle => 
+                cycle.pcfsystemfield549 === 2 || cycle.pcfsystemfield549 === 3
+            );
+            
+            // Check each valid cycle for registrations
+            for (const cycle of validCycles) {
                 try {
                     const response = await fetch(`/api/registrations?cycleId=${cycle.id}`);
                     if (response.ok) {
@@ -309,14 +314,14 @@
                         }
                     }
                 } catch (error) {
-                    console.log(`Error checking cycle ${cycle.id}:`, error);
+                    console.log(`Error checking registrations for cycle ${cycle.id}:`, error);
                 }
             }
             
             // Update dropdown
             adminCycleSelect.innerHTML = '<option value="">בחר מחזור...</option>';
             if (cyclesWithRegistrations.length === 0) {
-                adminCycleSelect.innerHTML = '<option value="">אין מחזורים עם רישומים</option>';
+                adminCycleSelect.innerHTML = '<option value="">אין מחזורים מתאימים</option>';
             } else {
                 cyclesWithRegistrations.forEach(cycle => {
                     const option = document.createElement('option');

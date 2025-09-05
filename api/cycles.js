@@ -24,7 +24,7 @@ export default async function handler(req, res) {
     const queryPayload = {
       objecttype: 1000,
       page_size: 500,
-      fields: "customobject1000id,name,pcfsystemfield37",
+      fields: "customobject1000id,name,pcfsystemfield37,pcfsystemfield549",
       query: "pcfsystemfield37 = 3"
     };
 
@@ -47,7 +47,8 @@ export default async function handler(req, res) {
     // Transform data for frontend
     const cycles = data.data && data.data.Data ? data.data.Data.map(cycle => ({
       id: cycle.customobject1000id,
-      name: cycle.name
+      name: cycle.name,
+      pcfsystemfield549: cycle.pcfsystemfield549
     })) : [];
 
     res.status(200).json({ cycles });
