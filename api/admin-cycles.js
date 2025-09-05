@@ -49,11 +49,20 @@ export default async function handler(req, res) {
     }
 
     // Filter cycles by pcfsystemfield549 != "פרטי"
+    console.log('All cycles before filtering:', cyclesData.data.Data.map(c => ({
+      name: c.name,
+      pcfsystemfield549: c.pcfsystemfield549
+    })));
+    
     const validCycles = cyclesData.data.Data.filter(cycle => {
       const fieldValue = cycle.pcfsystemfield549;
       const trimmedValue = fieldValue ? fieldValue.toString().trim() : '';
-      return trimmedValue !== "פרטי";
+      const isValid = trimmedValue !== "פרטי";
+      console.log(`Cycle: ${cycle.name}, field549: "${fieldValue}", trimmed: "${trimmedValue}", isValid: ${isValid}`);
+      return isValid;
     });
+    
+    console.log('Valid cycles after filtering:', validCycles.length);
 
     if (validCycles.length === 0) {
       return res.status(200).json({ cycles: [] });
@@ -96,14 +105,22 @@ export default async function handler(req, res) {
     }
 
     // Step 3: Build final result with only cycles that have registrations
+    console.log('Registration counts:', registrationCounts);
+    
     const cyclesWithRegistrations = validCycles
-      .filter(cycle => registrationCounts[cycle.customobject1000id] > 0)
+      .filter(cycle => {
+        const count = registrationCounts[cycle.customobject1000id] || 0;
+        console.log(`Cycle ${cycle.name}: registrations = ${count}`);
+        return count > 0;
+      })
       .map(cycle => ({
         id: cycle.customobject1000id,
         name: cycle.name,
         pcfsystemfield549: cycle.pcfsystemfield549,
         count: registrationCounts[cycle.customobject1000id] || 0
       }));
+      
+    console.log('Final cycles with registrations:', cyclesWithRegistrations.length);
 
     res.status(200).json({ 
       cycles: cyclesWithRegistrations,
