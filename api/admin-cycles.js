@@ -19,6 +19,7 @@ export default async function handler(req, res) {
 
   try {
     const FIREBERRY_API_KEY = process.env.FIREBERRY_API_KEY;
+    console.log('[DEBUG] Starting admin-cycles API call');
     
     // Step 1: Get all active cycles with pcfsystemfield549
     const cyclesQuery = {
@@ -27,6 +28,8 @@ export default async function handler(req, res) {
       fields: "customobject1000id,name,pcfsystemfield37,pcfsystemfield549",
       query: "pcfsystemfield37 = 3"
     };
+    
+    console.log('[DEBUG] Cycles query:', JSON.stringify(cyclesQuery));
 
     const cyclesResponse = await fetch('https://api.fireberry.com/api/query', {
       method: 'POST',

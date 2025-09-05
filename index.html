@@ -286,7 +286,7 @@
             populateCyclesDropdown(filteredCycles);
         }
 
-        // Populate admin cycles dropdown using optimized backend endpoint
+        // Populate admin cycles dropdown - hybrid approach for better performance
         async function populateAdminCyclesDropdown() {
             const adminCycleSelect = document.getElementById('adminCycleSelect');
             if (!adminCycleSelect) return;
@@ -294,32 +294,101 @@
             adminCycleSelect.innerHTML = '<option value="">טוען מחזורים...</option>';
             
             try {
-                // Use optimized backend endpoint that does all filtering server-side
-                const response = await fetch('/api/admin-cycles');
-                
-                if (response.ok) {
-                    const data = await response.json();
+                // First try the optimized endpoint
+                const optimizedResponse = await fetch('/api/admin-cycles');
+                if (optimizedResponse.ok) {
+                    const data = await optimizedResponse.json();
                     const cyclesWithRegistrations = data.cycles || [];
                     
-                    console.log(`Loaded ${cyclesWithRegistrations.length} admin cycles in optimized way`);
-                    
-                    // Update dropdown
-                    adminCycleSelect.innerHTML = '<option value="">בחר מחזור...</option>';
-                    if (cyclesWithRegistrations.length === 0) {
-                        adminCycleSelect.innerHTML = '<option value="">אין מחזורים מתאימים</option>';
-                    } else {
+                    if (cyclesWithRegistrations.length > 0) {
+                        console.log(`Loaded ${cyclesWithRegistrations.length} admin cycles via optimized endpoint`);
+                        
+                        adminCycleSelect.innerHTML = '<option value="">בחר מחזור...</option>';
                         cyclesWithRegistrations.forEach(cycle => {
                             const option = document.createElement('option');
                             option.value = cycle.id;
                             option.textContent = `${cycle.name} (${cycle.count} רישומים)`;
                             adminCycleSelect.appendChild(option);
                         });
+                        return;
                     }
-                } else {
-                    throw new Error(`Failed to load admin cycles: ${response.status}`);
                 }
+                
+                // Fallback to original method if optimized fails or returns 0
+                console.log('Falling back to original method');
+                await populateAdminCyclesDropdownFallback();
+                
             } catch (error) {
-                console.error('Error loading admin cycles:', error);
+                console.error('Error with optimized endpoint, using fallback:', error);
+                await populateAdminCyclesDropdownFallback();
+            }
+        }
+        
+        // Fallback method (original working logic)
+        async function populateAdminCyclesDropdownFallback() {
+            const adminCycleSelect = document.getElementById('adminCycleSelect');
+            if (!adminCycleSelect) return;
+            
+            try {
+                // Get all cycles first
+                const cyclesResponse = await fetch('/api/cycles');
+                if (!cyclesResponse.ok) {
+                    throw new Error('Failed to fetch cycles');
+                }
+                
+                const cyclesData = await cyclesResponse.json();
+                const allCycles = cyclesData.cycles || [];
+                
+                // Filter cycles by pcfsystemfield549 != "פרטי"
+                const validCycles = allCycles.filter(cycle => {
+                    const fieldValue = cycle.pcfsystemfield549;
+                    const trimmedValue = fieldValue ? fieldValue.toString().trim() : '';
+                    return trimmedValue !== "פרטי";
+                });
+                
+                console.log(`Filtered to ${validCycles.length} non-private cycles`);
+                
+                const cyclesWithRegistrations = [];
+                
+                // Check each valid cycle for registrations (parallel for better performance)
+                const registrationChecks = validCycles.map(async (cycle) => {
+                    try {
+                        const response = await fetch(`/api/registrations?cycleId=${cycle.id}`);
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data.registrations && data.registrations.length > 0) {
+                                return {
+                                    ...cycle,
+                                    count: data.registrations.length
+                                };
+                            }
+                        }
+                    } catch (error) {
+                        console.log(`Error checking cycle ${cycle.id}:`, error);
+                    }
+                    return null;
+                });
+                
+                const results = await Promise.all(registrationChecks);
+                const finalCycles = results.filter(cycle => cycle !== null);
+                
+                console.log(`Found ${finalCycles.length} cycles with registrations`);
+                
+                // Update dropdown
+                adminCycleSelect.innerHTML = '<option value="">בחר מחזור...</option>';
+                if (finalCycles.length === 0) {
+                    adminCycleSelect.innerHTML = '<option value="">אין מחזורים מתאימים</option>';
+                } else {
+                    finalCycles.forEach(cycle => {
+                        const option = document.createElement('option');
+                        option.value = cycle.id;
+                        option.textContent = `${cycle.name} (${cycle.count} רישומים)`;
+                        adminCycleSelect.appendChild(option);
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Error in fallback method:', error);
                 adminCycleSelect.innerHTML = '<option value="">שגיאה בטעינת מחזורים</option>';
             }
         }
