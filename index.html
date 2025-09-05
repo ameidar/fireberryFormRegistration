@@ -324,6 +324,12 @@
                 }
             }
             
+            // Debug: Log final cycles that will appear in dropdown
+            console.log('Final cycles with registrations that will appear in dropdown:');
+            cyclesWithRegistrations.forEach(cycle => {
+                console.log(`- ${cycle.name}: pcfsystemfield549="${cycle.pcfsystemfield549}", count=${cycle.count}`);
+            });
+            
             // Update dropdown
             adminCycleSelect.innerHTML = '<option value="">בחר מחזור...</option>';
             if (cyclesWithRegistrations.length === 0) {
