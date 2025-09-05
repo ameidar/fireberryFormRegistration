@@ -295,9 +295,9 @@
             
             const cyclesWithRegistrations = [];
             
-            // Filter cycles by pcfsystemfield549 = 2 or 3 first
+            // Filter cycles by pcfsystemfield549 != 1 first
             const validCycles = cycles.filter(cycle => 
-                cycle.pcfsystemfield549 === 2 || cycle.pcfsystemfield549 === 3
+                cycle.pcfsystemfield549 !== 1
             );
             
             // Check each valid cycle for registrations
