@@ -1,11 +1,12 @@
 export default async function handler(req, res) {
-  // Basic CORS headers (security improved)
-  const origin = req.headers.origin;
-  if (origin && origin.includes('.vercel.app')) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST,PUT,DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -20,7 +21,7 @@ export default async function handler(req, res) {
     const FIREBERRY_API_KEY = process.env.FIREBERRY_API_KEY;
     console.log('[DEBUG] Starting admin-cycles API call');
     
-    // Step 1: Get all active cycles with pcfsystemfield549 - EXACT COPY FROM MAIN BRANCH
+    // Step 1: Get all active cycles with pcfsystemfield549
     const cyclesQuery = {
       objecttype: 1000,
       page_size: 500,
@@ -50,7 +51,7 @@ export default async function handler(req, res) {
       return res.status(200).json({ cycles: [] });
     }
 
-    // Filter cycles by pcfsystemfield549 != "פרטי" - EXACT COPY FROM MAIN BRANCH
+    // Filter cycles by pcfsystemfield549 != "פרטי"
     console.log('All cycles before filtering:', cyclesData.data.Data.map(c => ({
       name: c.name,
       pcfsystemfield549: c.pcfsystemfield549
@@ -70,12 +71,9 @@ export default async function handler(req, res) {
       return res.status(200).json({ cycles: [] });
     }
 
-    // Step 2: Get all registrations for valid cycles in one query - EXACT COPY FROM MAIN BRANCH
+    // Step 2: Get all registrations for valid cycles in one query
     const cycleIds = validCycles.map(cycle => cycle.customobject1000id);
     const cycleConditions = cycleIds.map(id => `pcfsystemfield53 = '${id}'`).join(' OR ');
-    
-    console.log('DEBUG - Single query with', cycleIds.length, 'cycle IDs');
-    console.log('DEBUG - Query length:', `(${cycleConditions})`.length, 'characters');
     
     const registrationsQuery = {
       objecttype: 33,
@@ -83,8 +81,6 @@ export default async function handler(req, res) {
       fields: "pcfsystemfield53",
       query: `(${cycleConditions})`
     };
-
-    console.log('DEBUG - Registrations query:', JSON.stringify(registrationsQuery, null, 2));
 
     const registrationsResponse = await fetch('https://api.fireberry.com/api/query', {
       method: 'POST',
@@ -99,13 +95,8 @@ export default async function handler(req, res) {
     let registrationCounts = {};
     if (registrationsResponse.ok) {
       const registrationsData = await registrationsResponse.json();
-      console.log('DEBUG - Registrations response structure:', {
-        hasData: !!registrationsData.data,
-        hasDataField: !!(registrationsData.data && registrationsData.data.Data),
-        totalRegistrations: registrationsData.data && registrationsData.data.Data ? registrationsData.data.Data.length : 0
-      });
       
-      // Count registrations per cycle - EXACT COPY FROM MAIN BRANCH
+      // Count registrations per cycle
       if (registrationsData.data && registrationsData.data.Data) {
         registrationsData.data.Data.forEach(registration => {
           const cycleId = registration.pcfsystemfield53;
@@ -113,32 +104,16 @@ export default async function handler(req, res) {
             registrationCounts[cycleId] = (registrationCounts[cycleId] || 0) + 1;
           }
         });
-        console.log('DEBUG - Registration counts:', registrationCounts);
-      } else {
-        console.log('DEBUG - No registration data found in response');
-      }
-    } else {
-      console.error('DEBUG - Registrations response not OK:', registrationsResponse.status);
-      console.error('DEBUG - This will result in 0 cycles being returned');
-      
-      // Try to get response text for more details
-      try {
-        const errorText = await registrationsResponse.text();
-        console.error('DEBUG - Error response body:', errorText);
-      } catch (e) {
-        console.error('DEBUG - Could not read error response');
       }
     }
 
-    // Step 3: Build final result with only cycles that have registrations - EXACT COPY FROM MAIN BRANCH
-    console.log('DEBUG - Total valid cycles after filtering:', validCycles.length);
-    console.log('DEBUG - Registration counts:', registrationCounts);
-    console.log('DEBUG - Number of cycles with registration counts:', Object.keys(registrationCounts).length);
+    // Step 3: Build final result with only cycles that have registrations
+    console.log('Registration counts:', registrationCounts);
     
     const cyclesWithRegistrations = validCycles
       .filter(cycle => {
         const count = registrationCounts[cycle.customobject1000id] || 0;
-        console.log(`DEBUG - Cycle "${cycle.name}" (${cycle.customobject1000id}): registrations = ${count}`);
+        console.log(`Cycle ${cycle.name}: registrations = ${count}`);
         return count > 0;
       })
       .map(cycle => ({
@@ -148,8 +123,7 @@ export default async function handler(req, res) {
         count: registrationCounts[cycle.customobject1000id] || 0
       }));
       
-    console.log('DEBUG - Final cycles with registrations:', cyclesWithRegistrations.length);
-    console.log('DEBUG - Final cycle names:', cyclesWithRegistrations.map(c => c.name));
+    console.log('Final cycles with registrations:', cyclesWithRegistrations.length);
 
     res.status(200).json({ 
       cycles: cyclesWithRegistrations,

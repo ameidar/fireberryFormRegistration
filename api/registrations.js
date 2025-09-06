@@ -1,11 +1,12 @@
 export default async function handler(req, res) {
-  // Basic CORS headers (security improved)
-  const origin = req.headers.origin;
-  if (origin && origin.includes('.vercel.app')) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST,PUT,DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -24,7 +25,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Cycle ID is required' });
     }
 
-    // Query registrations for the specified cycle - EXACT COPY FROM MAIN BRANCH
+    // Query registrations for the specified cycle
     const registrationsQuery = {
       objecttype: 33,
       page_size: 500,
@@ -65,7 +66,7 @@ export default async function handler(req, res) {
       return res.status(200).json({ registrations: [] });
     }
 
-    // Query customer names for all account IDs - EXACT COPY FROM MAIN BRANCH
+    // Query customer names for all account IDs
     const accountConditions = accountIds.map(id => `(accountid = '${id}')`).join(' OR ');
     
     const customersQuery = {
@@ -98,7 +99,7 @@ export default async function handler(req, res) {
       }
     }
 
-    // Transform registrations with customer names - EXACT COPY FROM MAIN BRANCH
+    // Transform registrations with customer names
     const transformedRegistrations = registrations.map(registration => ({
       registrationId: registration.accountproductid,
       accountId: registration.accountid,

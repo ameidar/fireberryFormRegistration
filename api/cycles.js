@@ -1,18 +1,16 @@
-// Temporarily use direct API calls while debugging module issues
-// const { getFireberryClient, FireberryAPIError } = require('../lib/utils/fireberryClient');
-// const { applySecurity } = require('../lib/middleware/security');
-
 export default async function handler(req, res) {
-  // Basic CORS headers
-  const origin = req.headers.origin;
-  if (origin && origin.includes('.vercel.app')) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST,PUT,DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
-  
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
+
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    res.status(200).end();
+    return;
   }
 
   if (req.method !== 'GET') {
@@ -20,16 +18,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Debug: Check if API key is available
-    console.log('Environment check - API key present:', !!process.env.FIREBERRY_API_KEY);
+    const FIREBERRY_API_KEY = process.env.FIREBERRY_API_KEY;
     
-    if (!process.env.FIREBERRY_API_KEY) {
-      return res.status(500).json({ error: 'API key not configured' });
-    }
-
-    // Direct API call to Fireberry
+    // Query for active cycles only
     const queryPayload = {
       objecttype: 1000,
+      page_size: 500,
       fields: "customobject1000id,name,pcfsystemfield37,pcfsystemfield549",
       query: "pcfsystemfield37 = 3"
     };
@@ -38,7 +32,7 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'tokenid': process.env.FIREBERRY_API_KEY,
+        'tokenid': FIREBERRY_API_KEY,
         'accept': 'application/json'
       },
       body: JSON.stringify(queryPayload)
@@ -48,22 +42,21 @@ export default async function handler(req, res) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const result = await response.json();
-    const cyclesData = result.data && result.data.Data ? result.data.Data : [];
+    const data = await response.json();
     
-    // Transform data for frontend - EXACT COPY FROM MAIN BRANCH
-    const cycles = cyclesData.map(cycle => ({
+    // Transform data for frontend
+    const cycles = data.data && data.data.Data ? data.data.Data.map(cycle => ({
       id: cycle.customobject1000id,
       name: cycle.name,
       pcfsystemfield549: cycle.pcfsystemfield549
-    }));
+    })) : [];
 
     res.status(200).json({ cycles });
   } catch (error) {
     console.error('Error fetching cycles:', error);
-    res.status(500).json({
+    res.status(500).json({ 
       error: 'Failed to fetch cycles',
-      message: error.message
+      message: error.message 
     });
   }
 }

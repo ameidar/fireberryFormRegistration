@@ -1,18 +1,16 @@
-const { getFireberryClient, FireberryAPIError } = require('../lib/utils/fireberryClient');
-const { validateId, validateName, sanitizeInput } = require('../lib/validation/schemas');
-const { applySecurity } = require('../lib/middleware/security');
-
 export default async function handler(req, res) {
-  // Apply security middleware
-  try {
-    await new Promise((resolve, reject) => {
-      applySecurity(req, res, (err) => {
-        if (err) reject(err);
-        else resolve();
-      });
-    });
-  } catch (error) {
-    return; // Response already sent by security middleware
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
   }
 
   if (req.method !== 'PUT') {
@@ -20,79 +18,59 @@ export default async function handler(req, res) {
   }
 
   try {
+    const FIREBERRY_API_KEY = process.env.FIREBERRY_API_KEY;
     const { registrationId, childName, statusCode } = req.body;
 
-    // Validate registration ID
-    const idValidation = validateId(registrationId);
-    if (!idValidation.isValid) {
-      return res.status(400).json({ 
-        error: 'Invalid registration ID', 
-        message: idValidation.error 
-      });
+    if (!registrationId) {
+      return res.status(400).json({ error: 'Registration ID is required' });
     }
 
-    // Build update payload with validation
+    // Build update payload
     const updatePayload = {};
-    const errors = {};
     
     if (childName !== undefined) {
-      const nameValidation = validateName(childName);
-      if (!nameValidation.isValid) {
-        errors.childName = nameValidation.error;
-      } else {
-        updatePayload.pcfsystemfield204 = nameValidation.value;
-      }
+      updatePayload.pcfsystemfield204 = childName;
     }
     
     if (statusCode !== undefined) {
-      // Validate status code is a number
-      const numericStatus = parseInt(statusCode, 10);
-      if (isNaN(numericStatus) || numericStatus < 1 || numericStatus > 100) {
-        errors.statusCode = 'Invalid status code';
-      } else {
-        updatePayload.statuscode = numericStatus;
-      }
-    }
-
-    if (Object.keys(errors).length > 0) {
-      return res.status(400).json({ 
-        error: 'Validation failed', 
-        details: errors 
-      });
+      updatePayload.statuscode = statusCode;
     }
 
     if (Object.keys(updatePayload).length === 0) {
       return res.status(400).json({ error: 'No fields to update' });
     }
 
-    const client = getFireberryClient();
-    
-    try {
-      const updateData = await client.updateRecord(33, idValidation.value, updatePayload);
-      
-      res.status(200).json({
-        success: true,
-        message: 'רישום עודכן בהצלחה!'
-      });
-    } catch (error) {
-      console.error('Registration update error:', error);
-      if (error instanceof FireberryAPIError) {
-        return res.status(error.status || 500).json({
-          error: 'Failed to update registration',
-          message: error.message
-        });
-      }
-      throw error;
+    // Update registration record in Fireberry
+    const updateResponse = await fetch(`https://api.fireberry.com/api/record/33/${registrationId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'tokenid': FIREBERRY_API_KEY,
+        'accept': 'application/json'
+      },
+      body: JSON.stringify(updatePayload)
+    });
+
+    if (!updateResponse.ok) {
+      const errorText = await updateResponse.text();
+      console.error('Registration update error:', errorText);
+      throw new Error(`Failed to update registration: ${updateResponse.status}`);
     }
+
+    const updateData = await updateResponse.json();
+
+    res.status(200).json({
+      success: true,
+      message: 'רישום עודכן בהצלחה!',
+      registrationId: registrationId,
+      updatedData: updateData
+    });
 
   } catch (error) {
     console.error('Registration update error:', error);
-    
-    const isDevelopment = process.env.NODE_ENV === 'development';
-    
-    res.status(500).json({
-      error: 'Internal server error',
-      message: isDevelopment ? error.message : 'An unexpected error occurred'
+    res.status(500).json({ 
+      error: 'Failed to update registration',
+      message: error.message 
     });
   }
 }
