@@ -81,7 +81,7 @@ export default async function handler(req, res) {
         objecttype: 33,
         page_size: 2000,
         fields: "accountproductid,accountid,pcfsystemfield204,pcfsystemfield53,statuscode",
-        query: `(${batchCycleIds.map(id => `pcfsystemfield53 = '${id}'`).join(' OR ')})`
+        query: `(${batchCycleIds.map(id => `pcfsystemfield53 = ${id}`).join(' OR ')})`
       };
 
       console.log(`DEBUG - Batch ${Math.floor(i/batchSize) + 1} query:`, JSON.stringify(registrationsQuery, null, 2));
