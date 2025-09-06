@@ -51,11 +51,11 @@ export default async function handler(req, res) {
     const result = await response.json();
     const cyclesData = result.data && result.data.Data ? result.data.Data : [];
     
-    // Transform and sanitize data for frontend
+    // Transform data for frontend - EXACT COPY FROM MAIN BRANCH
     const cycles = cyclesData.map(cycle => ({
       id: cycle.customobject1000id,
       name: cycle.name,
-      type: cycle.pcfsystemfield549 || 'Unknown'
+      pcfsystemfield549: cycle.pcfsystemfield549
     }));
 
     res.status(200).json({ cycles });
