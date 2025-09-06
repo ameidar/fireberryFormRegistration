@@ -1,17 +1,18 @@
-const { getFireberryClient, FireberryAPIError } = require('../lib/utils/fireberryClient');
-const { applySecurity } = require('../lib/middleware/security');
+// Temporarily use direct API calls while debugging module issues
+// const { getFireberryClient, FireberryAPIError } = require('../lib/utils/fireberryClient');
+// const { applySecurity } = require('../lib/middleware/security');
 
 export default async function handler(req, res) {
-  // Apply security middleware
-  try {
-    await new Promise((resolve, reject) => {
-      applySecurity(req, res, (err) => {
-        if (err) reject(err);
-        else resolve();
-      });
-    });
-  } catch (error) {
-    return; // Response already sent by security middleware
+  // Basic CORS headers
+  const origin = req.headers.origin;
+  if (origin && origin.includes('.vercel.app')) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST,PUT,DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
   }
 
   if (req.method !== 'GET') {
@@ -22,12 +23,35 @@ export default async function handler(req, res) {
     // Debug: Check if API key is available
     console.log('Environment check - API key present:', !!process.env.FIREBERRY_API_KEY);
     
-    const client = getFireberryClient();
+    if (!process.env.FIREBERRY_API_KEY) {
+      return res.status(500).json({ error: 'API key not configured' });
+    }
+
+    // Direct API call to Fireberry
+    const queryPayload = {
+      objecttype: 1000,
+      fields: "customobject1000id,name,pcfsystemfield37,pcfsystemfield549",
+      query: "pcfsystemfield37 = 3"
+    };
+
+    const response = await fetch('https://api.fireberry.com/api/query', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'tokenid': process.env.FIREBERRY_API_KEY,
+        'accept': 'application/json'
+      },
+      body: JSON.stringify(queryPayload)
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    const cyclesData = result.data && result.data.Data ? result.data.Data : [];
     
-    // Get active cycles using secure client
-    const cyclesData = await client.getActiveCycles();
-    
-    // Transform and sanitize data for frontend (no sensitive internal fields)
+    // Transform and sanitize data for frontend
     const cycles = cyclesData.map(cycle => ({
       id: cycle.customobject1000id,
       name: cycle.name,
@@ -37,20 +61,9 @@ export default async function handler(req, res) {
     res.status(200).json({ cycles });
   } catch (error) {
     console.error('Error fetching cycles:', error);
-    
-    // Don't expose internal error details in production
-    const isDevelopment = process.env.NODE_ENV === 'development';
-    
-    if (error instanceof FireberryAPIError) {
-      res.status(error.status || 500).json({
-        error: 'Failed to fetch cycles',
-        message: isDevelopment ? error.message : 'Unable to retrieve cycle data'
-      });
-    } else {
-      res.status(500).json({
-        error: 'Internal server error',
-        message: isDevelopment ? error.message : 'An unexpected error occurred'
-      });
-    }
+    res.status(500).json({
+      error: 'Failed to fetch cycles',
+      message: error.message
+    });
   }
 }
