@@ -44,10 +44,20 @@ export default async function handler(req, res) {
     });
 
     if (!cyclesResponse.ok) {
-      throw new Error(`Cycles API error! status: ${cyclesResponse.status}`);
+      console.error(`Cycles API error! status: ${cyclesResponse.status}`);
+      return res.status(500).json({ 
+        error: 'Failed to fetch cycles from Fireberry API',
+        status: cyclesResponse.status 
+      });
     }
 
     const cyclesResult = await cyclesResponse.json();
+    console.log('DEBUG - Cycles API response structure:', {
+      hasData: !!cyclesResult.data,
+      hasDataField: !!(cyclesResult.data && cyclesResult.data.Data),
+      dataLength: cyclesResult.data && cyclesResult.data.Data ? cyclesResult.data.Data.length : 0
+    });
+    
     const cyclesData = cyclesResult.data && cyclesResult.data.Data ? cyclesResult.data.Data : [];
     
     if (cyclesData.length === 0) {
@@ -65,26 +75,24 @@ export default async function handler(req, res) {
       return res.status(200).json({ cycles: [], totalCycles: 0 });
     }
 
-    // Step 2: Get all registrations for valid cycles (query in smaller batches to avoid query length limits)
+    // Step 2: Get all registrations for valid cycles
     const cycleIds = validCycles.map(cycle => cycle.customobject1000id);
-    const batchSize = 10; // Increased batch size for better performance
     let allRegistrations = [];
-
+    
     console.log('DEBUG - Number of cycle IDs:', cycleIds.length);
-    console.log('DEBUG - Will query in batches of:', batchSize);
 
-    // Process cycles in batches
-    for (let i = 0; i < cycleIds.length; i += batchSize) {
-      const batchCycleIds = cycleIds.slice(i, i + batchSize);
+    if (cycleIds.length > 0) {
+      // Use single query approach like main branch for reliability
+      const cycleConditions = cycleIds.map(id => `pcfsystemfield53 = '${id}'`).join(' OR ');
       
       const registrationsQuery = {
         objecttype: 33,
         page_size: 2000,
         fields: "accountproductid,accountid,pcfsystemfield204,pcfsystemfield53,statuscode",
-        query: `(${batchCycleIds.map(id => `pcfsystemfield53 = '${id}'`).join(' OR ')})`
+        query: `(${cycleConditions})`
       };
 
-      console.log(`DEBUG - Batch ${Math.floor(i/batchSize) + 1} query:`, JSON.stringify(registrationsQuery, null, 2));
+      console.log('DEBUG - Registration query:', JSON.stringify(registrationsQuery, null, 2));
 
       const registrationsResponse = await fetch('https://api.fireberry.com/api/query', {
         method: 'POST',
@@ -97,14 +105,14 @@ export default async function handler(req, res) {
       });
 
       if (!registrationsResponse.ok) {
-        throw new Error(`Registrations batch ${Math.floor(i/batchSize) + 1} API error! status: ${registrationsResponse.status}`);
+        console.error(`Registrations API error! status: ${registrationsResponse.status}`);
+        // Don't throw error, just continue with empty registrations
+        allRegistrations = [];
+      } else {
+        const registrationsResult = await registrationsResponse.json();
+        allRegistrations = registrationsResult.data && registrationsResult.data.Data ? registrationsResult.data.Data : [];
+        console.log('DEBUG - Total registrations found:', allRegistrations.length);
       }
-
-      const registrationsResult = await registrationsResponse.json();
-      const batchRegistrations = registrationsResult.data && registrationsResult.data.Data ? registrationsResult.data.Data : [];
-      
-      allRegistrations = allRegistrations.concat(batchRegistrations);
-      console.log(`DEBUG - Batch ${Math.floor(i/batchSize) + 1} returned:`, batchRegistrations.length, 'registrations');
     }
 
     const registrations = allRegistrations;
