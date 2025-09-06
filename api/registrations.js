@@ -1,34 +1,23 @@
-const { getFireberryClient, FireberryAPIError } = require('../lib/utils/fireberryClient');
-const { validateQuery } = require('../lib/middleware/validation');
-const { applySecurity } = require('../lib/middleware/security');
+// Temporarily use direct API calls while debugging module issues
+// const { getFireberryClient, FireberryAPIError } = require('../lib/utils/fireberryClient');
+// const { validateQuery } = require('../lib/middleware/validation');
+// const { applySecurity } = require('../lib/middleware/security');
 
 export default async function handler(req, res) {
-  // Apply security middleware
-  try {
-    await new Promise((resolve, reject) => {
-      applySecurity(req, res, (err) => {
-        if (err) reject(err);
-        else resolve();
-      });
-    });
-  } catch (error) {
-    return; // Response already sent by security middleware
+  // Basic CORS headers
+  const origin = req.headers.origin;
+  if (origin && origin.includes('.vercel.app')) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST,PUT,DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
   }
 
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  // Apply validation middleware
-  try {
-    await new Promise((resolve, reject) => {
-      validateQuery(req, res, (err) => {
-        if (err) reject(err);
-        else resolve();
-      });
-    });
-  } catch (error) {
-    return; // Response already sent by validation middleware
   }
 
   try {
@@ -38,10 +27,34 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Cycle ID is required' });
     }
 
-    const client = getFireberryClient();
+    if (!process.env.FIREBERRY_API_KEY) {
+      return res.status(500).json({ error: 'API key not configured' });
+    }
 
-    // Get registrations for the specified cycle (secure query)
-    const registrations = await client.getRegistrationsBatch([cycleId]);
+    // Get registrations for the specified cycle
+    const registrationsQuery = {
+      objecttype: 33,
+      page_size: 2000,
+      fields: "accountproductid,accountid,pcfsystemfield204,pcfsystemfield53,statuscode,pcfsystemfield56,pcfsystemfield289,pcfsystemfield298",
+      query: `pcfsystemfield53 = '${cycleId}'`
+    };
+
+    const registrationsResponse = await fetch('https://api.fireberry.com/api/query', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'tokenid': process.env.FIREBERRY_API_KEY,
+        'accept': 'application/json'
+      },
+      body: JSON.stringify(registrationsQuery)
+    });
+
+    if (!registrationsResponse.ok) {
+      throw new Error(`Registrations API error! status: ${registrationsResponse.status}`);
+    }
+
+    const registrationsResult = await registrationsResponse.json();
+    const registrations = registrationsResult.data && registrationsResult.data.Data ? registrationsResult.data.Data : [];
 
     if (registrations.length === 0) {
       return res.status(200).json({ 
@@ -62,8 +75,30 @@ export default async function handler(req, res) {
       });
     }
 
-    // Batch fetch customer data (optimized performance)
-    const customers = await client.getCustomersBatch(accountIds);
+    // Batch fetch customer data
+    const customersQuery = {
+      objecttype: 1,
+      page_size: 500,
+      fields: "accountid,accountname,telephone1,emailaddress1",
+      query: `accountid IN ('${accountIds.join("','")}')`
+    };
+
+    const customersResponse = await fetch('https://api.fireberry.com/api/query', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'tokenid': process.env.FIREBERRY_API_KEY,
+        'accept': 'application/json'
+      },
+      body: JSON.stringify(customersQuery)
+    });
+
+    if (!customersResponse.ok) {
+      throw new Error(`Customers API error! status: ${customersResponse.status}`);
+    }
+
+    const customersResult = await customersResponse.json();
+    const customers = customersResult.data && customersResult.data.Data ? customersResult.data.Data : [];
     
     // Create lookup maps for efficient data joining
     const customerMap = {};
@@ -74,7 +109,7 @@ export default async function handler(req, res) {
       phoneMap[customer.accountid] = customer.telephone1;
     });
 
-    // Transform registrations with customer data (sanitized output)
+    // Transform registrations with customer data
     const transformedRegistrations = registrations.map(registration => ({
       registrationId: registration.accountproductid,
       accountName: customerMap[registration.accountid] || 'לא נמצא',
@@ -93,20 +128,9 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Error fetching registrations:', error);
-    
-    // Don't expose internal error details in production
-    const isDevelopment = process.env.NODE_ENV === 'development';
-    
-    if (error instanceof FireberryAPIError) {
-      res.status(error.status || 500).json({
-        error: 'Failed to fetch registrations',
-        message: isDevelopment ? error.message : 'Unable to retrieve registration data'
-      });
-    } else {
-      res.status(500).json({
-        error: 'Internal server error',
-        message: isDevelopment ? error.message : 'An unexpected error occurred'
-      });
-    }
+    res.status(500).json({
+      error: 'Failed to fetch registrations',
+      message: error.message
+    });
   }
 }

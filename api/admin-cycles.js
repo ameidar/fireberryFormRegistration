@@ -1,17 +1,18 @@
-const { getFireberryClient, FireberryAPIError } = require('../lib/utils/fireberryClient');
-const { applySecurity } = require('../lib/middleware/security');
+// Temporarily use direct API calls while debugging module issues
+// const { getFireberryClient, FireberryAPIError } = require('../lib/utils/fireberryClient');
+// const { applySecurity } = require('../lib/middleware/security');
 
 export default async function handler(req, res) {
-  // Apply security middleware
-  try {
-    await new Promise((resolve, reject) => {
-      applySecurity(req, res, (err) => {
-        if (err) reject(err);
-        else resolve();
-      });
-    });
-  } catch (error) {
-    return; // Response already sent by security middleware
+  // Basic CORS headers
+  const origin = req.headers.origin;
+  if (origin && origin.includes('.vercel.app')) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST,PUT,DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
   }
 
   if (req.method !== 'GET') {
@@ -19,10 +20,33 @@ export default async function handler(req, res) {
   }
 
   try {
-    const client = getFireberryClient();
-    
-    // Step 1: Get all active cycles using secure client
-    const cyclesData = await client.getActiveCycles();
+    if (!process.env.FIREBERRY_API_KEY) {
+      return res.status(500).json({ error: 'API key not configured' });
+    }
+
+    // Step 1: Get all active cycles
+    const cyclesQuery = {
+      objecttype: 1000,
+      fields: "customobject1000id,name,pcfsystemfield37,pcfsystemfield549",
+      query: "pcfsystemfield37 = 3"
+    };
+
+    const cyclesResponse = await fetch('https://api.fireberry.com/api/query', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'tokenid': process.env.FIREBERRY_API_KEY,
+        'accept': 'application/json'
+      },
+      body: JSON.stringify(cyclesQuery)
+    });
+
+    if (!cyclesResponse.ok) {
+      throw new Error(`Cycles API error! status: ${cyclesResponse.status}`);
+    }
+
+    const cyclesResult = await cyclesResponse.json();
+    const cyclesData = cyclesResult.data && cyclesResult.data.Data ? cyclesResult.data.Data : [];
     
     if (cyclesData.length === 0) {
       return res.status(200).json({ cycles: [], totalCycles: 0 });
@@ -39,9 +63,33 @@ export default async function handler(req, res) {
       return res.status(200).json({ cycles: [], totalCycles: 0 });
     }
 
-    // Step 2: Get all registrations for valid cycles using batch query (performance optimization)
+    // Step 2: Get all registrations for valid cycles
     const cycleIds = validCycles.map(cycle => cycle.customobject1000id);
-    const registrations = await client.getRegistrationsBatch(cycleIds);
+    
+    // Build query for registrations
+    const registrationsQuery = {
+      objecttype: 33,
+      page_size: 2000,
+      fields: "accountproductid,accountid,pcfsystemfield204,pcfsystemfield53,statuscode",
+      query: `pcfsystemfield53 IN ('${cycleIds.join("','")}')`
+    };
+
+    const registrationsResponse = await fetch('https://api.fireberry.com/api/query', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'tokenid': process.env.FIREBERRY_API_KEY,
+        'accept': 'application/json'
+      },
+      body: JSON.stringify(registrationsQuery)
+    });
+
+    if (!registrationsResponse.ok) {
+      throw new Error(`Registrations API error! status: ${registrationsResponse.status}`);
+    }
+
+    const registrationsResult = await registrationsResponse.json();
+    const registrations = registrationsResult.data && registrationsResult.data.Data ? registrationsResult.data.Data : [];
     
     // Count registrations per cycle
     const registrationCounts = {};
@@ -52,7 +100,7 @@ export default async function handler(req, res) {
       }
     });
 
-    // Step 3: Build final result with only cycles that have registrations (sanitized output)
+    // Step 3: Build final result with only cycles that have registrations
     const cyclesWithRegistrations = validCycles
       .filter(cycle => {
         const count = registrationCounts[cycle.customobject1000id] || 0;
@@ -72,20 +120,9 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Error fetching admin cycles:', error);
-    
-    // Don't expose internal error details in production
-    const isDevelopment = process.env.NODE_ENV === 'development';
-    
-    if (error instanceof FireberryAPIError) {
-      res.status(error.status || 500).json({
-        error: 'Failed to fetch admin cycles',
-        message: isDevelopment ? error.message : 'Unable to retrieve cycle data'
-      });
-    } else {
-      res.status(500).json({
-        error: 'Internal server error',
-        message: isDevelopment ? error.message : 'An unexpected error occurred'
-      });
-    }
+    res.status(500).json({
+      error: 'Failed to fetch admin cycles',
+      message: error.message
+    });
   }
 }
