@@ -1,16 +1,17 @@
-export default async function handler(req, res) {
-  // Enable CORS
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+const { getFireberryClient, FireberryAPIError } = require('../lib/utils/fireberryClient');
+const { applySecurity } = require('../lib/middleware/security');
 
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+export default async function handler(req, res) {
+  // Apply security middleware
+  try {
+    await new Promise((resolve, reject) => {
+      applySecurity(req, res, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  } catch (error) {
+    return; // Response already sent by security middleware
   }
 
   if (req.method !== 'GET') {
@@ -18,45 +19,35 @@ export default async function handler(req, res) {
   }
 
   try {
-    const FIREBERRY_API_KEY = process.env.FIREBERRY_API_KEY;
+    const client = getFireberryClient();
     
-    // Query for active cycles only
-    const queryPayload = {
-      objecttype: 1000,
-      page_size: 500,
-      fields: "customobject1000id,name,pcfsystemfield37,pcfsystemfield549",
-      query: "pcfsystemfield37 = 3"
-    };
-
-    const response = await fetch('https://api.fireberry.com/api/query', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'tokenid': FIREBERRY_API_KEY,
-        'accept': 'application/json'
-      },
-      body: JSON.stringify(queryPayload)
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
+    // Get active cycles using secure client
+    const cyclesData = await client.getActiveCycles();
     
-    // Transform data for frontend
-    const cycles = data.data && data.data.Data ? data.data.Data.map(cycle => ({
+    // Transform and sanitize data for frontend (no sensitive internal fields)
+    const cycles = cyclesData.map(cycle => ({
       id: cycle.customobject1000id,
       name: cycle.name,
-      pcfsystemfield549: cycle.pcfsystemfield549
-    })) : [];
+      type: cycle.pcfsystemfield549 || 'Unknown'
+    }));
 
     res.status(200).json({ cycles });
   } catch (error) {
     console.error('Error fetching cycles:', error);
-    res.status(500).json({ 
-      error: 'Failed to fetch cycles',
-      message: error.message 
-    });
+    
+    // Don't expose internal error details in production
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    
+    if (error instanceof FireberryAPIError) {
+      res.status(error.status || 500).json({
+        error: 'Failed to fetch cycles',
+        message: isDevelopment ? error.message : 'Unable to retrieve cycle data'
+      });
+    } else {
+      res.status(500).json({
+        error: 'Internal server error',
+        message: isDevelopment ? error.message : 'An unexpected error occurred'
+      });
+    }
   }
 }

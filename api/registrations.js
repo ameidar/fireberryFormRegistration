@@ -1,124 +1,112 @@
-export default async function handler(req, res) {
-  // Enable CORS
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+const { getFireberryClient, FireberryAPIError } = require('../lib/utils/fireberryClient');
+const { validateQuery } = require('../lib/middleware/validation');
+const { applySecurity } = require('../lib/middleware/security');
 
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+export default async function handler(req, res) {
+  // Apply security middleware
+  try {
+    await new Promise((resolve, reject) => {
+      applySecurity(req, res, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  } catch (error) {
+    return; // Response already sent by security middleware
   }
 
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // Apply validation middleware
   try {
-    const FIREBERRY_API_KEY = process.env.FIREBERRY_API_KEY;
+    await new Promise((resolve, reject) => {
+      validateQuery(req, res, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  } catch (error) {
+    return; // Response already sent by validation middleware
+  }
+
+  try {
     const { cycleId } = req.query;
 
     if (!cycleId) {
       return res.status(400).json({ error: 'Cycle ID is required' });
     }
 
-    // Query registrations for the specified cycle
-    const registrationsQuery = {
-      objecttype: 33,
-      page_size: 500,
-      fields: "accountproductid,accountid,pcfsystemfield204,pcfsystemfield53,statuscode,pcfsystemfield56,pcfsystemfield289",
-      query: `pcfsystemfield53 = ${cycleId}`
-    };
+    const client = getFireberryClient();
 
-    const registrationsResponse = await fetch('https://api.fireberry.com/api/query', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'tokenid': FIREBERRY_API_KEY,
-        'accept': 'application/json'
-      },
-      body: JSON.stringify(registrationsQuery)
-    });
+    // Get registrations for the specified cycle (secure query)
+    const registrations = await client.getRegistrationsBatch([cycleId]);
 
-    if (!registrationsResponse.ok) {
-      throw new Error(`Failed to fetch registrations: ${registrationsResponse.status}`);
+    if (registrations.length === 0) {
+      return res.status(200).json({ 
+        registrations: [],
+        cycleId: cycleId,
+        count: 0
+      });
     }
 
-    const registrationsData = await registrationsResponse.json();
-
-    if (!registrationsData.data || !registrationsData.data.Data) {
-      return res.status(200).json({ registrations: [] });
-    }
-
-    const registrations = registrationsData.data.Data;
-
-    // Get unique account IDs to fetch customer names
+    // Get unique account IDs for batch customer lookup
     const accountIds = [...new Set(registrations.map(reg => reg.accountid).filter(id => id))];
     
     if (accountIds.length === 0) {
-      return res.status(200).json({ registrations: [] });
+      return res.status(200).json({ 
+        registrations: [],
+        cycleId: cycleId,
+        count: 0
+      });
     }
 
-    // Query customer names for all account IDs
-    const accountConditions = accountIds.map(id => `(accountid = '${id}')`).join(' OR ');
+    // Batch fetch customer data (optimized performance)
+    const customers = await client.getCustomersBatch(accountIds);
     
-    const customersQuery = {
-      objecttype: 1,
-      page_size: 500,
-      fields: "accountid,accountname,telephone1",
-      query: `(${accountConditions})`
-    };
-
-    const customersResponse = await fetch('https://api.fireberry.com/api/query', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'tokenid': FIREBERRY_API_KEY,
-        'accept': 'application/json'
-      },
-      body: JSON.stringify(customersQuery)
+    // Create lookup maps for efficient data joining
+    const customerMap = {};
+    const phoneMap = {};
+    
+    customers.forEach(customer => {
+      customerMap[customer.accountid] = customer.accountname;
+      phoneMap[customer.accountid] = customer.telephone1;
     });
 
-    let customerMap = {};
-    let phoneMap = {};
-    if (customersResponse.ok) {
-      const customersData = await customersResponse.json();
-      
-      if (customersData.data && customersData.data.Data) {
-        customersData.data.Data.forEach(customer => {
-          customerMap[customer.accountid] = customer.accountname;
-          phoneMap[customer.accountid] = customer.telephone1;
-        });
-      }
-    }
-
-    // Transform registrations with customer names
+    // Transform registrations with customer data (sanitized output)
     const transformedRegistrations = registrations.map(registration => ({
       registrationId: registration.accountproductid,
-      accountId: registration.accountid,
-      accountName: customerMap[registration.accountid] || registration.accountid,
+      accountName: customerMap[registration.accountid] || 'לא נמצא',
       phoneNumber: phoneMap[registration.accountid] || 'לא נמצא',
       childName: registration.pcfsystemfield204 || 'לא נמצא',
       statusCode: registration.statuscode,
-      cycleId: registration.pcfsystemfield53,
       paymentStatus: registration.pcfsystemfield56,
-      paymentAmount: registration.pcfsystemfield289
+      paymentAmount: registration.pcfsystemfield289,
+      birthDate: registration.pcfsystemfield298 || null
     }));
 
     res.status(200).json({ 
       registrations: transformedRegistrations,
-      cycleId: cycleId,
       count: transformedRegistrations.length
     });
 
   } catch (error) {
     console.error('Error fetching registrations:', error);
-    res.status(500).json({ 
-      error: 'Failed to fetch registrations',
-      message: error.message 
-    });
+    
+    // Don't expose internal error details in production
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    
+    if (error instanceof FireberryAPIError) {
+      res.status(error.status || 500).json({
+        error: 'Failed to fetch registrations',
+        message: isDevelopment ? error.message : 'Unable to retrieve registration data'
+      });
+    } else {
+      res.status(500).json({
+        error: 'Internal server error',
+        message: isDevelopment ? error.message : 'An unexpected error occurred'
+      });
+    }
   }
 }

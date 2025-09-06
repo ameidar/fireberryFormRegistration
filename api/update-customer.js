@@ -1,16 +1,18 @@
-export default async function handler(req, res) {
-  // Enable CORS
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+const { getFireberryClient, FireberryAPIError } = require('../lib/utils/fireberryClient');
+const { validateId, validateName, validatePhone } = require('../lib/validation/schemas');
+const { applySecurity } = require('../lib/middleware/security');
 
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+export default async function handler(req, res) {
+  // Apply security middleware
+  try {
+    await new Promise((resolve, reject) => {
+      applySecurity(req, res, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  } catch (error) {
+    return; // Response already sent by security middleware
   }
 
   if (req.method !== 'PUT') {
@@ -18,59 +20,78 @@ export default async function handler(req, res) {
   }
 
   try {
-    const FIREBERRY_API_KEY = process.env.FIREBERRY_API_KEY;
     const { accountId, accountName, phoneNumber } = req.body;
 
-    if (!accountId) {
-      return res.status(400).json({ error: 'Account ID is required' });
+    // Validate account ID
+    const idValidation = validateId(accountId);
+    if (!idValidation.isValid) {
+      return res.status(400).json({ 
+        error: 'Invalid account ID', 
+        message: idValidation.error 
+      });
     }
 
-    // Build update payload
+    // Build update payload with validation
     const updatePayload = {};
+    const errors = {};
     
     if (accountName !== undefined) {
-      updatePayload.accountname = accountName;
+      const nameValidation = validateName(accountName);
+      if (!nameValidation.isValid) {
+        errors.accountName = nameValidation.error;
+      } else {
+        updatePayload.accountname = nameValidation.value;
+      }
     }
     
     if (phoneNumber !== undefined) {
-      updatePayload.telephone1 = phoneNumber;
+      const phoneValidation = validatePhone(phoneNumber);
+      if (!phoneValidation.isValid) {
+        errors.phoneNumber = phoneValidation.error;
+      } else {
+        updatePayload.telephone1 = phoneValidation.value;
+      }
+    }
+
+    if (Object.keys(errors).length > 0) {
+      return res.status(400).json({ 
+        error: 'Validation failed', 
+        details: errors 
+      });
     }
 
     if (Object.keys(updatePayload).length === 0) {
       return res.status(400).json({ error: 'No fields to update' });
     }
 
-    // Update customer record in Fireberry (objecttype 1)
-    const updateResponse = await fetch(`https://api.fireberry.com/api/record/1/${accountId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'tokenid': FIREBERRY_API_KEY,
-        'accept': 'application/json'
-      },
-      body: JSON.stringify(updatePayload)
-    });
-
-    if (!updateResponse.ok) {
-      const errorText = await updateResponse.text();
-      console.error('Customer update error:', errorText);
-      throw new Error(`Failed to update customer: ${updateResponse.status}`);
+    const client = getFireberryClient();
+    
+    try {
+      const updateData = await client.updateRecord(1, idValidation.value, updatePayload);
+      
+      res.status(200).json({
+        success: true,
+        message: 'פרטי הלקוח עודכנו בהצלחה!'
+      });
+    } catch (error) {
+      console.error('Customer update error:', error);
+      if (error instanceof FireberryAPIError) {
+        return res.status(error.status || 500).json({
+          error: 'Failed to update customer',
+          message: error.message
+        });
+      }
+      throw error;
     }
-
-    const updateData = await updateResponse.json();
-
-    res.status(200).json({
-      success: true,
-      message: 'פרטי הלקוח עודכנו בהצלחה!',
-      accountId: accountId,
-      updatedData: updateData
-    });
 
   } catch (error) {
     console.error('Customer update error:', error);
-    res.status(500).json({ 
-      error: 'Failed to update customer',
-      message: error.message 
+    
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    
+    res.status(500).json({
+      error: 'Internal server error',
+      message: isDevelopment ? error.message : 'An unexpected error occurred'
     });
   }
 }
