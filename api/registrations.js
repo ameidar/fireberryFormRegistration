@@ -21,15 +21,22 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log('DEBUG - Registrations API called with query:', req.query);
+    
     const { cycleId } = req.query;
 
     if (!cycleId) {
+      console.log('DEBUG - No cycle ID provided');
       return res.status(400).json({ error: 'Cycle ID is required' });
     }
 
     if (!process.env.FIREBERRY_API_KEY) {
+      console.log('DEBUG - No API key configured');
       return res.status(500).json({ error: 'API key not configured' });
     }
+
+    console.log('DEBUG - Processing cycle ID:', cycleId);
+    console.log('DEBUG - API key present:', !!process.env.FIREBERRY_API_KEY);
 
     // Get registrations for the specified cycle
     const registrationsQuery = {
@@ -42,15 +49,27 @@ export default async function handler(req, res) {
     console.log('DEBUG - Single registration query:', JSON.stringify(registrationsQuery, null, 2));
     console.log('DEBUG - Cycle ID:', cycleId);
 
-    const registrationsResponse = await fetch('https://api.fireberry.com/api/query', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'tokenid': process.env.FIREBERRY_API_KEY,
-        'accept': 'application/json'
-      },
-      body: JSON.stringify(registrationsQuery)
-    });
+    console.log('DEBUG - About to make registrations API call');
+    
+    let registrationsResponse;
+    try {
+      registrationsResponse = await fetch('https://api.fireberry.com/api/query', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'tokenid': process.env.FIREBERRY_API_KEY,
+          'accept': 'application/json'
+        },
+        body: JSON.stringify(registrationsQuery)
+      });
+      console.log('DEBUG - Registrations API call completed, status:', registrationsResponse.status);
+    } catch (fetchError) {
+      console.error('DEBUG - Fetch error for registrations:', fetchError);
+      return res.status(500).json({
+        error: 'Network error when fetching registrations',
+        message: fetchError.message
+      });
+    }
 
     if (!registrationsResponse.ok) {
       console.error(`Registrations API error! status: ${registrationsResponse.status}`);
@@ -110,15 +129,39 @@ export default async function handler(req, res) {
       query: `(${accountIds.map(id => `(accountid = '${id}')`).join(' OR ')})`
     };
 
-    const customersResponse = await fetch('https://api.fireberry.com/api/query', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'tokenid': process.env.FIREBERRY_API_KEY,
-        'accept': 'application/json'
-      },
-      body: JSON.stringify(customersQuery)
-    });
+    console.log('DEBUG - About to make customers API call');
+    
+    let customersResponse;
+    try {
+      customersResponse = await fetch('https://api.fireberry.com/api/query', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'tokenid': process.env.FIREBERRY_API_KEY,
+          'accept': 'application/json'
+        },
+        body: JSON.stringify(customersQuery)
+      });
+      console.log('DEBUG - Customers API call completed, status:', customersResponse.status);
+    } catch (fetchError) {
+      console.error('DEBUG - Fetch error for customers:', fetchError);
+      // Return registrations without customer names instead of failing
+      const basicRegistrations = registrations.map(registration => ({
+        registrationId: registration.accountproductid,
+        accountName: 'לא נמצא (שגיאת רשת)',
+        phoneNumber: 'לא נמצא (שגיאת רשת)',
+        childName: registration.pcfsystemfield204 || 'לא נמצא',
+        statusCode: registration.statuscode,
+        paymentStatus: registration.pcfsystemfield56,
+        paymentAmount: registration.pcfsystemfield289,
+        birthDate: registration.pcfsystemfield298 || null
+      }));
+      
+      return res.status(200).json({ 
+        registrations: basicRegistrations,
+        count: basicRegistrations.length
+      });
+    }
 
     if (!customersResponse.ok) {
       console.error(`Customers API error! status: ${customersResponse.status}`);
