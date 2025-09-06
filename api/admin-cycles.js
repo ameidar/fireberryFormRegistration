@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     const cyclesQuery = {
       objecttype: 1000,
       fields: "customobject1000id,name,pcfsystemfield37,pcfsystemfield549",
-      query: "pcfsystemfield37 = 3"
+      query: "(pcfsystemfield37 = 3)"
     };
 
     const cyclesResponse = await fetch('https://api.fireberry.com/api/query', {
@@ -71,7 +71,7 @@ export default async function handler(req, res) {
       objecttype: 33,
       page_size: 2000,
       fields: "accountproductid,accountid,pcfsystemfield204,pcfsystemfield53,statuscode",
-      query: `pcfsystemfield53 IN ('${cycleIds.join("','")}')`
+      query: `(${cycleIds.map(id => `pcfsystemfield53 = '${id}'`).join(' OR ')})`
     };
 
     const registrationsResponse = await fetch('https://api.fireberry.com/api/query', {

@@ -36,7 +36,7 @@ export default async function handler(req, res) {
       objecttype: 33,
       page_size: 2000,
       fields: "accountproductid,accountid,pcfsystemfield204,pcfsystemfield53,statuscode,pcfsystemfield56,pcfsystemfield289,pcfsystemfield298",
-      query: `pcfsystemfield53 = '${cycleId}'`
+      query: `(pcfsystemfield53 = '${cycleId}')`
     };
 
     const registrationsResponse = await fetch('https://api.fireberry.com/api/query', {
@@ -80,7 +80,7 @@ export default async function handler(req, res) {
       objecttype: 1,
       page_size: 500,
       fields: "accountid,accountname,telephone1,emailaddress1",
-      query: `accountid IN ('${accountIds.join("','")}')`
+      query: `(${accountIds.map(id => `accountid = '${id}'`).join(' OR ')})`
     };
 
     const customersResponse = await fetch('https://api.fireberry.com/api/query', {
