@@ -19,6 +19,9 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Debug: Check if API key is available
+    console.log('Environment check - API key present:', !!process.env.FIREBERRY_API_KEY);
+    
     const client = getFireberryClient();
     
     // Get active cycles using secure client
