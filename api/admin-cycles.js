@@ -70,52 +70,61 @@ export default async function handler(req, res) {
       return res.status(200).json({ cycles: [] });
     }
 
-    // Step 2: Get all registrations for valid cycles in one query - EXACT COPY FROM MAIN BRANCH
+    // Step 2: Get all registrations for valid cycles - Use batch processing for large queries
     const cycleIds = validCycles.map(cycle => cycle.customobject1000id);
-    const cycleConditions = cycleIds.map(id => `pcfsystemfield53 = '${id}'`).join(' OR ');
+    console.log('DEBUG - Processing', cycleIds.length, 'cycle IDs');
     
-    const registrationsQuery = {
-      objecttype: 33,
-      page_size: 2000,
-      fields: "pcfsystemfield53",
-      query: `(${cycleConditions})`
-    };
-
-    const registrationsResponse = await fetch('https://api.fireberry.com/api/query', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'tokenid': FIREBERRY_API_KEY,
-        'accept': 'application/json'
-      },
-      body: JSON.stringify(registrationsQuery)
-    });
-
     let registrationCounts = {};
-    if (registrationsResponse.ok) {
-      const registrationsData = await registrationsResponse.json();
-      console.log('DEBUG - Registrations response structure:', {
-        hasData: !!registrationsData.data,
-        hasDataField: !!(registrationsData.data && registrationsData.data.Data),
-        totalRegistrations: registrationsData.data && registrationsData.data.Data ? registrationsData.data.Data.length : 0
-      });
+    
+    // Process in smaller batches to avoid query length limits
+    const batchSize = 20; // Smaller batches for reliability
+    for (let i = 0; i < cycleIds.length; i += batchSize) {
+      const batchCycleIds = cycleIds.slice(i, i + batchSize);
+      const cycleConditions = batchCycleIds.map(id => `pcfsystemfield53 = '${id}'`).join(' OR ');
       
-      // Count registrations per cycle - EXACT COPY FROM MAIN BRANCH
-      if (registrationsData.data && registrationsData.data.Data) {
-        registrationsData.data.Data.forEach(registration => {
-          const cycleId = registration.pcfsystemfield53;
-          if (cycleId) {
-            registrationCounts[cycleId] = (registrationCounts[cycleId] || 0) + 1;
-          }
+      const registrationsQuery = {
+        objecttype: 33,
+        page_size: 2000,
+        fields: "pcfsystemfield53",
+        query: `(${cycleConditions})`
+      };
+
+      console.log(`DEBUG - Batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(cycleIds.length/batchSize)} query:`, JSON.stringify(registrationsQuery, null, 2));
+
+      const registrationsResponse = await fetch('https://api.fireberry.com/api/query', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'tokenid': FIREBERRY_API_KEY,
+          'accept': 'application/json'
+        },
+        body: JSON.stringify(registrationsQuery)
+      });
+
+      if (registrationsResponse.ok) {
+        const registrationsData = await registrationsResponse.json();
+        console.log(`DEBUG - Batch ${Math.floor(i/batchSize) + 1} response structure:`, {
+          hasData: !!registrationsData.data,
+          hasDataField: !!(registrationsData.data && registrationsData.data.Data),
+          totalRegistrations: registrationsData.data && registrationsData.data.Data ? registrationsData.data.Data.length : 0
         });
-        console.log('DEBUG - Registration counts:', registrationCounts);
+        
+        // Count registrations per cycle from this batch
+        if (registrationsData.data && registrationsData.data.Data) {
+          registrationsData.data.Data.forEach(registration => {
+            const cycleId = registration.pcfsystemfield53;
+            if (cycleId) {
+              registrationCounts[cycleId] = (registrationCounts[cycleId] || 0) + 1;
+            }
+          });
+        }
       } else {
-        console.log('DEBUG - No registration data found in response');
+        console.error(`DEBUG - Batch ${Math.floor(i/batchSize) + 1} failed with status:`, registrationsResponse.status);
+        // Continue with other batches even if one fails
       }
-    } else {
-      console.error('DEBUG - Registrations response not OK:', registrationsResponse.status);
-      console.error('DEBUG - This will result in 0 cycles being returned');
     }
+
+    console.log('DEBUG - Final registration counts from all batches:', registrationCounts);
 
     // Step 3: Build final result with only cycles that have registrations - EXACT COPY FROM MAIN BRANCH
     console.log('DEBUG - Total valid cycles after filtering:', validCycles.length);
