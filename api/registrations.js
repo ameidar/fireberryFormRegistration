@@ -53,13 +53,24 @@ export default async function handler(req, res) {
     });
 
     if (!registrationsResponse.ok) {
-      throw new Error(`Registrations API error! status: ${registrationsResponse.status}`);
+      console.error(`Registrations API error! status: ${registrationsResponse.status}`);
+      return res.status(500).json({ 
+        error: 'Failed to fetch registrations from Fireberry API',
+        status: registrationsResponse.status 
+      });
     }
 
     const registrationsResult = await registrationsResponse.json();
+    console.log('DEBUG - Registrations API response structure:', {
+      hasData: !!registrationsResult.data,
+      hasDataField: !!(registrationsResult.data && registrationsResult.data.Data),
+      dataLength: registrationsResult.data && registrationsResult.data.Data ? registrationsResult.data.Data.length : 0
+    });
+    
     const registrations = registrationsResult.data && registrationsResult.data.Data ? registrationsResult.data.Data : [];
 
     if (registrations.length === 0) {
+      console.log('DEBUG - No registrations found for cycle:', cycleId);
       return res.status(200).json({ 
         registrations: [],
         cycleId: cycleId,
@@ -69,12 +80,25 @@ export default async function handler(req, res) {
 
     // Get unique account IDs for batch customer lookup
     const accountIds = [...new Set(registrations.map(reg => reg.accountid).filter(id => id))];
+    console.log('DEBUG - Unique account IDs found:', accountIds.length);
     
     if (accountIds.length === 0) {
+      console.log('DEBUG - No valid account IDs found');
+      // Return registrations with basic info, no customer lookup needed
+      const basicRegistrations = registrations.map(registration => ({
+        registrationId: registration.accountproductid,
+        accountName: 'לא נמצא',
+        phoneNumber: 'לא נמצא',
+        childName: registration.pcfsystemfield204 || 'לא נמצא',
+        statusCode: registration.statuscode,
+        paymentStatus: registration.pcfsystemfield56,
+        paymentAmount: registration.pcfsystemfield289,
+        birthDate: registration.pcfsystemfield298 || null
+      }));
+      
       return res.status(200).json({ 
-        registrations: [],
-        cycleId: cycleId,
-        count: 0
+        registrations: basicRegistrations,
+        count: basicRegistrations.length
       });
     }
 
@@ -97,10 +121,32 @@ export default async function handler(req, res) {
     });
 
     if (!customersResponse.ok) {
-      throw new Error(`Customers API error! status: ${customersResponse.status}`);
+      console.error(`Customers API error! status: ${customersResponse.status}`);
+      // Don't fail the whole request, just return registrations without customer names
+      const basicRegistrations = registrations.map(registration => ({
+        registrationId: registration.accountproductid,
+        accountName: 'לא נמצא (שגיאה בטעינה)',
+        phoneNumber: 'לא נמצא (שגיאה בטעינה)',
+        childName: registration.pcfsystemfield204 || 'לא נמצא',
+        statusCode: registration.statuscode,
+        paymentStatus: registration.pcfsystemfield56,
+        paymentAmount: registration.pcfsystemfield289,
+        birthDate: registration.pcfsystemfield298 || null
+      }));
+      
+      return res.status(200).json({ 
+        registrations: basicRegistrations,
+        count: basicRegistrations.length
+      });
     }
 
     const customersResult = await customersResponse.json();
+    console.log('DEBUG - Customers API response structure:', {
+      hasData: !!customersResult.data,
+      hasDataField: !!(customersResult.data && customersResult.data.Data),
+      dataLength: customersResult.data && customersResult.data.Data ? customersResult.data.Data.length : 0
+    });
+    
     const customers = customersResult.data && customersResult.data.Data ? customersResult.data.Data : [];
     
     // Create lookup maps for efficient data joining
