@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     const cyclesQuery = {
       objecttype: 1000,
       fields: "customobject1000id,name,pcfsystemfield37,pcfsystemfield549",
-      query: "(pcfsystemfield37 = 3)"
+      query: "pcfsystemfield37 = 3"
     };
 
     console.log('DEBUG - Cycles query:', JSON.stringify(cyclesQuery, null, 2));
