@@ -4,119 +4,634 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>טופס רישום לפעילויות חינוכיות</title>
+    <!-- Import Hebrew fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
+        /* Modern CSS Variables */
+        :root {
+            --primary-color: #1a73e8;
+            --primary-hover: #1557b0;
+            --secondary-color: #34a853;
+            --accent-color: #fbbc04;
+            --error-color: #ea4335;
+            --warning-color: #ff9800;
+            --success-color: #34a853;
+            
+            /* Hebrew-optimized typography */
+            --hebrew-font: 'Assistant', 'Rubik', 'Open Sans Hebrew', system-ui, sans-serif;
+            --hebrew-font-bold: 'Assistant', 'Rubik', 'Open Sans Hebrew Condensed', system-ui, sans-serif;
+            
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+            --shadow-md: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+            --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+            
+            /* Border radius */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
+        /* Enhanced Hebrew Typography */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f5f5;
-            padding: 20px;
+            font-family: var(--hebrew-font);
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-size: 16px;
+            min-height: 100vh;
+            padding: var(--spacing-lg);
         }
 
+        /* Modern container with card design */
         .container {
-            max-width: 600px;
+            max-width: 700px;
             margin: 0 auto;
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            transition: box-shadow 0.3s ease, transform 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+        }
+
+        .container:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        /* Modern headers */
+        h1, h2, h3 {
+            font-family: var(--hebrew-font-bold);
+            font-weight: 600;
+            letter-spacing: -0.02em;
         }
 
         h1 {
+            font-size: clamp(24px, 4vw, 32px);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--spacing-xl);
             text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 24px;
+            position: relative;
         }
 
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: var(--radius-sm);
+        }
+
+        h2 {
+            font-size: 24px;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        /* Enhanced form styling */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: var(--spacing-lg);
+            position: relative;
+        }
+
+        /* Modern floating label design */
+        .form-field {
+            position: relative;
+            margin-bottom: var(--spacing-lg);
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: var(--spacing-sm);
             font-weight: 600;
-            color: #555;
+            color: #374151;
+            font-size: 14px;
+            transition: all 0.2s ease;
         }
 
         input, select {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
+            padding: 16px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: var(--radius-md);
             font-size: 16px;
-            transition: border-color 0.3s;
+            font-family: var(--hebrew-font);
+            transition: all 0.3s ease;
+            background: #fefefe;
+            direction: rtl;
+            text-align: right;
         }
 
         input:focus, select:focus {
             outline: none;
-            border-color: #4CAF50;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+            background: white;
+        }
+
+        input::placeholder {
+            color: #9ca3af;
+            direction: rtl;
+            text-align: right;
+        }
+
+        /* Enhanced button design */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            padding: 14px 28px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: var(--hebrew-font);
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
         }
 
         .submit-btn {
-            background-color: #4CAF50;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
             color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 6px;
-            font-size: 18px;
-            cursor: pointer;
             width: 100%;
-            transition: background-color 0.3s;
+            padding: 16px 32px;
+            font-size: 18px;
+            box-shadow: var(--shadow-sm);
         }
 
-        .submit-btn:hover {
-            background-color: #45a049;
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .submit-btn:disabled {
-            background-color: #ccc;
+            background: #d1d5db;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .payment-btn {
-            display: inline-block;
-            background-color: #2196F3;
-            color: white;
-            padding: 15px 30px;
-            text-decoration: none;
-            border-radius: 6px;
+            background: linear-gradient(135deg, var(--accent-color), #f59e0b);
+            color: #1f2937;
+            font-weight: 700;
+            padding: 16px 32px;
             font-size: 18px;
-            font-weight: bold;
-            transition: background-color 0.3s;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-md);
+            text-decoration: none;
+            display: inline-block;
         }
 
         .payment-btn:hover {
-            background-color: #1976D2;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
             text-decoration: none;
+            color: #1f2937;
         }
 
         .payment-btn:visited {
+            color: #1f2937;
+        }
+
+        /* Loading states */
+        .loading {
+            text-align: center;
+            color: #6b7280;
+            font-style: italic;
+            padding: var(--spacing-lg);
+        }
+
+        .loading-skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: var(--radius-sm);
+            height: 20px;
+            margin: var(--spacing-sm) 0;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Enhanced error styling */
+        .error {
+            color: var(--error-color);
+            font-size: 14px;
+            margin-top: var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .error::before {
+            content: '⚠️';
+            font-size: 12px;
+        }
+
+        /* Admin section improvements */
+        #adminSection {
+            margin-top: var(--spacing-xl);
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            min-width: 300px;
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            color: white;
+            font-weight: 600;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: var(--success-color);
+        }
+
+        .toast.error {
+            background: var(--error-color);
+        }
+
+        .toast.info {
+            background: var(--primary-color);
+        }
+
+        /* Enhanced modal styling */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            max-width: 500px;
+            width: 90%;
+            box-shadow: var(--shadow-lg);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6b7280;
+            transition: color 0.2s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--error-color);
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            body {
+                padding: var(--spacing-md);
+            }
+
+            .container {
+                padding: var(--spacing-lg);
+                margin: 0;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .btn {
+                padding: 12px 24px;
+                font-size: 16px;
+            }
+
+            .modal-content {
+                padding: var(--spacing-lg);
+                width: 95%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: var(--spacing-md);
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+
+        /* Enhanced Admin Table Styling */
+        .admin-table-container {
+            background: var(--surface-color);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            margin-top: var(--spacing-lg);
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            background: var(--surface-color);
+        }
+
+        .admin-table thead th {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            padding: var(--spacing-md);
+            text-align: right;
+            font-weight: 600;
+            font-size: 13px;
+            border: none;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .admin-table tbody tr {
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .admin-table tbody tr:hover {
+            background: var(--hover-color);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-table tbody tr:nth-child(even) {
+            background: var(--light-bg);
+        }
+
+        .admin-table tbody tr:nth-child(even):hover {
+            background: var(--hover-color);
+        }
+
+        .admin-table td {
+            padding: var(--spacing-md);
+            text-align: right;
+            vertical-align: middle;
+            border: none;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .admin-table .row-number {
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-align: center;
+            width: 50px;
+        }
+
+        .admin-table .account-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .admin-table .phone-number {
+            font-family: 'Courier New', monospace;
+            color: var(--text-secondary);
+            direction: ltr;
+            text-align: left;
+        }
+
+        .admin-table .child-name {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .admin-table .status-cell {
+            text-align: center;
+        }
+
+        .admin-table .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .admin-table .status-active {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
             color: white;
         }
 
-        .loading {
+        .admin-table .status-inactive {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
+        }
+
+        .admin-table .status-cancelled {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+        }
+
+        .admin-table .status-waiting {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .admin-table .status-completed {
+            background: linear-gradient(135deg, #8BC34A, #689F38);
+            color: white;
+        }
+
+        .admin-table .actions-cell {
             text-align: center;
-            color: #666;
-            font-style: italic;
+            white-space: nowrap;
         }
 
-        .error {
-            color: #e74c3c;
-            font-size: 14px;
-            margin-top: 5px;
+        .admin-table .table-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            margin: 2px;
+            min-width: 60px;
         }
 
+        .admin-table .edit-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+        }
+
+        .admin-table .edit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .admin-table .save-btn {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .admin-table .save-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .admin-table .cancel-btn {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+        }
+
+        .admin-table .cancel-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .admin-table .edit-input {
+            width: 100%;
+            border: 2px solid var(--border-color);
+            padding: 8px;
+            font-size: 13px;
+            border-radius: 6px;
+            background: var(--surface-color);
+            transition: border-color 0.2s ease;
+            font-family: var(--hebrew-font);
+        }
+
+        .admin-table .edit-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        }
+
+        .admin-table .edit-select {
+            width: 100%;
+            border: 2px solid var(--border-color);
+            padding: 8px;
+            font-size: 13px;
+            border-radius: 6px;
+            background: var(--surface-color);
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+            font-family: var(--hebrew-font);
+        }
+
+        .admin-table .edit-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        }
+
+        /* Responsive table enhancements */
         @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-                margin: 10px;
+            .admin-table-container {
+                overflow-x: auto;
+                border-radius: 0;
+                margin: var(--spacing-md) -var(--spacing-md) 0;
+            }
+
+            .admin-table {
+                min-width: 800px;
+            }
+
+            .admin-table thead th,
+            .admin-table td {
+                padding: var(--spacing-sm);
+                font-size: 12px;
+            }
+
+            .admin-table .table-btn {
+                padding: 4px 8px;
+                font-size: 10px;
+                min-width: 50px;
             }
         }
     </style>
@@ -467,16 +982,16 @@
         // Create HTML table for registrations
         function createRegistrationsTable(registrations) {
             let html = `
-                <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px;">
+                <div class="admin-table-container">
+                    <table class="admin-table">
                         <thead>
-                            <tr style="background-color: #f5f5f5;">
-                                <th style="border: 1px solid #ddd; padding: 8px; text-align: right; width: 5%;">#</th>
-                                <th style="border: 1px solid #ddd; padding: 8px; text-align: right; width: 25%;">👤 שם ההורה</th>
-                                <th style="border: 1px solid #ddd; padding: 8px; text-align: right; width: 18%;">📞 טלפון</th>
-                                <th style="border: 1px solid #ddd; padding: 8px; text-align: right; width: 25%;">👶 שם הילד/ה</th>
-                                <th style="border: 1px solid #ddd; padding: 8px; text-align: right; width: 20%;">📋 סטטוס</th>
-                                <th style="border: 1px solid #ddd; padding: 8px; text-align: center; width: 7%;">⚙️ פעולות</th>
+                            <tr>
+                                <th style="width: 5%;">#</th>
+                                <th style="width: 25%;">👤 שם ההורה</th>
+                                <th style="width: 18%;">📞 טלפון</th>
+                                <th style="width: 25%;">👶 שם הילד/ה</th>
+                                <th style="width: 20%;">📋 סטטוס</th>
+                                <th style="width: 7%;">⚙️ פעולות</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -484,33 +999,33 @@
 
             registrations.forEach((registration, index) => {
                 const statusText = getStatusText(registration.statusCode);
+                const statusClass = getStatusClass(registration.statusCode);
                 html += `
-                    <tr id="row-${registration.registrationId}" data-account-id="${registration.accountId}" onclick="showRegistrationDetails('${registration.registrationId}')" style="cursor: pointer;" 
-                        onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
-                        <td style="border: 1px solid #ddd; padding: 8px; text-align: right; vertical-align: middle;">${index + 1}</td>
-                        <td style="border: 1px solid #ddd; padding: 8px; text-align: right; vertical-align: middle;">
-                            <span class="display-mode account-name" style="font-weight: bold;">${registration.accountName}</span>
-                            <input type="text" class="edit-mode account-name-input" value="${registration.accountName}" style="display: none; width: 100%; border: 1px solid #ccc; padding: 6px; font-size: 13px; border-radius: 4px;">
+                    <tr id="row-${registration.registrationId}" data-account-id="${registration.accountId}" onclick="showRegistrationDetails('${registration.registrationId}')">
+                        <td class="row-number">${index + 1}</td>
+                        <td>
+                            <span class="display-mode account-name">${registration.accountName}</span>
+                            <input type="text" class="edit-mode edit-input account-name-input" value="${registration.accountName}" style="display: none;">
                         </td>
-                        <td style="border: 1px solid #ddd; padding: 8px; text-align: right; vertical-align: middle;">
+                        <td>
                             <span class="display-mode phone-number">${registration.phoneNumber}</span>
-                            <input type="text" class="edit-mode phone-number-input" value="${registration.phoneNumber}" style="display: none; width: 100%; border: 1px solid #ccc; padding: 6px; font-size: 13px; border-radius: 4px;">
+                            <input type="text" class="edit-mode edit-input phone-number-input" value="${registration.phoneNumber}" style="display: none;">
                         </td>
-                        <td style="border: 1px solid #ddd; padding: 8px; text-align: right; vertical-align: middle;">
+                        <td>
                             <span class="display-mode child-name">${registration.childName}</span>
-                            <input type="text" class="edit-mode child-name-input" value="${registration.childName}" style="display: none; width: 100%; border: 1px solid #ccc; padding: 6px; font-size: 13px; border-radius: 4px;">
+                            <input type="text" class="edit-mode edit-input child-name-input" value="${registration.childName}" style="display: none;">
                         </td>
-                        <td style="border: 1px solid #ddd; padding: 8px; text-align: right; vertical-align: middle;">
-                            <span class="display-mode status-text">${statusText}</span>
-                            <select class="edit-mode status-select" style="display: none; width: 100%; border: 1px solid #ccc; padding: 6px; font-size: 13px; border-radius: 4px;">
+                        <td class="status-cell">
+                            <span class="display-mode status-badge ${statusClass}">${statusText}</span>
+                            <select class="edit-mode edit-select status-select" style="display: none;">
                                 ${generateStatusOptions(registration.statusCode)}
                             </select>
                         </td>
-                        <td style="border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;">
+                        <td class="actions-cell">
                             <div style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
-                                <button class="edit-btn" onclick="event.stopPropagation(); editRegistration('${registration.registrationId}')" style="background: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; min-width: 60px;">✏️ ערוך</button>
-                                <button class="save-btn" onclick="event.stopPropagation(); saveRegistration('${registration.registrationId}')" style="background: #4CAF50; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; min-width: 60px; display: none;">💾 שמור</button>
-                                <button class="cancel-btn" onclick="event.stopPropagation(); cancelEdit('${registration.registrationId}')" style="background: #f44336; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; min-width: 60px; display: none;">❌ בטל</button>
+                                <button class="edit-btn table-btn" onclick="event.stopPropagation(); editRegistration('${registration.registrationId}')">✏️ ערוך</button>
+                                <button class="save-btn table-btn" onclick="event.stopPropagation(); saveRegistration('${registration.registrationId}')" style="display: none;">💾 שמור</button>
+                                <button class="cancel-btn table-btn" onclick="event.stopPropagation(); cancelEdit('${registration.registrationId}')" style="display: none;">❌ בטל</button>
                             </div>
                         </td>
                     </tr>
@@ -542,6 +1057,18 @@
                 5: '✅ מושלם'
             };
             return statusMap[statusCode] || `(${statusCode})`;
+        }
+
+        // Get status CSS class based on status code
+        function getStatusClass(statusCode) {
+            const statusClassMap = {
+                1: 'status-active',
+                2: 'status-inactive', 
+                3: 'status-cancelled',
+                4: 'status-waiting',
+                5: 'status-completed'
+            };
+            return statusClassMap[statusCode] || 'status-waiting';
         }
 
         // Generate status dropdown options
