@@ -33,6 +33,10 @@ export default async function handler(req, res) {
       query: `pcfsystemfield53 = ${cycleId}`
     };
 
+    console.log('DEBUG MAIN BRANCH - Registration query:', JSON.stringify(registrationsQuery, null, 2));
+    console.log('DEBUG MAIN BRANCH - Cycle ID:', cycleId);
+    console.log('DEBUG MAIN BRANCH - Cycle ID type:', typeof cycleId);
+
     const registrationsResponse = await fetch('https://api.fireberry.com/api/query', {
       method: 'POST',
       headers: {
