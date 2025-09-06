@@ -4,227 +4,1956 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>טופס רישום לפעילויות חינוכיות</title>
+    <!-- Optimized Hebrew fonts with better rendering -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&family=Rubik:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
+        /* Modern CSS Variables */
+        :root {
+            --primary-color: #1a73e8;
+            --primary-hover: #1557b0;
+            --secondary-color: #34a853;
+            --accent-color: #fbbc04;
+            --error-color: #ea4335;
+            --warning-color: #ff9800;
+            --success-color: #34a853;
+            
+            /* Navigation colors */
+            --nav-bg: linear-gradient(135deg, #1a73e8, #34a853);
+            --nav-active: rgba(255, 255, 255, 0.2);
+            --nav-hover: rgba(255, 255, 255, 0.1);
+            
+            /* Modern dropdown colors */
+            --dropdown-bg: #ffffff;
+            --dropdown-border: #e2e8f0;
+            --dropdown-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            --dropdown-item-hover: #f8fafc;
+            --dropdown-item-selected: #e3f2fd;
+            --dropdown-item-active: var(--primary-color);
+            --dropdown-scroll-thumb: #cbd5e0;
+            --dropdown-scroll-track: #f7fafc;
+            
+            /* Professional Hebrew typography stack */
+            --hebrew-font: 'Assistant', 'Rubik', 'Segoe UI', 'Tahoma', 'Arial Hebrew', system-ui, sans-serif;
+            --hebrew-font-bold: 'Assistant', 'Rubik', 'Segoe UI', 'Tahoma', 'Arial Hebrew', system-ui, sans-serif;
+            --latin-font: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', system-ui, sans-serif;
+            
+            /* Typography color system */
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --text-inverse: #ffffff;
+            
+            /* Surface colors for better contrast */
+            --surface-color: #ffffff;
+            --surface-secondary: #f7fafc;
+            --surface-elevated: #ffffff;
+            --border-color: #e2e8f0;
+            --hover-color: rgba(66, 153, 225, 0.05);
+            --light-bg: #f8fafc;
+            
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+            --shadow-md: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+            --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+            
+            /* Border radius */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
+        /* Enhanced Hebrew Typography with better rendering */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f5f5;
-            padding: 20px;
+            font-family: var(--hebrew-font);
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-size: 16px;
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            font-feature-settings: 'kern' 1, 'liga' 1;
         }
 
+        /* Modern full-width container with card design */
         .container {
-            max-width: 600px;
-            margin: 0 auto;
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            transition: box-shadow 0.3s ease, transform 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+        }
+
+        .container:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        /* Modern headers */
+        h1, h2, h3 {
+            font-family: var(--hebrew-font-bold);
+            font-weight: 600;
+            letter-spacing: -0.02em;
         }
 
         h1 {
+            font-size: clamp(24px, 4vw, 32px);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--spacing-xl);
             text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 24px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
         }
 
+        h1::before {
+            content: '👑';
+            font-size: 0.8em;
+            -webkit-text-fill-color: initial;
+            background: none;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: var(--radius-sm);
+        }
+
+        h2 {
+            font-size: 24px;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        h2::before {
+            content: '💎';
+            font-size: 0.8em;
+        }
+
+        /* Enhanced form styling */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: var(--spacing-lg);
+            position: relative;
+        }
+
+        /* Modern floating label design */
+        .form-field {
+            position: relative;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        /* Modern Searchable Dropdown Styles */
+        .modern-dropdown {
+            position: relative;
+            width: 100%;
+        }
+        
+        .dropdown-input {
+            width: 100%;
+            padding: 16px 48px 16px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-family: var(--hebrew-font);
+            background: #fefefe;
+            direction: rtl;
+            text-align: right;
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .dropdown-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+            background: white;
+        }
+        
+        .dropdown-input::placeholder {
+            color: #9ca3af;
+            direction: rtl;
+            text-align: right;
+        }
+        
+        .dropdown-arrow {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            transition: transform 0.2s ease;
+            color: var(--text-secondary);
+            font-size: 18px;
+            z-index: 2;
+        }
+        
+        .modern-dropdown.open .dropdown-arrow {
+            transform: translateY(-50%) rotate(180deg);
+            color: var(--primary-color);
+        }
+        
+        .dropdown-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--dropdown-bg);
+            border: 2px solid var(--dropdown-border);
+            border-top: none;
+            border-radius: 0 0 var(--radius-md) var(--radius-md);
+            box-shadow: var(--dropdown-shadow);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            scrollbar-width: thin;
+            scrollbar-color: var(--dropdown-scroll-thumb) var(--dropdown-scroll-track);
+        }
+        
+        .dropdown-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .dropdown-list::-webkit-scrollbar-track {
+            background: var(--dropdown-scroll-track);
+        }
+        
+        .dropdown-list::-webkit-scrollbar-thumb {
+            background: var(--dropdown-scroll-thumb);
+            border-radius: 4px;
+        }
+        
+        .dropdown-list::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
+        }
+        
+        .modern-dropdown.open .dropdown-list {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .dropdown-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            direction: rtl;
+            text-align: right;
+            font-family: var(--hebrew-font);
+            font-size: 15px;
+            color: var(--text-primary);
+        }
+        
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-item:hover {
+            background: var(--dropdown-item-hover);
+            transform: translateX(2px);
+        }
+        
+        .dropdown-item.highlighted {
+            background: var(--dropdown-item-selected);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .dropdown-item.selected {
+            background: var(--dropdown-item-active);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .dropdown-item .item-text {
+            flex: 1;
+        }
+        
+        .dropdown-item .item-badge {
+            background: rgba(26, 115, 232, 0.1);
+            color: var(--primary-color);
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        
+        .dropdown-item .item-badges {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        
+        .dropdown-item .admin-count {
+            background: rgba(34, 197, 94, 0.1);
+            color: #059669;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        .dropdown-empty {
+            padding: 16px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .dropdown-loading {
+            padding: 16px;
+            text-align: center;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .dropdown-loading .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e5e7eb;
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Search highlight */
+        .dropdown-item .highlight {
+            background: rgba(255, 235, 59, 0.3);
+            font-weight: 700;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+        
+        /* Recent selections section */
+        .dropdown-section {
+            padding: 8px 16px 4px;
+            background: #f8fafc;
+            border-bottom: 1px solid var(--dropdown-border);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .dropdown-input {
+                padding: 14px 40px 14px 12px;
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+            
+            .dropdown-list {
+                max-height: 250px;
+            }
+            
+            .dropdown-item {
+                padding: 14px 16px;
+                font-size: 16px;
+            }
+            
+            .dropdown-arrow {
+                font-size: 16px;
+            }
+        }
+        
+        /* Touch-friendly improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .dropdown-item:hover {
+                transform: none;
+            }
+            
+            .dropdown-item:active {
+                background: var(--dropdown-item-selected);
+                transform: scale(0.98);
+            }
         }
 
         label {
-            display: block;
-            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            margin-bottom: var(--spacing-sm);
             font-weight: 600;
-            color: #555;
+            color: var(--text-primary);
+            font-size: 15px;
+            transition: all 0.2s ease;
+            letter-spacing: -0.01em;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
+
+        label::before {
+            font-size: 1em;
+        }
+
+        label[for="parentName"]::before { content: '👤'; }
+        label[for="phoneNumber"]::before { content: '📞'; }
+        label[for="email"]::before { content: '📧'; }
+        label[for="childName"]::before { content: '👶'; }
+        label[for="childBirthDate"]::before { content: '🎂'; }
+        label[for="cycleSearch"]::before { content: '🔍'; }
+        label[for="programCycle"]::before { content: '🎯'; }
+        label[for="adminCycleSelect"]::before { content: '⚙️'; }
 
         input, select {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
+            padding: 16px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: var(--radius-md);
             font-size: 16px;
-            transition: border-color 0.3s;
+            font-family: var(--hebrew-font);
+            transition: all 0.3s ease;
+            background: #fefefe;
+            direction: rtl;
+            text-align: right;
+            color: var(--text-primary);
+            font-weight: 500;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            letter-spacing: -0.01em;
         }
 
         input:focus, select:focus {
             outline: none;
-            border-color: #4CAF50;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+            background: white;
+        }
+
+        input::placeholder {
+            color: #9ca3af;
+            direction: rtl;
+            text-align: right;
+        }
+
+        /* Enhanced button design */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            padding: 14px 28px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: var(--hebrew-font);
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
         }
 
         .submit-btn {
-            background-color: #4CAF50;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
             color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 6px;
-            font-size: 18px;
-            cursor: pointer;
             width: 100%;
-            transition: background-color 0.3s;
+            padding: 16px 32px;
+            font-size: 18px;
+            box-shadow: var(--shadow-sm);
+            position: relative;
         }
 
-        .submit-btn:hover {
-            background-color: #45a049;
+        .submit-btn::before {
+            content: '⭐';
+            margin-left: var(--spacing-xs);
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .submit-btn:disabled {
-            background-color: #ccc;
+            background: #d1d5db;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .payment-btn {
-            display: inline-block;
-            background-color: #2196F3;
-            color: white;
-            padding: 15px 30px;
-            text-decoration: none;
-            border-radius: 6px;
+            background: linear-gradient(135deg, var(--accent-color), #f59e0b);
+            color: #1f2937;
+            font-weight: 700;
+            padding: 16px 32px;
             font-size: 18px;
-            font-weight: bold;
-            transition: background-color 0.3s;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-md);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+        }
+
+        .payment-btn::before {
+            content: '💎';
+            font-size: 1.2em;
         }
 
         .payment-btn:hover {
-            background-color: #1976D2;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
             text-decoration: none;
+            color: #1f2937;
         }
 
         .payment-btn:visited {
+            color: #1f2937;
+        }
+
+        /* Loading states */
+        .loading {
+            text-align: center;
+            color: #6b7280;
+            font-style: italic;
+            padding: var(--spacing-lg);
+        }
+
+        .loading-skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: var(--radius-sm);
+            height: 20px;
+            margin: var(--spacing-sm) 0;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Enhanced error styling */
+        .error {
+            color: var(--error-color);
+            font-size: 14px;
+            margin-top: var(--spacing-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .error::before {
+            content: '⚠️';
+            font-size: 12px;
+        }
+
+        /* Admin section improvements */
+        #adminSection {
+            margin-top: 0;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, var(--secondary-color), #2e7d32);
+            color: white;
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            margin: -var(--spacing-xl) -var(--spacing-xl) var(--spacing-lg) -var(--spacing-xl);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .admin-header::before {
+            content: '👨‍💼';
+            font-size: 1.5em;
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            min-width: 300px;
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            color: white;
+            font-weight: 600;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: var(--success-color);
+        }
+
+        .toast.error {
+            background: var(--error-color);
+        }
+
+        .toast.info {
+            background: var(--primary-color);
+        }
+
+        /* Enhanced modal styling with better typography */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--surface-elevated);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            max-width: 600px;
+            width: 90%;
+            box-shadow: var(--shadow-lg);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            font-family: var(--hebrew-font);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-content h3 {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .modal-content h4 {
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .modal-content p {
+            color: var(--text-primary);
+            font-size: 15px;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .modal-content strong {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6b7280;
+            transition: color 0.2s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--error-color);
+        }
+
+        /* Enhanced full-width layout adjustments */
+        .main-content {
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            padding: var(--spacing-lg);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xl);
+        }
+
+        /* Page sections optimized for full width */
+        .page-section {
+            width: 100%;
+            max-width: none;
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: var(--spacing-xl);
+            margin: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Form container improvements for better space usage */
+        .form-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-lg);
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        @media (min-width: 768px) {
+            .form-container {
+                grid-template-columns: 1fr 1fr;
+                gap: var(--spacing-xl);
+            }
+            
+            /* Full width for certain fields */
+            .form-group.full-width {
+                grid-column: 1 / -1;
+            }
+            
+            .main-content {
+                padding: var(--spacing-xl);
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .main-content {
+                padding: var(--spacing-xl) var(--spacing-xl) * 2;
+            }
+            
+            .page-section {
+                padding: var(--spacing-xl) * 1.5;
+            }
+        }
+        
+        @media (min-width: 1440px) {
+            .main-content {
+                padding: var(--spacing-xl) * 2;
+            }
+            
+            .form-container {
+                max-width: 1000px;
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+            
+            /* Specific grid spans for larger screens */
+            .form-group.span-2 {
+                grid-column: span 2;
+            }
+        }
+
+        /* Premium header styling */
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: var(--spacing-xl) 0;
+            text-align: center;
+            margin-bottom: 0;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .page-header h1 {
+            color: white;
+            -webkit-text-fill-color: white;
+            background: none;
+            margin-bottom: 0;
+        }
+
+        .page-header h1::before {
+            color: #ffd700;
+        }
+
+        /* Premium section styling */
+        .premium-section {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: var(--spacing-xl);
+            position: relative;
+            overflow: hidden;
+            border-top: 4px solid transparent;
+            border-image: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--accent-color)) 1;
+        }
+
+        .premium-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: var(--spacing-md);
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: var(--spacing-lg);
+                margin: 0;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .btn {
+                padding: 12px 24px;
+                font-size: 16px;
+            }
+
+            .modal-content {
+                padding: var(--spacing-lg);
+                width: 95%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: var(--spacing-md);
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+
+        /* Professional Admin Table Styling with Enhanced Typography */
+        .admin-table-container {
+            background: var(--surface-color);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            overflow-x: auto;
+            overflow-y: visible;
+            margin-top: var(--spacing-lg);
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .admin-table {
+            width: 100%;
+            min-width: 1000px;
+            border-collapse: collapse;
+            font-size: 15px;
+            background: var(--surface-color);
+            font-family: var(--hebrew-font);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            table-layout: fixed;
+        }
+
+        .admin-table thead th {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: var(--text-inverse);
+            padding: 18px 12px;
+            text-align: right;
+            font-weight: 600;
+            font-size: 13px;
+            border: none;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            letter-spacing: 0.025em;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+        
+        /* Specific column widths */
+        .admin-table th:nth-child(1) { width: 60px; } /* # */
+        .admin-table th:nth-child(2) { width: 200px; } /* Parent name */
+        .admin-table th:nth-child(3) { width: 140px; } /* Phone */
+        .admin-table th:nth-child(4) { width: 200px; } /* Child name */
+        .admin-table th:nth-child(5) { width: 160px; } /* Status */
+        .admin-table th:nth-child(6) { width: 240px; } /* Actions */
+
+        .admin-table tbody tr {
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.15s ease;
+            cursor: pointer;
+            background-color: var(--surface-color);
+        }
+
+        .admin-table tbody tr:hover {
+            background: var(--hover-color);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .admin-table tbody tr:nth-child(even) {
+            background: var(--light-bg);
+        }
+
+        .admin-table tbody tr:nth-child(even):hover {
+            background: var(--hover-color);
+        }
+
+        .admin-table td {
+            padding: 12px 8px;
+            text-align: right;
+            vertical-align: middle;
+            border: none;
+            font-size: 13px;
+            line-height: 1.4;
+            color: var(--text-primary);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        
+        /* Specific column styling */
+        .admin-table td:nth-child(1) { text-align: center; }
+        .admin-table td:nth-child(3) { direction: ltr; text-align: left; }
+        .admin-table td:nth-child(5) { text-align: center; }
+        .admin-table td:nth-child(6) { text-align: center; }
+
+        .admin-table .row-number {
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-align: center;
+            font-family: var(--latin-font);
+            font-size: 12px;
+            background: var(--surface-secondary);
+            border-radius: 4px;
+            padding: 4px 8px;
+            display: inline-block;
+            min-width: 24px;
+        }
+
+        .admin-table .account-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+            letter-spacing: -0.01em;
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .admin-table .phone-number {
+            font-family: var(--latin-font);
+            color: var(--text-secondary);
+            direction: ltr;
+            text-align: left;
+            font-weight: 500;
+            font-size: 13px;
+            background: var(--surface-secondary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            letter-spacing: 0.02em;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .admin-table .child-name {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: -0.01em;
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .admin-table .status-cell {
+            text-align: center;
+        }
+
+        .admin-table .status-badge {
+            display: inline-block;
+            padding: 4px 6px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 600;
+            text-align: center;
+            min-width: 70px;
+            max-width: 140px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .admin-table .status-active {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
             color: white;
         }
 
-        .loading {
-            text-align: center;
-            color: #666;
-            font-style: italic;
+        .admin-table .status-inactive {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
         }
 
-        .error {
-            color: #e74c3c;
+        .admin-table .status-cancelled {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+        }
+
+        .admin-table .status-waiting {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .admin-table .status-completed {
+            background: linear-gradient(135deg, #8BC34A, #689F38);
+            color: white;
+        }
+
+        .admin-table .actions-cell {
+            text-align: center;
+            white-space: nowrap;
+            width: 280px;
+            min-width: 280px;
+            padding: 12px 8px;
+            vertical-align: middle;
+        }
+
+        .admin-table .actions-cell > div {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 6px !important;
+            align-items: center !important;
+            padding: 6px !important;
+        }
+
+        .admin-table .table-btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 2px;
+            min-width: 80px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            backdrop-filter: blur(4px);
+            letter-spacing: 0.025em;
+            text-decoration: none;
+        }
+
+        .admin-table .table-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .admin-table .table-btn:hover::before {
+            left: 100%;
+        }
+
+
+
+        .admin-table .edit-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            color: white;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .admin-table .edit-btn:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 25px -3px rgba(59, 130, 246, 0.4), 0 4px 6px -2px rgba(59, 130, 246, 0.1);
+        }
+
+
+        .admin-table .save-btn {
+            background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+            color: white;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .admin-table .save-btn:hover {
+            background: linear-gradient(135deg, #059669 0%, #065f46 100%);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 25px -3px rgba(16, 185, 129, 0.4), 0 4px 6px -2px rgba(16, 185, 129, 0.1);
+        }
+
+
+        .admin-table .cancel-btn {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .admin-table .cancel-btn:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 25px -3px rgba(239, 68, 68, 0.4), 0 4px 6px -2px rgba(239, 68, 68, 0.1);
+        }
+
+
+        /* Loading state for buttons */
+        .admin-table .table-btn.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .admin-table .table-btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Button press animation */
+        .admin-table .table-btn:active {
+            transform: scale(0.96) !important;
+            transition: transform 0.1s ease;
+        }
+
+        /* Subtle glow effect for better visibility */
+        .admin-table .table-btn:hover {
+            filter: brightness(1.05);
+        }
+
+        /* Enhanced focus states for accessibility */
+        .admin-table .table-btn:focus-visible {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+            outline: none;
+        }
+
+        .admin-table .save-btn:focus-visible {
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.5);
+        }
+
+        .admin-table .cancel-btn:focus-visible {
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.5);
+        }
+
+        .admin-table .edit-input {
+            width: 100%;
+            border: 2px solid var(--border-color);
+            padding: 10px 12px;
             font-size: 14px;
-            margin-top: 5px;
+            border-radius: 6px;
+            background: var(--surface-color);
+            transition: all 0.2s ease;
+            font-family: var(--hebrew-font);
+            color: var(--text-primary);
+            font-weight: 500;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .admin-table .edit-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+            background: var(--surface-elevated);
+        }
+
+        .admin-table .edit-select {
+            width: 100%;
+            border: 2px solid var(--border-color);
+            padding: 10px 12px;
+            font-size: 14px;
+            border-radius: 6px;
+            background: var(--surface-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: var(--hebrew-font);
+            color: var(--text-primary);
+            font-weight: 500;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .admin-table .edit-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+            background: var(--surface-elevated);
+        }
+
+        /* Additional typography improvements */
+        .admin-table .status-text {
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 0.025em;
+        }
+
+        /* Enhanced typography for better readability */
+        .admin-table .display-mode {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        /* Improved button typography */
+        .admin-table .table-btn {
+            font-family: var(--hebrew-font);
+            font-weight: 600;
+            letter-spacing: 0.025em;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Enhanced registration count display */
+        #registrationsCount {
+            font-family: var(--hebrew-font);
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--text-primary);
+            background: var(--surface-secondary);
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        /* Better title typography */
+        #registrationsTitle {
+            font-family: var(--hebrew-font);
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            margin-bottom: var(--spacing-md);
+        }
+
+        /* Professional loading states */
+        .loading {
+            font-family: var(--hebrew-font);
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        /* Table border and separation improvements */
+        .admin-table th,
+        .admin-table td {
+            border-right: 1px solid var(--border-color);
+        }
+        
+        .admin-table th:last-child,
+        .admin-table td:last-child {
+            border-right: none;
+        }
+        
+        /* Enhanced responsive table with horizontal scroll */
+        @media (max-width: 1200px) {
+            .admin-table-container {
+                overflow-x: auto;
+                overflow-y: visible;
+                width: 100%;
+                -webkit-overflow-scrolling: touch;
+                position: relative;
+            }
+            
+            .admin-table {
+                min-width: 1000px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .admin-table-container {
+                overflow-x: auto;
+                border-radius: var(--radius-md);
+                margin: var(--spacing-md) -var(--spacing-lg) 0;
+                box-shadow: var(--shadow-md);
+            }
+
+            .admin-table {
+                min-width: 1000px;
+            }
+
+            .admin-table thead th {
+                padding: 12px 8px;
+                font-size: 12px;
+            }
+            
+            .admin-table td {
+                padding: 10px 6px;
+                font-size: 12px;
+            }
+
+            .admin-table .account-name,
+            .admin-table .child-name {
+                font-size: 13px;
+            }
+
+            .admin-table .phone-number {
+                font-size: 12px;
+            }
+
+            .admin-table .table-btn {
+                padding: 8px 12px;
+                font-size: 11px;
+                min-width: 65px;
+                margin: 0.5px;
+            }
+
+            .admin-table .actions-cell {
+                width: 200px;
+                min-width: 200px;
+                padding: 8px 4px;
+            }
+
+            .admin-table .actions-cell > div {
+                gap: 4px !important;
+                padding: 4px !important;
+            }
+
+            .admin-table .row-number {
+                font-size: 11px;
+                padding: 3px 6px;
+            }
+            
+            .admin-table .status-badge {
+                font-size: 9px;
+                padding: 3px 5px;
+                min-width: 60px;
+            }
+        }
+        
+        /* Horizontal scroll indicator */
+        .admin-table-container::after {
+            content: '← גלול לראיה מלאה →';
+            display: none;
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            white-space: nowrap;
+            z-index: 20;
+        }
+        
+        @media (max-width: 1200px) {
+            .admin-table-container {
+                position: relative;
+            }
+            
+            .admin-table-container::after {
+                display: block;
+            }
+        }
+
+        /* High DPI displays optimization */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .admin-table {
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+            
+            .admin-table .account-name,
+            .admin-table .child-name {
+                text-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.05);
+            }
+        }
+
+        /* Modern Navigation System */
+        .app-navigation {
+            background: var(--nav-bg);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            padding: 0 var(--spacing-lg);
+        }
+
+        .nav-brand {
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .nav-tabs {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 0;
+        }
+
+        .nav-tab {
+            position: relative;
+        }
+
+        .nav-tab-button {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.9);
+            padding: var(--spacing-md) var(--spacing-lg);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-family: var(--hebrew-font);
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            position: relative;
+            min-height: 60px;
+            border-radius: 0;
+        }
+
+        .nav-tab-button:hover {
+            background: var(--nav-hover);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .nav-tab-button.active {
+            background: var(--nav-active);
+            color: white;
+            box-shadow: inset 0 -3px 0 white;
+        }
+
+        .nav-tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: white;
+            border-radius: 3px 3px 0 0;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-tab-button:hover .nav-icon {
+            transform: scale(1.1);
+        }
+
+        /* Page Content Styling */
+        .page-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Page Headers */
+        .page-title {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: var(--spacing-xl) 0;
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+        }
+
+        .page-title h1 {
+            color: white;
+            -webkit-text-fill-color: white;
+            background: none;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .page-title h1::before {
+            color: #ffd700;
+        }
+
+        .page-title h1::after {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .page-title .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            font-weight: 400;
+            margin-top: var(--spacing-sm);
+        }
+
+        /* Responsive Navigation */
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: var(--spacing-sm);
         }
 
         @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-                margin: 10px;
+            .nav-container {
+                flex-wrap: wrap;
+                padding: 0 var(--spacing-md);
+            }
+
+            .nav-brand {
+                margin-left: 0;
+                margin-right: auto;
+                font-size: 18px;
+            }
+
+            .nav-toggle {
+                display: block;
+                order: 3;
+            }
+
+            .nav-tabs {
+                order: 4;
+                width: 100%;
+                flex-direction: column;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+                background: rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-tabs.active {
+                max-height: 300px;
+            }
+
+            .nav-tab-button {
+                width: 100%;
+                padding: var(--spacing-md) var(--spacing-lg);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                justify-content: flex-end;
+                min-height: 50px;
+            }
+
+            .nav-tab-button.active::after {
+                display: none;
+            }
+
+            .nav-tab-button.active {
+                box-shadow: inset 3px 0 0 white;
+            }
+
+            .page-title {
+                padding: var(--spacing-lg) 0;
+            }
+
+            .page-title h1 {
+                font-size: 24px;
+            }
+        }
+
+        /* Premium Section Updates for Pages */
+        .page-section {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: var(--spacing-xl);
+            margin: var(--spacing-lg) auto;
+            max-width: 1200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+        }
+
+        /* Update main content layout */
+        .main-content {
+            padding: 0 var(--spacing-lg);
+            margin: 0 auto;
+            max-width: none;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 0 var(--spacing-md);
+            }
+
+            .page-section {
+                margin: var(--spacing-md) 0;
+                padding: var(--spacing-lg);
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>טופס רישום לפעילויות חינוכיות</h1>
-        
-        <form id="registrationForm">
-            <div class="form-group">
-                <label for="parentName">שם ההורה *</label>
-                <input type="text" id="parentName" name="parentName" required>
+    <!-- Modern Navigation System -->
+    <nav class="app-navigation">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="nav-icon">👑</span>
+                רישום פעילויות חינוכיות
             </div>
-
-            <div class="form-group">
-                <label for="phoneNumber">מספר טלפון *</label>
-                <input type="tel" id="phoneNumber" name="phoneNumber" required>
-            </div>
-
-            <div class="form-group">
-                <label for="email">כתובת אימייל</label>
-                <input type="email" id="email" name="email">
-            </div>
-
-            <div class="form-group">
-                <label for="childName">שם הילד/ה *</label>
-                <input type="text" id="childName" name="childName" required>
-            </div>
-
-            <div class="form-group">
-                <label for="childBirthDate">תאריך לידת הילד/ה</label>
-                <input type="date" id="childBirthDate" name="childBirthDate">
-            </div>
-
-            <div class="form-group">
-                <label for="cycleSearch">חיפוש מחזור תוכנית</label>
-                <input type="text" id="cycleSearch" name="cycleSearch" placeholder="הקלד לחיפוש מחזור...">
-            </div>
-
-            <div class="form-group">
-                <label for="programCycle">מחזור תוכנית *</label>
-                <select id="programCycle" name="programCycle" required>
-                    <option value="">טוען מחזורים...</option>
-                </select>
-                <div id="cycleError" class="error" style="display: none;"></div>
-            </div>
-
-            <button type="submit" class="submit-btn" id="submitBtn">שלח רישום</button>
             
-            <div style="margin-top: 20px; text-align: center;">
-                <a href="https://pages.greeninvoice.co.il/payments/links/a81eeaab-4b27-4910-8ffe-864ded9a0567" 
-                   target="_blank" 
-                   class="payment-btn">
-                   💳 עבור לתשלום
-                </a>
+            <button class="nav-toggle" onclick="toggleMobileNav()">☰</button>
+            
+            <ul class="nav-tabs" id="navTabs">
+                <li class="nav-tab">
+                    <button class="nav-tab-button active" onclick="switchPage('registration')" data-page="registration">
+                        <span class="nav-icon">📝</span>
+                        רישום חדש
+                    </button>
+                </li>
+                <li class="nav-tab">
+                    <button class="nav-tab-button" onclick="switchPage('management')" data-page="management">
+                        <span class="nav-icon">👨‍💼</span>
+                        ניהול רישומים
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page 1: New Registration -->
+    <div id="registrationPage" class="page-content active">
+        <div class="page-title">
+            <h1>רישום חדש</h1>
+            <div class="subtitle">טופס רישום לפעילויות חינוכיות מתקדמות</div>
+        </div>
+        
+        <div class="main-content">
+            <div class="page-section">
+                <h2>פרטי הרישום</h2>
+                
+                <form id="registrationForm">
+                    <div class="form-container">
+                        <div class="form-group">
+                            <label for="parentName">שם ההורה *</label>
+                            <input type="text" id="parentName" name="parentName" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phoneNumber">מספר טלפון *</label>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="childName">שם הילד/ה *</label>
+                            <input type="text" id="childName" name="childName" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="childBirthDate">תאריך לידת הילד/ה</label>
+                            <input type="date" id="childBirthDate" name="childBirthDate">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="email">כתובת אימייל</label>
+                            <input type="email" id="email" name="email">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="programCycle">מחזור תוכנית *</label>
+                            <div class="modern-dropdown" id="cycleDropdown">
+                                <input type="text" 
+                                       id="programCycle" 
+                                       name="programCycle" 
+                                       class="dropdown-input" 
+                                       placeholder="הקלד לחיפוש מחזור או בחר מהרשימה..." 
+                                       autocomplete="off"
+                                       required>
+                                <div class="dropdown-arrow">▼</div>
+                                <div class="dropdown-list" id="cycleDropdownList">
+                                    <div class="dropdown-loading">
+                                        <div class="spinner"></div>
+                                        טוען מחזורים...
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="selectedCycleId" name="selectedCycleId" required>
+                            <div id="cycleError" class="error" style="display: none;"></div>
+                        </div>
+
+                        <div class="form-group full-width" style="margin-top: var(--spacing-lg);">
+                            <button type="submit" class="submit-btn" id="submitBtn">שלח רישום</button>
+                        </div>
+                        
+                        <div class="form-group full-width" style="margin-top: var(--spacing-md); text-align: center;">
+                            <a href="https://pages.greeninvoice.co.il/payments/links/a81eeaab-4b27-4910-8ffe-864ded9a0567" 
+                               target="_blank" 
+                               class="payment-btn">
+                               עבור לתשלום
+                            </a>
+                        </div>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 
-    <!-- Admin Section -->
-    <div class="container" style="margin-top: 40px;" id="adminSection">
-        <h2>📊 צפייה ברישומים לפי מחזור</h2>
-        
-        <div class="form-group">
-            <label for="adminCycleSelect">בחר מחזור לצפייה:</label>
-            <select id="adminCycleSelect" name="adminCycleSelect">
-                <option value="">בחר מחזור...</option>
-            </select>
+    <!-- Page 2: Registration Management -->
+    <div id="managementPage" class="page-content">
+        <div class="page-title">
+            <h1>ניהול רישומים</h1>
+            <div class="subtitle">מערכת ניהול רישומים מתקדמת</div>
         </div>
         
-        <button type="button" class="submit-btn" id="fetchRegistrationsBtn" style="margin-bottom: 20px;">
-            🔍 הצג רישומים
-        </button>
-        
-        <div id="registrationsResults" style="display: none;">
-            <h3 id="registrationsTitle">רישומים למחזור:</h3>
-            <div id="registrationsCount" style="margin-bottom: 15px; font-weight: bold;"></div>
-            <div id="registrationsList"></div>
+        <div class="main-content">
+            <div class="page-section" id="adminSection">
+                <h2>בחירת מחזור לניהול</h2>
+                
+                <div class="form-container">
+                    <div class="form-group span-2">
+                        <label for="adminCycleSelect">בחר מחזור לצפייה:</label>
+                        <div class="modern-dropdown" id="adminCycleDropdown">
+                            <input type="text" 
+                                   id="adminCycleSelect" 
+                                   name="adminCycleSelect" 
+                                   class="dropdown-input" 
+                                   placeholder="הקלד לחיפוש מחזור או בחר מהרשימה..." 
+                                   autocomplete="off">
+                            <div class="dropdown-arrow">▼</div>
+                            <div class="dropdown-list" id="adminCycleDropdownList">
+                                <div class="dropdown-loading">
+                                    <div class="spinner"></div>
+                                    טוען מחזורים...
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="selectedAdminCycleId" name="selectedAdminCycleId">
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <button type="button" class="submit-btn" id="fetchRegistrationsBtn" style="margin-bottom: 20px;">
+                            הצג רישומים
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="registrationsResults" style="display: none;">
+                    <h3 id="registrationsTitle">רישומים למחזור:</h3>
+                    <div id="registrationsCount" style="margin-bottom: 15px; font-weight: bold;"></div>
+                    <div id="registrationsList"></div>
+                </div>
+            </div>
         </div>
-        
-        <!-- Registration Details Modal -->
-        <div id="registrationModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000;">
-            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 10px; max-width: 500px; width: 90%; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 15px;">
-                    <h3 style="margin: 0; color: #2c3e50;">פרטי רישום</h3>
-                    <button onclick="closeRegistrationModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #e74c3c;">&times;</button>
-                </div>
-                
-                <div id="modalContent">
-                    <!-- Content will be populated dynamically -->
-                </div>
-                
-                <div style="text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
-                    <button onclick="closeRegistrationModal()" style="background: #95a5a6; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">סגור</button>
-                </div>
+    </div>
+
+    <!-- Registration Details Modal -->
+    <div id="registrationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>פרטי רישום</h3>
+                <button class="modal-close" onclick="closeRegistrationModal()">&times;</button>
+            </div>
+            
+            <div id="modalContent">
+                <!-- Content will be populated dynamically -->
             </div>
         </div>
     </div>
 
     <script>
+        // Navigation System - Define first for immediate availability
+        window.switchPage = function switchPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show selected page
+            const targetPage = document.getElementById(pageId + 'Page');
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+            
+            // Update navigation active state
+            document.querySelectorAll('.nav-tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            const activeBtn = document.querySelector(`[data-page="${pageId}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+            
+            // Close mobile nav if open
+            const navTabs = document.getElementById('navTabs');
+            if (navTabs) {
+                navTabs.classList.remove('active');
+            }
+            
+            // Special handling for management page
+            if (pageId === 'management') {
+                // Ensure admin cycles are loaded when switching to management page
+                if (adminModernDropdown && adminModernDropdown.adminCycles.length === 0) {
+                    populateAdminCyclesDropdown().catch(error => {
+                        console.log('Error loading admin cycles on page switch:', error);
+                    });
+                }
+            }
+        };
+
+        function toggleMobileNav() {
+            const navTabs = document.getElementById('navTabs');
+            if (navTabs) {
+                navTabs.classList.toggle('active');
+            }
+        }
+
+        // Close mobile nav when clicking outside
+        document.addEventListener('click', function(e) {
+            const navTabs = document.getElementById('navTabs');
+            const navToggle = document.querySelector('.nav-toggle');
+            
+            if (navTabs && navToggle && 
+                !navTabs.contains(e.target) && 
+                !navToggle.contains(e.target) &&
+                navTabs.classList.contains('active')) {
+                navTabs.classList.remove('active');
+            }
+        });
+
         // Token is now handled securely on the server-side
         let allCycles = []; // Store all cycles for filtering
         let statusOptions = []; // Store status options from Fireberry
         let currentRegistrations = []; // Store current registrations for modal access
         
+        // Modern dropdown state
+        let filteredCycles = []; // Store filtered results
+        let highlightedIndex = -1; // For keyboard navigation
+        let selectedCycle = null; // Currently selected cycle
+        let recentSelections = JSON.parse(localStorage.getItem('recentCycleSelections') || '[]');
+        let searchTimeout = null; // For debounced search
+        
         // Fetch active cycles from our API proxy (avoids CORS issues)
         async function fetchActiveCycles() {
-            const cycleSelect = document.getElementById('programCycle');
             const cycleError = document.getElementById('cycleError');
             
             try {
@@ -239,18 +1968,24 @@
                 
                 if (data.cycles && data.cycles.length > 0) {
                     allCycles = data.cycles; // Store all cycles
-                    populateCyclesDropdown(allCycles); // Populate with all cycles initially
+                    
+                    // Update modern dropdown if initialized
+                    if (modernDropdown) {
+                        modernDropdown.updateItems(allCycles);
+                    }
                     
                     // Populate admin dropdown in background (don't await to avoid blocking)
                     populateAdminCyclesDropdown().catch(error => {
                         console.log('Error populating admin cycles:', error);
-                        const adminCycleSelect = document.getElementById('adminCycleSelect');
-                        if (adminCycleSelect) {
-                            adminCycleSelect.innerHTML = '<option value="">שגיאה בטעינת מחזורים</option>';
+                        if (adminModernDropdown) {
+                            adminModernDropdown.updateAdminCycles([]);
                         }
                     });
                 } else {
-                    cycleSelect.innerHTML = '<option value="">אין מחזורים זמינים כרגע</option>';
+                    // Show error in dropdown
+                    if (modernDropdown) {
+                        modernDropdown.list.innerHTML = '<div class="dropdown-empty">אין מחזורים זמינים כרגע</div>';
+                    }
                 }
                 
                 cycleError.style.display = 'none';
@@ -264,7 +1999,11 @@
                     { id: 'cycle2', name: 'מחזור סתיו 2024' },
                     { id: 'cycle3', name: 'מחזור חורף 2024' }
                 ];
-                populateCyclesDropdown(allCycles);
+                
+                // Update modern dropdown
+                if (modernDropdown) {
+                    modernDropdown.updateItems(allCycles);
+                }
                 
                 // Populate admin dropdown in background
                 populateAdminCyclesDropdown().catch(error => {
@@ -289,28 +2028,524 @@
             });
         }
 
-        // Filter cycles based on search input
-        function filterCycles(searchTerm) {
-            if (!searchTerm) {
-                // Show all cycles if search is empty
-                populateCyclesDropdown(allCycles);
-                return;
+        // Modern Dropdown Implementation
+        class ModernDropdown {
+            constructor(containerId) {
+                this.container = document.getElementById(containerId);
+                this.input = this.container.querySelector('.dropdown-input');
+                this.list = this.container.querySelector('.dropdown-list');
+                this.arrow = this.container.querySelector('.dropdown-arrow');
+                this.hiddenInput = document.getElementById('selectedCycleId');
+                this.isOpen = false;
+                this.highlightedIndex = -1;
+                this.filteredItems = [];
+                this.virtualStart = 0;
+                this.virtualEnd = 20; // Show 20 items at a time
+                this.itemHeight = 45; // Approximate height per item
+                
+                this.init();
             }
             
-            // Filter cycles that contain the search term (case-insensitive)
-            const filteredCycles = allCycles.filter(cycle => 
-                cycle.name.toLowerCase().includes(searchTerm.toLowerCase())
-            );
+            init() {
+                // Input event handlers
+                this.input.addEventListener('input', (e) => this.handleInput(e));
+                this.input.addEventListener('focus', () => this.open());
+                this.input.addEventListener('blur', (e) => this.handleBlur(e));
+                this.input.addEventListener('keydown', (e) => this.handleKeydown(e));
+                
+                // Click outside to close
+                document.addEventListener('click', (e) => {
+                    if (!this.container.contains(e.target)) {
+                        this.close();
+                    }
+                });
+                
+                // Arrow click
+                this.arrow.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.isOpen ? this.close() : this.open();
+                });
+                
+                // Scroll handler for virtual scrolling
+                this.list.addEventListener('scroll', () => this.handleScroll());
+            }
             
-            populateCyclesDropdown(filteredCycles);
+            handleInput(e) {
+                const value = e.target.value;
+                
+                // Clear timeout for debounced search
+                if (searchTimeout) {
+                    clearTimeout(searchTimeout);
+                }
+                
+                // Debounced search (300ms delay)
+                searchTimeout = setTimeout(() => {
+                    this.filterItems(value);
+                    if (!this.isOpen && value) {
+                        this.open();
+                    }
+                }, 300);
+                
+                // Clear selection if input changes
+                if (selectedCycle && value !== selectedCycle.name) {
+                    selectedCycle = null;
+                    this.hiddenInput.value = '';
+                }
+            }
+            
+            handleKeydown(e) {
+                if (!this.isOpen) {
+                    if (e.key === 'ArrowDown' || e.key === 'Enter') {
+                        e.preventDefault();
+                        this.open();
+                    }
+                    return;
+                }
+                
+                switch (e.key) {
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        this.highlightNext();
+                        break;
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        this.highlightPrev();
+                        break;
+                    case 'Enter':
+                        e.preventDefault();
+                        if (this.highlightedIndex >= 0) {
+                            this.selectItem(this.filteredItems[this.highlightedIndex]);
+                        }
+                        break;
+                    case 'Escape':
+                        e.preventDefault();
+                        this.close();
+                        break;
+                    case 'Tab':
+                        this.close();
+                        break;
+                }
+            }
+            
+            handleBlur(e) {
+                // Delay close to allow clicking on items
+                setTimeout(() => {
+                    if (!this.container.contains(document.activeElement)) {
+                        this.close();
+                    }
+                }, 150);
+            }
+            
+            handleScroll() {
+                // Virtual scrolling for performance with large lists
+                const scrollTop = this.list.scrollTop;
+                const visibleStart = Math.floor(scrollTop / this.itemHeight);
+                const visibleEnd = Math.min(visibleStart + Math.ceil(this.list.clientHeight / this.itemHeight) + 5, this.filteredItems.length);
+                
+                if (visibleStart !== this.virtualStart || visibleEnd !== this.virtualEnd) {
+                    this.virtualStart = visibleStart;
+                    this.virtualEnd = visibleEnd;
+                    this.renderItems();
+                }
+            }
+            
+            filterItems(searchTerm) {
+                if (!searchTerm.trim()) {
+                    this.filteredItems = [...allCycles];
+                } else {
+                    const term = searchTerm.toLowerCase().trim();
+                    this.filteredItems = allCycles.filter(cycle => 
+                        cycle.name.toLowerCase().includes(term)
+                    );
+                }
+                
+                this.highlightedIndex = -1;
+                this.virtualStart = 0;
+                this.virtualEnd = Math.min(20, this.filteredItems.length);
+                this.renderItems();
+            }
+            
+            renderItems() {
+                if (this.filteredItems.length === 0) {
+                    this.list.innerHTML = `
+                        <div class=\"dropdown-empty\">
+                            🔍 לא נמצאו תוצאות
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let html = '';
+                
+                // Add recent selections section if we have recent items and no search
+                if (recentSelections.length > 0 && !this.input.value.trim()) {
+                    html += '<div class=\"dropdown-section\">בחירות אחרונות</div>';
+                    
+                    recentSelections.slice(0, 3).forEach((recentId, index) => {
+                        const cycle = allCycles.find(c => c.id === recentId);
+                        if (cycle) {
+                            const isHighlighted = index === this.highlightedIndex;
+                            html += this.renderItem(cycle, isHighlighted, true, index);
+                        }
+                    });
+                    
+                    if (this.filteredItems.length > recentSelections.length) {
+                        html += '<div class=\"dropdown-section\">כל המחזורים</div>';
+                    }
+                }
+                
+                // Virtual scrolling implementation
+                const totalHeight = this.filteredItems.length * this.itemHeight;
+                const offsetY = this.virtualStart * this.itemHeight;
+                
+                // Add spacer for items before visible range
+                if (this.virtualStart > 0) {
+                    html += `<div style=\"height: ${offsetY}px;\"></div>`;
+                }
+                
+                // Render visible items
+                const recentCount = recentSelections.length > 0 && !this.input.value.trim() ? 3 : 0;
+                for (let i = this.virtualStart; i < this.virtualEnd; i++) {
+                    const cycle = this.filteredItems[i];
+                    if (cycle) {
+                        const adjustedIndex = recentCount > 0 ? i + recentCount : i;
+                        const isHighlighted = adjustedIndex === this.highlightedIndex;
+                        const isRecent = false;
+                        html += this.renderItem(cycle, isHighlighted, isRecent, adjustedIndex);
+                    }
+                }
+                
+                // Add spacer for items after visible range
+                const remainingHeight = totalHeight - ((this.virtualEnd) * this.itemHeight);
+                if (remainingHeight > 0) {
+                    html += `<div style="height: ${remainingHeight}px;"></div>`;
+                }
+                
+                this.list.innerHTML = html;
+                
+                // Add click handlers to items
+                this.list.querySelectorAll('.dropdown-item').forEach((item, index) => {
+                    item.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const cycleId = item.getAttribute('data-cycle-id');
+                        const cycle = allCycles.find(c => c.id === cycleId);
+                        if (cycle) {
+                            this.selectItem(cycle);
+                        }
+                    });
+                });
+            }
+            
+            renderItem(cycle, isHighlighted, isRecent, index) {
+                const searchTerm = this.input.value.toLowerCase().trim();
+                let displayName = cycle.name;
+                
+                // Highlight search terms
+                if (searchTerm && !isRecent) {
+                    const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')})`, 'gi');
+                    displayName = displayName.replace(regex, '<span class="highlight">$1</span>');
+                }
+                
+                const recentBadge = isRecent ? '<span class="item-badge">אחרון</span>' : '';
+                const highlightClass = isHighlighted ? 'highlighted' : '';
+                
+                return `
+                    <div class="dropdown-item ${highlightClass}" data-cycle-id="${cycle.id}" data-index="${index}">
+                        <div class="item-text">${displayName}</div>
+                        ${recentBadge}
+                    </div>
+                `;
+            }
+            
+            highlightNext() {
+                const maxIndex = this.getMaxHighlightIndex();
+                this.highlightedIndex = Math.min(this.highlightedIndex + 1, maxIndex);
+                this.updateHighlight();
+                this.scrollToHighlighted();
+            }
+            
+            highlightPrev() {
+                this.highlightedIndex = Math.max(this.highlightedIndex - 1, 0);
+                this.updateHighlight();
+                this.scrollToHighlighted();
+            }
+            
+            getMaxHighlightIndex() {
+                const recentCount = recentSelections.length > 0 && !this.input.value.trim() ? Math.min(3, recentSelections.length) : 0;
+                return recentCount + this.filteredItems.length - 1;
+            }
+            
+            updateHighlight() {
+                this.list.querySelectorAll('.dropdown-item').forEach((item, index) => {
+                    const itemIndex = parseInt(item.getAttribute('data-index'));
+                    if (itemIndex === this.highlightedIndex) {
+                        item.classList.add('highlighted');
+                    } else {
+                        item.classList.remove('highlighted');
+                    }
+                });
+            }
+            
+            scrollToHighlighted() {
+                const highlightedItem = this.list.querySelector('.dropdown-item.highlighted');
+                if (highlightedItem) {
+                    const listRect = this.list.getBoundingClientRect();
+                    const itemRect = highlightedItem.getBoundingClientRect();
+                    
+                    if (itemRect.bottom > listRect.bottom) {
+                        highlightedItem.scrollIntoView({ block: 'end', behavior: 'smooth' });
+                    } else if (itemRect.top < listRect.top) {
+                        highlightedItem.scrollIntoView({ block: 'start', behavior: 'smooth' });
+                    }
+                }
+            }
+            
+            selectItem(cycle) {
+                selectedCycle = cycle;
+                this.input.value = cycle.name;
+                this.hiddenInput.value = cycle.id;
+                
+                // Add to recent selections
+                this.addToRecent(cycle.id);
+                
+                // Clear any error state
+                const errorDiv = document.getElementById('cycleError');
+                if (errorDiv) {
+                    errorDiv.style.display = 'none';
+                }
+                
+                this.close();
+                
+                // Trigger change event for form validation
+                this.input.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+            
+            addToRecent(cycleId) {
+                // Remove if already exists
+                recentSelections = recentSelections.filter(id => id !== cycleId);
+                // Add to beginning
+                recentSelections.unshift(cycleId);
+                // Keep only last 5
+                recentSelections = recentSelections.slice(0, 5);
+                // Save to localStorage
+                localStorage.setItem('recentCycleSelections', JSON.stringify(recentSelections));
+            }
+            
+            open() {
+                if (this.isOpen) return;
+                
+                this.isOpen = true;
+                this.container.classList.add('open');
+                
+                // Load items if not already loaded
+                if (allCycles.length === 0) {
+                    this.showLoading();
+                    fetchActiveCycles().then(() => {
+                        this.filterItems(this.input.value);
+                    });
+                } else {
+                    this.filterItems(this.input.value);
+                }
+            }
+            
+            close() {
+                if (!this.isOpen) return;
+                
+                this.isOpen = false;
+                this.container.classList.remove('open');
+                this.highlightedIndex = -1;
+            }
+            
+            showLoading() {
+                this.list.innerHTML = `
+                    <div class="dropdown-loading">
+                        <div class="spinner"></div>
+                        טוען מחזורים...
+                    </div>
+                `;
+            }
+            
+            updateItems(cycles) {
+                allCycles = cycles;
+                if (this.isOpen) {
+                    this.filterItems(this.input.value);
+                }
+            }
+        }
+        
+        // Initialize modern dropdown
+        let modernDropdown;
+        let adminModernDropdown;
+        
+        // Admin Modern Dropdown Implementation - specialized for admin cycles with registration counts
+        class AdminModernDropdown extends ModernDropdown {
+            constructor(containerId) {
+                super(containerId);
+                this.hiddenInput = document.getElementById('selectedAdminCycleId');
+                this.adminCycles = []; // Store admin-specific data
+                this.recentAdminSelections = JSON.parse(localStorage.getItem('recentAdminCycleSelections') || '[]');
+            }
+            
+            updateAdminCycles(cycles) {
+                this.adminCycles = cycles;
+                if (this.isOpen) {
+                    this.filterItems(this.input.value);
+                }
+            }
+            
+            filterItems(searchTerm) {
+                if (!searchTerm.trim()) {
+                    this.filteredItems = [...this.adminCycles];
+                } else {
+                    const term = searchTerm.toLowerCase().trim();
+                    this.filteredItems = this.adminCycles.filter(cycle => 
+                        cycle.name.toLowerCase().includes(term)
+                    );
+                }
+                
+                this.highlightedIndex = -1;
+                this.virtualStart = 0;
+                this.virtualEnd = Math.min(20, this.filteredItems.length);
+                this.renderItems();
+            }
+            
+            renderItems() {
+                if (this.filteredItems.length === 0) {
+                    this.list.innerHTML = `
+                        <div class="dropdown-empty">
+                            🔍 לא נמצאו תוצאות
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let html = '';
+                
+                // Add recent selections section if we have recent items and no search
+                if (this.recentAdminSelections.length > 0 && !this.input.value.trim()) {
+                    html += '<div class="dropdown-section">בחירות אחרונות</div>';
+                    
+                    this.recentAdminSelections.slice(0, 3).forEach((recentId, index) => {
+                        const cycle = this.adminCycles.find(c => c.id === recentId);
+                        if (cycle) {
+                            const isHighlighted = index === this.highlightedIndex;
+                            html += this.renderAdminItem(cycle, isHighlighted, true, index);
+                        }
+                    });
+                    
+                    if (this.filteredItems.length > this.recentAdminSelections.length) {
+                        html += '<div class="dropdown-section">כל המחזורים</div>';
+                    }
+                }
+                
+                // Render filtered items with registration counts
+                this.filteredItems.forEach((cycle, index) => {
+                    const adjustedIndex = this.recentAdminSelections.length > 0 && !this.input.value.trim() ? 
+                        index + Math.min(3, this.recentAdminSelections.length) : index;
+                    const isHighlighted = adjustedIndex === this.highlightedIndex;
+                    const isRecent = this.recentAdminSelections.length > 0 && !this.input.value.trim() && 
+                        this.recentAdminSelections.includes(cycle.id);
+                    
+                    if (!isRecent) {
+                        html += this.renderAdminItem(cycle, isHighlighted, false, adjustedIndex);
+                    }
+                });
+                
+                this.list.innerHTML = html;
+                
+                // Add click handlers
+                this.list.querySelectorAll('.dropdown-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const cycleId = item.getAttribute('data-cycle-id');
+                        const cycle = this.adminCycles.find(c => c.id === cycleId);
+                        if (cycle) {
+                            this.selectAdminItem(cycle);
+                        }
+                    });
+                });
+            }
+            
+            renderAdminItem(cycle, isHighlighted, isRecent, index) {
+                const searchTerm = this.input.value.toLowerCase().trim();
+                let displayName = cycle.name;
+                
+                // Highlight search terms
+                if (searchTerm && !isRecent) {
+                    const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&')})`, 'gi');
+                    displayName = displayName.replace(regex, '<span class="highlight">$1</span>');
+                }
+                
+                const recentBadge = isRecent ? '<span class="item-badge">אחרון</span>' : '';
+                const countBadge = `<span class="item-badge admin-count">${cycle.count} רישומים</span>`;
+                const highlightClass = isHighlighted ? 'highlighted' : '';
+                
+                return `
+                    <div class="dropdown-item ${highlightClass}" data-cycle-id="${cycle.id}" data-index="${index}">
+                        <div class="item-text">${displayName}</div>
+                        <div class="item-badges">
+                            ${countBadge}
+                            ${recentBadge}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            selectAdminItem(cycle) {
+                this.input.value = `${cycle.name} (${cycle.count} רישומים)`;
+                this.hiddenInput.value = cycle.id;
+                
+                // Add to recent selections
+                this.addToAdminRecent(cycle.id);
+                
+                this.close();
+                
+                // Trigger change event and auto-load registrations
+                this.input.dispatchEvent(new Event('change', { bubbles: true }));
+                
+                // Auto-load registrations
+                if (typeof fetchRegistrations === 'function') {
+                    fetchRegistrations();
+                }
+            }
+            
+            addToAdminRecent(cycleId) {
+                // Remove if already exists
+                this.recentAdminSelections = this.recentAdminSelections.filter(id => id !== cycleId);
+                // Add to beginning
+                this.recentAdminSelections.unshift(cycleId);
+                // Keep only last 5
+                this.recentAdminSelections = this.recentAdminSelections.slice(0, 5);
+                // Save to localStorage
+                localStorage.setItem('recentAdminCycleSelections', JSON.stringify(this.recentAdminSelections));
+            }
+            
+            open() {
+                if (this.isOpen) return;
+                
+                this.isOpen = true;
+                this.container.classList.add('open');
+                
+                // Load items if not already loaded
+                if (this.adminCycles.length === 0) {
+                    this.showLoading();
+                    populateAdminCyclesDropdown();
+                } else {
+                    this.filterItems(this.input.value);
+                }
+            }
+        }
+        
+        // Legacy filter function for backward compatibility
+        function filterCycles(searchTerm) {
+            if (modernDropdown) {
+                modernDropdown.filterItems(searchTerm);
+            }
         }
 
         // Populate admin cycles dropdown - hybrid approach for better performance
         async function populateAdminCyclesDropdown() {
-            const adminCycleSelect = document.getElementById('adminCycleSelect');
-            if (!adminCycleSelect) return;
-            
-            adminCycleSelect.innerHTML = '<option value="">טוען מחזורים...</option>';
+            if (!adminModernDropdown) return;
             
             try {
                 // First try the optimized endpoint
@@ -322,13 +2557,8 @@
                     if (cyclesWithRegistrations.length > 0) {
                         console.log(`Loaded ${cyclesWithRegistrations.length} admin cycles via optimized endpoint`);
                         
-                        adminCycleSelect.innerHTML = '<option value="">בחר מחזור...</option>';
-                        cyclesWithRegistrations.forEach(cycle => {
-                            const option = document.createElement('option');
-                            option.value = cycle.id;
-                            option.textContent = `${cycle.name} (${cycle.count} רישומים)`;
-                            adminCycleSelect.appendChild(option);
-                        });
+                        // Update the admin dropdown with cycles data
+                        adminModernDropdown.updateAdminCycles(cyclesWithRegistrations);
                         return;
                     }
                 }
@@ -345,8 +2575,7 @@
         
         // Fallback method (original working logic)
         async function populateAdminCyclesDropdownFallback() {
-            const adminCycleSelect = document.getElementById('adminCycleSelect');
-            if (!adminCycleSelect) return;
+            if (!adminModernDropdown) return;
             
             try {
                 // Get all cycles first
@@ -366,8 +2595,6 @@
                 });
                 
                 console.log(`Filtered to ${validCycles.length} non-private cycles`);
-                
-                const cyclesWithRegistrations = [];
                 
                 // Check each valid cycle for registrations (parallel for better performance)
                 const registrationChecks = validCycles.map(async (cycle) => {
@@ -393,28 +2620,19 @@
                 
                 console.log(`Found ${finalCycles.length} cycles with registrations`);
                 
-                // Update dropdown
-                adminCycleSelect.innerHTML = '<option value="">בחר מחזור...</option>';
-                if (finalCycles.length === 0) {
-                    adminCycleSelect.innerHTML = '<option value="">אין מחזורים מתאימים</option>';
-                } else {
-                    finalCycles.forEach(cycle => {
-                        const option = document.createElement('option');
-                        option.value = cycle.id;
-                        option.textContent = `${cycle.name} (${cycle.count} רישומים)`;
-                        adminCycleSelect.appendChild(option);
-                    });
-                }
+                // Update the admin dropdown with cycles data
+                adminModernDropdown.updateAdminCycles(finalCycles);
                 
             } catch (error) {
                 console.error('Error in fallback method:', error);
-                adminCycleSelect.innerHTML = '<option value="">שגיאה בטעינת מחזורים</option>';
+                // Set empty array if error occurs
+                adminModernDropdown.updateAdminCycles([]);
             }
         }
 
         // Fetch registrations for selected cycle
         async function fetchRegistrations() {
-            const cycleId = document.getElementById('adminCycleSelect').value;
+            const cycleId = document.getElementById('selectedAdminCycleId').value;
             const resultsDiv = document.getElementById('registrationsResults');
             const titleEl = document.getElementById('registrationsTitle');
             const countEl = document.getElementById('registrationsCount');
@@ -467,16 +2685,16 @@
         // Create HTML table for registrations
         function createRegistrationsTable(registrations) {
             let html = `
-                <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px;">
+                <div class="admin-table-container">
+                    <table class="admin-table">
                         <thead>
-                            <tr style="background-color: #f5f5f5;">
-                                <th style="border: 1px solid #ddd; padding: 8px; text-align: right; width: 5%;">#</th>
-                                <th style="border: 1px solid #ddd; padding: 8px; text-align: right; width: 25%;">👤 שם ההורה</th>
-                                <th style="border: 1px solid #ddd; padding: 8px; text-align: right; width: 18%;">📞 טלפון</th>
-                                <th style="border: 1px solid #ddd; padding: 8px; text-align: right; width: 25%;">👶 שם הילד/ה</th>
-                                <th style="border: 1px solid #ddd; padding: 8px; text-align: right; width: 20%;">📋 סטטוס</th>
-                                <th style="border: 1px solid #ddd; padding: 8px; text-align: center; width: 7%;">⚙️ פעולות</th>
+                            <tr>
+                                <th>#</th>
+                                <th>👤 שם ההורה</th>
+                                <th>📞 טלפון</th>
+                                <th>👶 שם הילד/ה</th>
+                                <th>📊 סטטוס</th>
+                                <th>⚙️ פעולות</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -484,33 +2702,48 @@
 
             registrations.forEach((registration, index) => {
                 const statusText = getStatusText(registration.statusCode);
+                const statusClass = getStatusClass(registration.statusCode);
                 html += `
-                    <tr id="row-${registration.registrationId}" data-account-id="${registration.accountId}" onclick="showRegistrationDetails('${registration.registrationId}')" style="cursor: pointer;" 
-                        onmouseover="this.style.backgroundColor='#f8f9fa'" onmouseout="this.style.backgroundColor='transparent'">
-                        <td style="border: 1px solid #ddd; padding: 8px; text-align: right; vertical-align: middle;">${index + 1}</td>
-                        <td style="border: 1px solid #ddd; padding: 8px; text-align: right; vertical-align: middle;">
-                            <span class="display-mode account-name" style="font-weight: bold;">${registration.accountName}</span>
-                            <input type="text" class="edit-mode account-name-input" value="${registration.accountName}" style="display: none; width: 100%; border: 1px solid #ccc; padding: 6px; font-size: 13px; border-radius: 4px;">
+                    <tr id="row-${registration.registrationId}" data-account-id="${registration.accountId}" onclick="showRegistrationDetails('${registration.registrationId}')">
+                        <td class="row-number">${index + 1}</td>
+                        <td>
+                            <span class="display-mode account-name">${registration.accountName}</span>
+                            <input type="text" class="edit-mode edit-input account-name-input" value="${registration.accountName}" style="display: none;">
                         </td>
-                        <td style="border: 1px solid #ddd; padding: 8px; text-align: right; vertical-align: middle;">
+                        <td>
                             <span class="display-mode phone-number">${registration.phoneNumber}</span>
-                            <input type="text" class="edit-mode phone-number-input" value="${registration.phoneNumber}" style="display: none; width: 100%; border: 1px solid #ccc; padding: 6px; font-size: 13px; border-radius: 4px;">
+                            <input type="text" class="edit-mode edit-input phone-number-input" value="${registration.phoneNumber}" style="display: none;">
                         </td>
-                        <td style="border: 1px solid #ddd; padding: 8px; text-align: right; vertical-align: middle;">
+                        <td>
                             <span class="display-mode child-name">${registration.childName}</span>
-                            <input type="text" class="edit-mode child-name-input" value="${registration.childName}" style="display: none; width: 100%; border: 1px solid #ccc; padding: 6px; font-size: 13px; border-radius: 4px;">
+                            <input type="text" class="edit-mode edit-input child-name-input" value="${registration.childName}" style="display: none;">
                         </td>
-                        <td style="border: 1px solid #ddd; padding: 8px; text-align: right; vertical-align: middle;">
-                            <span class="display-mode status-text">${statusText}</span>
-                            <select class="edit-mode status-select" style="display: none; width: 100%; border: 1px solid #ccc; padding: 6px; font-size: 13px; border-radius: 4px;">
+                        <td class="status-cell">
+                            <span class="display-mode status-badge ${statusClass}">${statusText}</span>
+                            <select class="edit-mode edit-select status-select" style="display: none;">
                                 ${generateStatusOptions(registration.statusCode)}
                             </select>
                         </td>
-                        <td style="border: 1px solid #ddd; padding: 8px; text-align: center; vertical-align: middle;">
-                            <div style="display: flex; flex-direction: column; gap: 4px; align-items: center;">
-                                <button class="edit-btn" onclick="event.stopPropagation(); editRegistration('${registration.registrationId}')" style="background: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; min-width: 60px;">✏️ ערוך</button>
-                                <button class="save-btn" onclick="event.stopPropagation(); saveRegistration('${registration.registrationId}')" style="background: #4CAF50; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; min-width: 60px; display: none;">💾 שמור</button>
-                                <button class="cancel-btn" onclick="event.stopPropagation(); cancelEdit('${registration.registrationId}')" style="background: #f44336; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; min-width: 60px; display: none;">❌ בטל</button>
+                        <td class="actions-cell">
+                            <div style="display: flex; flex-direction: column; gap: 3px; align-items: center; padding: 2px;">
+                                <button class="edit-btn table-btn" onclick="event.stopPropagation(); editRegistration('${registration.registrationId}')">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="margin-left: 4px;">
+                                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                                    </svg>
+                                    ערוך
+                                </button>
+                                <button class="save-btn table-btn" onclick="event.stopPropagation(); saveRegistration('${registration.registrationId}')" style="display: none;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="margin-left: 4px;">
+                                        <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+                                    </svg>
+                                    שמור
+                                </button>
+                                <button class="cancel-btn table-btn" onclick="event.stopPropagation(); cancelEdit('${registration.registrationId}')" style="display: none;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="margin-left: 4px;">
+                                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                                    </svg>
+                                    בטל
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -542,6 +2775,18 @@
                 5: '✅ מושלם'
             };
             return statusMap[statusCode] || `(${statusCode})`;
+        }
+
+        // Get status CSS class based on status code
+        function getStatusClass(statusCode) {
+            const statusClassMap = {
+                1: 'status-active',
+                2: 'status-inactive', 
+                3: 'status-cancelled',
+                4: 'status-waiting',
+                5: 'status-completed'
+            };
+            return statusClassMap[statusCode] || 'status-waiting';
         }
 
         // Generate status dropdown options
@@ -629,7 +2874,7 @@
                 
                 // Check if registration fields have changed
                 const originalChildName = row.querySelector('.child-name').textContent;
-                const originalStatus = row.querySelector('.status-text').textContent;
+                const originalStatus = row.querySelector('.status-badge').textContent;
                 const newStatus = getStatusText(parseInt(statusSelect.value));
                 
                 if (childNameInput.value !== originalChildName || newStatus !== originalStatus) {
@@ -680,7 +2925,7 @@
                 row.querySelector('.account-name').textContent = accountNameInput.value;
                 row.querySelector('.phone-number').textContent = phoneNumberInput.value;
                 row.querySelector('.child-name').textContent = childNameInput.value;
-                row.querySelector('.status-text').textContent = getStatusText(parseInt(statusSelect.value));
+                row.querySelector('.status-badge').textContent = getStatusText(parseInt(statusSelect.value));
                 
                 // Exit edit mode
                 cancelEdit(registrationId);
@@ -713,6 +2958,15 @@
             const submitBtn = document.getElementById('submitBtn');
             const originalText = submitBtn.textContent;
             
+            // Validate cycle selection
+            const selectedCycleId = document.getElementById('selectedCycleId').value;
+            if (!selectedCycleId) {
+                const cycleError = document.getElementById('cycleError');
+                cycleError.textContent = 'אנא בחר מחזור תוכנית';
+                cycleError.style.display = 'block';
+                return;
+            }
+            
             // Disable submit button and show loading state
             submitBtn.disabled = true;
             submitBtn.textContent = 'שולח...';
@@ -724,7 +2978,7 @@
                 email: formData.get('email'),
                 childName: formData.get('childName'),
                 childBirthDate: formData.get('childBirthDate'),
-                programCycle: formData.get('programCycle')
+                programCycle: selectedCycleId // Use the hidden field value
             };
             
             try {
@@ -813,22 +3067,15 @@
 
         // Initialize the form
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize modern dropdown
+            modernDropdown = new ModernDropdown('cycleDropdown');
+            
+            // Initialize admin modern dropdown
+            adminModernDropdown = new AdminModernDropdown('adminCycleDropdown');
+            
+            // Fetch cycles and status options
             fetchActiveCycles();
             fetchStatusOptions();
-            
-            // Add search functionality
-            const cycleSearch = document.getElementById('cycleSearch');
-            cycleSearch.addEventListener('input', function(e) {
-                filterCycles(e.target.value);
-            });
-            
-            // Clear search when cycles dropdown changes
-            const cycleSelect = document.getElementById('programCycle');
-            cycleSelect.addEventListener('change', function() {
-                if (this.value) {
-                    cycleSearch.value = ''; // Clear search when selection is made
-                }
-            });
 
             // Add admin functionality
             const fetchRegistrationsBtn = document.getElementById('fetchRegistrationsBtn');
@@ -836,8 +3083,10 @@
             
             // Add auto-load functionality to admin cycle dropdown
             const adminCycleSelect = document.getElementById('adminCycleSelect');
+            const selectedAdminCycleId = document.getElementById('selectedAdminCycleId');
+            
             adminCycleSelect.addEventListener('change', function() {
-                if (this.value) {
+                if (selectedAdminCycleId.value) {
                     // Hide the manual fetch button since we're auto-loading
                     fetchRegistrationsBtn.style.display = 'none';
                     fetchRegistrations();
@@ -869,31 +3118,33 @@
             modalContent.innerHTML = `
                 <div style="text-align: right; line-height: 1.6;">
                     <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                        <h4 style="margin: 0 0 10px 0; color: #495057;">👤 פרטי לקוח</h4>
+                        <h4 style="margin: 0 0 10px 0; color: #495057; display: flex; align-items: center; gap: 8px;">👤 פרטי לקוח</h4>
                         <p style="margin: 5px 0;"><strong>שם ההורה:</strong> ${registration.accountName}</p>
                         <p style="margin: 5px 0;"><strong>טלפון:</strong> ${registration.phoneNumber}</p>
                         <p style="margin: 5px 0;"><strong>שם הילד/ה:</strong> ${registration.childName}</p>
                     </div>
                     
                     <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                        <h4 style="margin: 0 0 10px 0; color: #1976d2;">📋 פרטי רישום</h4>
+                        <h4 style="margin: 0 0 10px 0; color: #1976d2; display: flex; align-items: center; gap: 8px;">📊 פרטי רישום</h4>
                         <p style="margin: 5px 0;"><strong>סטטוס:</strong> ${getStatusText(registration.statusCode)}</p>
                         <p style="margin: 5px 0;"><strong>מזהה רישום:</strong> ${registration.registrationId}</p>
                     </div>
                     
                     <div style="background: #e8f5e8; padding: 15px; border-radius: 8px;">
-                        <h4 style="margin: 0 0 10px 0; color: #388e3c;">💰 פרטי תשלום</h4>
+                        <h4 style="margin: 0 0 10px 0; color: #388e3c; display: flex; align-items: center; gap: 8px;">💎 פרטי תשלום</h4>
                         <p style="margin: 5px 0;"><strong>סטטוס תשלום:</strong> <span style="padding: 3px 8px; border-radius: 4px; background: ${getPaymentStatusColor(registration.paymentStatus)}; color: white;">${paymentStatusText}</span></p>
                         <p style="margin: 5px 0;"><strong>סכום ששולם:</strong> ${paymentAmountText}</p>
                     </div>
                 </div>
             `;
             
-            document.getElementById('registrationModal').style.display = 'block';
+            const modal = document.getElementById('registrationModal');
+            modal.classList.add('show');
         }
         
         function closeRegistrationModal() {
-            document.getElementById('registrationModal').style.display = 'none';
+            const modal = document.getElementById('registrationModal');
+            modal.classList.remove('show');
         }
         
         function getPaymentStatusText(paymentStatus) {
@@ -918,9 +3169,14 @@
         }
         
         // Close modal when clicking outside
-        document.getElementById('registrationModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeRegistrationModal();
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('registrationModal');
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeRegistrationModal();
+                    }
+                });
             }
         });
     </script>
