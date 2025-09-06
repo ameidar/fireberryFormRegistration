@@ -94,6 +94,11 @@ export default async function handler(req, res) {
     let registrationCounts = {};
     if (registrationsResponse.ok) {
       const registrationsData = await registrationsResponse.json();
+      console.log('DEBUG - Registrations response structure:', {
+        hasData: !!registrationsData.data,
+        hasDataField: !!(registrationsData.data && registrationsData.data.Data),
+        totalRegistrations: registrationsData.data && registrationsData.data.Data ? registrationsData.data.Data.length : 0
+      });
       
       // Count registrations per cycle - EXACT COPY FROM MAIN BRANCH
       if (registrationsData.data && registrationsData.data.Data) {
@@ -103,16 +108,24 @@ export default async function handler(req, res) {
             registrationCounts[cycleId] = (registrationCounts[cycleId] || 0) + 1;
           }
         });
+        console.log('DEBUG - Registration counts:', registrationCounts);
+      } else {
+        console.log('DEBUG - No registration data found in response');
       }
+    } else {
+      console.error('DEBUG - Registrations response not OK:', registrationsResponse.status);
+      console.error('DEBUG - This will result in 0 cycles being returned');
     }
 
     // Step 3: Build final result with only cycles that have registrations - EXACT COPY FROM MAIN BRANCH
-    console.log('Registration counts:', registrationCounts);
+    console.log('DEBUG - Total valid cycles after filtering:', validCycles.length);
+    console.log('DEBUG - Registration counts:', registrationCounts);
+    console.log('DEBUG - Number of cycles with registration counts:', Object.keys(registrationCounts).length);
     
     const cyclesWithRegistrations = validCycles
       .filter(cycle => {
         const count = registrationCounts[cycle.customobject1000id] || 0;
-        console.log(`Cycle ${cycle.name}: registrations = ${count}`);
+        console.log(`DEBUG - Cycle "${cycle.name}" (${cycle.customobject1000id}): registrations = ${count}`);
         return count > 0;
       })
       .map(cycle => ({
@@ -122,7 +135,8 @@ export default async function handler(req, res) {
         count: registrationCounts[cycle.customobject1000id] || 0
       }));
       
-    console.log('Final cycles with registrations:', cyclesWithRegistrations.length);
+    console.log('DEBUG - Final cycles with registrations:', cyclesWithRegistrations.length);
+    console.log('DEBUG - Final cycle names:', cyclesWithRegistrations.map(c => c.name));
 
     res.status(200).json({ 
       cycles: cyclesWithRegistrations,
