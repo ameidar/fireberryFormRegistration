@@ -83,7 +83,7 @@ export default async function handler(req, res) {
 
     if (cycleIds.length > 0) {
       // Use single query approach like main branch for reliability
-      const cycleConditions = cycleIds.map(id => `pcfsystemfield53 = '${id}'`).join(' OR ');
+      const cycleConditions = cycleIds.map(id => `pcfsystemfield53 = ${id}`).join(' OR ');
       
       const registrationsQuery = {
         objecttype: 33,
