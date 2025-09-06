@@ -67,7 +67,7 @@ export default async function handler(req, res) {
 
     // Step 2: Get all registrations for valid cycles (query in smaller batches to avoid query length limits)
     const cycleIds = validCycles.map(cycle => cycle.customobject1000id);
-    const batchSize = 5; // Query 5 cycles at a time to keep query length manageable
+    const batchSize = 10; // Increased batch size for better performance
     let allRegistrations = [];
 
     console.log('DEBUG - Number of cycle IDs:', cycleIds.length);
