@@ -31,6 +31,8 @@ export default async function handler(req, res) {
       query: "(pcfsystemfield37 = 3)"
     };
 
+    console.log('DEBUG - Cycles query:', JSON.stringify(cyclesQuery, null, 2));
+
     const cyclesResponse = await fetch('https://api.fireberry.com/api/query', {
       method: 'POST',
       headers: {
@@ -73,6 +75,10 @@ export default async function handler(req, res) {
       fields: "accountproductid,accountid,pcfsystemfield204,pcfsystemfield53,statuscode",
       query: `(${cycleIds.map(id => `pcfsystemfield53 = '${id}'`).join(' OR ')})`
     };
+
+    console.log('DEBUG - Registrations query:', JSON.stringify(registrationsQuery, null, 2));
+    console.log('DEBUG - Number of cycle IDs:', cycleIds.length);
+    console.log('DEBUG - First 3 cycle IDs:', cycleIds.slice(0, 3));
 
     const registrationsResponse = await fetch('https://api.fireberry.com/api/query', {
       method: 'POST',
