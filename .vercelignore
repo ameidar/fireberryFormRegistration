@@ -1,0 +1,17 @@
+# Exclude instructor-system subdirectory from deployment
+instructor-system/
+tests/
+.playwright-mcp/
+README-INSTRUCTOR-SYSTEM.md
+
+# Development files
+*.log
+.env.development
+.env.test
+.DS_Store
+node_modules/
+
+# Test files
+playwright-report/
+test-results/
+coverage/

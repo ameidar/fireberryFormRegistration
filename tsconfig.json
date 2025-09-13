@@ -27,6 +27,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "dist", "build"]
+  "include": ["src", "api", "utils"],
+  "exclude": ["node_modules", "dist", "build", "instructor-system", "tests", ".playwright-mcp"]
 }
