@@ -1053,42 +1053,206 @@
         }
 
         .admin-table .status-badge {
-            display: inline-block;
-            padding: 4px 6px;
-            border-radius: 8px;
-            font-size: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
             font-weight: 600;
             text-align: center;
-            min-width: 70px;
-            max-width: 140px;
+            min-width: 90px;
+            height: 28px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
         }
 
-        .admin-table .status-active {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
+        /* Status Color Classes - Comprehensive Color Coding */
+        
+        /* חדש (New) - Blue theme */
+        .admin-table .status-new {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
             color: white;
+            border: 1px solid rgba(59, 130, 246, 0.3);
         }
-
-        .admin-table .status-inactive {
-            background: linear-gradient(135deg, #ff9800, #f57c00);
+        
+        /* נרשם (Registered) - Green theme */
+        .admin-table .status-registered {
+            background: linear-gradient(135deg, #10b981, #059669);
             color: white;
+            border: 1px solid rgba(16, 185, 129, 0.3);
         }
-
+        
+        /* נרשם חיצוני (External Registration) - Orange theme */
+        .admin-table .status-external {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        /* ביטל (Cancelled) - Red theme */
         .admin-table .status-cancelled {
-            background: linear-gradient(135deg, #f44336, #d32f2f);
+            background: linear-gradient(135deg, #ef4444, #dc2626);
             color: white;
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }
-
+        
+        /* מחכה לשיבוץ (Waiting for Assignment) - Purple theme */
         .admin-table .status-waiting {
-            background: linear-gradient(135deg, #2196F3, #1976D2);
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
             color: white;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+        
+        /* פולואפ (Follow-up) - Teal theme */
+        .admin-table .status-followup {
+            background: linear-gradient(135deg, #14b8a6, #0d9488);
+            color: white;
+            border: 1px solid rgba(20, 184, 166, 0.3);
+        }
+        
+        /* הוזמנו לשיעור נסיון (Invited to Trial) - Amber theme */
+        .admin-table .status-trial {
+            background: linear-gradient(135deg, #f59e0b, #f97316);
+            color: white;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        /* סיים (Completed) - Emerald theme */
+        .admin-table .status-completed {
+            background: linear-gradient(135deg, #059669, #047857);
+            color: white;
+            border: 1px solid rgba(5, 150, 105, 0.3);
+        }
+        
+        /* Hover effects for all status badges */
+        .admin-table .status-badge:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Legacy fallback classes for backward compatibility */
+        .admin-table .status-active {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .admin-table .status-inactive {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            border: 1px solid rgba(245, 158, 11, 0.3);
         }
 
-        .admin-table .status-completed {
-            background: linear-gradient(135deg, #8BC34A, #689F38);
+        /* Status Dropdown Styling */
+        .status-dropdown {
+            position: relative;
+            width: 100%;
+            min-width: 140px;
+        }
+        
+        .status-dropdown-input {
+            width: 100%;
+            padding: 6px 32px 6px 8px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 12px;
+            font-family: var(--hebrew-font);
+            background: #fefefe;
+            direction: rtl;
+            text-align: right;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+        
+        .status-dropdown-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
+            background: white;
+        }
+        
+        .status-dropdown .dropdown-arrow {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: auto;
+            transition: transform 0.2s ease;
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            z-index: 2;
+        }
+        
+        .status-dropdown.open .dropdown-arrow {
+            transform: translateY(-50%) rotate(180deg);
+            color: var(--primary-color);
+        }
+        
+        .status-dropdown .dropdown-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .status-dropdown.open .dropdown-list {
+            display: block;
+        }
+        
+        .status-dropdown .dropdown-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            direction: rtl;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-dropdown .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-dropdown .dropdown-item:hover {
+            background: #f8fafc;
+            transform: translateX(2px);
+        }
+        
+        .status-dropdown .dropdown-item.selected {
+            background: var(--primary-color);
             color: white;
+            font-weight: 600;
+        }
+        
+        .status-dropdown .status-icon {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+        }
+        
+        .status-dropdown .status-label {
+            flex: 1;
+            text-align: right;
         }
 
         .admin-table .actions-cell {
@@ -1413,9 +1577,10 @@
             }
             
             .admin-table .status-badge {
-                font-size: 9px;
-                padding: 3px 5px;
-                min-width: 60px;
+                font-size: 10px;
+                padding: 6px 8px;
+                min-width: 70px;
+                height: 24px;
             }
         }
         
@@ -1773,7 +1938,7 @@
                             <input type="date" id="childBirthDate" name="childBirthDate">
                         </div>
 
-                        <div class="form-group full-width">
+                        <div class="form-group">
                             <label for="email">כתובת אימייל</label>
                             <input type="email" id="email" name="email">
                         </div>
@@ -1879,6 +2044,9 @@
         </div>
     </div>
 
+    <!-- Client-side Rate Limiting and Request Management -->
+    <script src="utils/clientRateLimiter.js"></script>
+
     <script>
         // Navigation System - Define first for immediate availability
         window.switchPage = function switchPage(pageId) {
@@ -1952,22 +2120,39 @@
         let recentSelections = JSON.parse(localStorage.getItem('recentCycleSelections') || '[]');
         let searchTimeout = null; // For debounced search
         
-        // Fetch active cycles from our API proxy (avoids CORS issues)
+        // Enhanced fetch active cycles with rate limiting and error handling
         async function fetchActiveCycles() {
             const cycleError = document.getElementById('cycleError');
             
             try {
-                // Call our Vercel API endpoint that proxies Fireberry API
-                const response = await fetch('/api/cycles');
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                let data;
+                
+                // Check if rate limiter is available, fallback to regular fetch if not
+                if (window.clientRateLimiter && window.requestCancellation) {
+                    // Use rate-limited and cached request
+                    const cacheKey = 'active_cycles';
+                    data = await window.clientRateLimiter.executeRequest(async () => {
+                        const response = await window.requestCancellation.fetch('/api/cycles', {}, 'fetch_cycles');
+                        
+                        if (!response.ok) {
+                            const errorData = await response.json().catch(() => ({}));
+                            throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+                        }
+                        
+                        return await response.json();
+                    }, cacheKey);
+                } else {
+                    console.warn('[Frontend] Rate limiter not available, using fallback fetch');
+                    const response = await fetch('/api/cycles');
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    data = await response.json();
                 }
-
-                const data = await response.json();
                 
                 if (data.cycles && data.cycles.length > 0) {
                     allCycles = data.cycles; // Store all cycles
+                    console.log(`[Frontend] Loaded ${allCycles.length} active cycles (cached: ${data.fromCache})`);
                     
                     // Update modern dropdown if initialized
                     if (modernDropdown) {
@@ -1976,7 +2161,7 @@
                     
                     // Populate admin dropdown in background (don't await to avoid blocking)
                     populateAdminCyclesDropdown().catch(error => {
-                        console.log('Error populating admin cycles:', error);
+                        console.log('[Frontend] Error populating admin cycles:', error);
                         if (adminModernDropdown) {
                             adminModernDropdown.updateAdminCycles([]);
                         }
@@ -1988,30 +2173,49 @@
                     }
                 }
                 
-                cycleError.style.display = 'none';
-                
-            } catch (error) {
-                console.error('Error fetching cycles:', error);
-                
-                // Fallback with dummy data for development
-                allCycles = [
-                    { id: 'cycle1', name: 'מחזור קיץ 2024' },
-                    { id: 'cycle2', name: 'מחזור סתיו 2024' },
-                    { id: 'cycle3', name: 'מחזור חורף 2024' }
-                ];
-                
-                // Update modern dropdown
-                if (modernDropdown) {
-                    modernDropdown.updateItems(allCycles);
+                if (cycleError) {
+                    cycleError.style.display = 'none';
                 }
                 
-                // Populate admin dropdown in background
-                populateAdminCyclesDropdown().catch(error => {
-                    console.log('Error populating admin cycles:', error);
-                });
+            } catch (error) {
+                console.error('[Frontend] Error fetching cycles:', error);
                 
-                cycleError.textContent = 'שגיאה בטעינת המחזורים. מוצגים נתונים לדוגמה.';
-                cycleError.style.display = 'block';
+                if (cycleError) {
+                    // Use enhanced error handling if available
+                    if (window.ErrorHandler) {
+                        window.ErrorHandler.displayError(cycleError, error, 'טעינת מחזורים');
+                        
+                        // Add retry functionality
+                        cycleError.addEventListener('retry', async () => {
+                            console.log('[Frontend] Retrying cycles fetch...');
+                            await fetchActiveCycles();
+                        }, { once: true });
+                    } else {
+                        // Fallback error display
+                        cycleError.innerHTML = `<div style="color: #e74c3c; padding: 10px; text-align: center;">❌ שגיאה בטעינת המחזורים: ${error.message}</div>`;
+                        cycleError.style.display = 'block';
+                    }
+                }
+                
+                // Fallback with dummy data for development after delay
+                setTimeout(() => {
+                    console.log('[Frontend] Using fallback data for development');
+                    allCycles = [
+                        { id: 'cycle1', name: 'מחזור קיץ 2024' },
+                        { id: 'cycle2', name: 'מחזור סתיו 2024' },
+                        { id: 'cycle3', name: 'מחזור חורף 2024' }
+                    ];
+                    
+                    // Update modern dropdown
+                    if (modernDropdown) {
+                        modernDropdown.updateItems(allCycles);
+                    }
+                    
+                    // Populate admin dropdown in background
+                    populateAdminCyclesDropdown().catch(error => {
+                        console.log('[Frontend] Error populating admin cycles with fallback:', error);
+                    });
+                }, 2000);
             }
         }
 
@@ -2535,6 +2739,64 @@
                 }
             }
         }
+
+        // Status Dropdown Class for table edit mode
+        class StatusDropdown {
+            constructor(dropdownElement) {
+                this.dropdown = dropdownElement;
+                this.input = dropdownElement.querySelector('.status-dropdown-input');
+                this.list = dropdownElement.querySelector('.dropdown-list');
+                this.arrow = dropdownElement.querySelector('.dropdown-arrow');
+                this.isOpen = false;
+                
+                this.init();
+            }
+            
+            init() {
+                // Input click
+                this.input.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.toggle();
+                });
+                
+                // Arrow click
+                this.arrow.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.toggle();
+                });
+                
+                // Close on outside click
+                document.addEventListener('click', (e) => {
+                    if (!this.dropdown.contains(e.target)) {
+                        this.close();
+                    }
+                });
+            }
+            
+            toggle() {
+                if (this.isOpen) {
+                    this.close();
+                } else {
+                    this.open();
+                }
+            }
+            
+            open() {
+                if (this.isOpen) return;
+                
+                this.isOpen = true;
+                this.dropdown.classList.add('open');
+                this.list.style.display = 'block';
+            }
+            
+            close() {
+                if (!this.isOpen) return;
+                
+                this.isOpen = false;
+                this.dropdown.classList.remove('open');
+                this.list.style.display = 'none';
+            }
+        }
         
         // Legacy filter function for backward compatibility
         function filterCycles(searchTerm) {
@@ -2543,32 +2805,36 @@
             }
         }
 
-        // Populate admin cycles dropdown - hybrid approach for better performance
+        // Enhanced populate admin cycles dropdown with rate limiting
         async function populateAdminCyclesDropdown() {
             if (!adminModernDropdown) return;
             
             try {
-                // First try the optimized endpoint
-                const optimizedResponse = await fetch('/api/admin-cycles');
-                if (optimizedResponse.ok) {
-                    const data = await optimizedResponse.json();
-                    const cyclesWithRegistrations = data.cycles || [];
+                // Use rate-limited and cached request for admin cycles
+                const cacheKey = 'admin_cycles';
+                const data = await window.clientRateLimiter.executeRequest(async () => {
+                    const response = await window.requestCancellation.fetch('/api/admin-cycles', {}, 'fetch_admin_cycles');
                     
-                    if (cyclesWithRegistrations.length > 0) {
-                        console.log(`Loaded ${cyclesWithRegistrations.length} admin cycles via optimized endpoint`);
-                        
-                        // Update the admin dropdown with cycles data
-                        adminModernDropdown.updateAdminCycles(cyclesWithRegistrations);
-                        return;
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
                     }
+                    
+                    return await response.json();
+                }, cacheKey);
+                
+                const cyclesWithRegistrations = data.cycles || [];
+                
+                if (cyclesWithRegistrations.length > 0) {
+                    console.log(`[Frontend] Loaded ${cyclesWithRegistrations.length} admin cycles (cached: ${data.fromCache})`);
+                    adminModernDropdown.updateAdminCycles(cyclesWithRegistrations);
+                } else {
+                    console.log('[Frontend] No admin cycles found, trying fallback method');
+                    await populateAdminCyclesDropdownFallback();
                 }
                 
-                // Fallback to original method if optimized fails or returns 0
-                console.log('Falling back to original method');
-                await populateAdminCyclesDropdownFallback();
-                
             } catch (error) {
-                console.error('Error with optimized endpoint, using fallback:', error);
+                console.error('[Frontend] Error with admin cycles endpoint, using fallback:', error);
                 await populateAdminCyclesDropdownFallback();
             }
         }
@@ -2630,7 +2896,7 @@
             }
         }
 
-        // Fetch registrations for selected cycle
+        // Enhanced fetch registrations with rate limiting and error handling
         async function fetchRegistrations() {
             const cycleId = document.getElementById('selectedAdminCycleId').value;
             const resultsDiv = document.getElementById('registrationsResults');
@@ -2647,6 +2913,10 @@
                 return;
             }
 
+            // Cancel any existing request for this cycle
+            const requestKey = `registrations_${cycleId}`;
+            window.requestCancellation.cancel(requestKey);
+
             // Show loading state
             fetchBtn.disabled = true;
             fetchBtn.textContent = '🔄 טוען...';
@@ -2654,28 +2924,62 @@
             resultsDiv.style.display = 'block';
 
             try {
-                const response = await fetch(`/api/registrations?cycleId=${cycleId}`);
-                const data = await response.json();
+                // Use debounced and rate-limited request
+                const cacheKey = `registrations_${cycleId}`;
+                const data = await window.clientRateLimiter.debounce(`fetch_${cycleId}`, async () => {
+                    return await window.clientRateLimiter.executeRequest(async () => {
+                        const response = await window.requestCancellation.fetch(`/api/registrations?cycleId=${cycleId}`, {}, requestKey);
+                        
+                        if (!response.ok) {
+                            const errorData = await response.json().catch(() => ({}));
+                            throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+                        }
 
-                if (response.ok) {
-                    const selectedCycle = allCycles.find(c => c.id == cycleId);
-                    titleEl.textContent = `רישומים למחזור: ${selectedCycle ? selectedCycle.name : cycleId}`;
-                    countEl.textContent = `📈 סה"כ רישומים: ${data.count}`;
+                        return await response.json();
+                    }, cacheKey);
+                }, 500);
 
-                    // Store registrations for modal access
-                    currentRegistrations = data.registrations;
+                // Update UI with fetched data
+                const selectedCycle = allCycles.find(c => c.id == cycleId);
+                const cycleName = selectedCycle ? selectedCycle.name : cycleId;
+                
+                titleEl.textContent = `רישומים למחזור: ${cycleName}`;
+                
+                // Enhanced count display with cache info
+                const cacheIndicator = data.fromCache || data.cached ? ' 📁' : '';
+                countEl.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                        <span>📈 סה"כ רישומים: ${data.count}${cacheIndicator}</span>
+                        <small style="color: #666; font-size: 12px;">
+                            ${data.timestamp ? `עודכן: ${new Date(data.timestamp).toLocaleString('he-IL')}` : ''}
+                            ${data.cached ? ' (נשמר במטמון)' : ''}
+                        </small>
+                    </div>
+                `;
 
-                    if (data.registrations.length === 0) {
-                        listEl.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">אין רישומים למחזור זה</div>';
-                    } else {
-                        listEl.innerHTML = createRegistrationsTable(data.registrations);
-                    }
+                // Store registrations for modal access
+                currentRegistrations = data.registrations;
+
+                if (data.registrations.length === 0) {
+                    listEl.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">אין רישומים למחזור זה</div>';
                 } else {
-                    throw new Error(data.message || 'שגיאה בטעינת הרישומים');
+                    listEl.innerHTML = createRegistrationsTable(data.registrations);
                 }
+
+                console.log(`[Frontend] Loaded ${data.registrations.length} registrations for cycle ${cycleName} (cached: ${data.cached || data.fromCache})`);
+
             } catch (error) {
-                console.error('Error fetching registrations:', error);
-                listEl.innerHTML = '<div style="text-align: center; padding: 20px; color: #e74c3c;">❌ שגיאה בטעינת הרישומים: ' + error.message + '</div>';
+                console.error('[Frontend] Error fetching registrations:', error);
+                
+                // Use enhanced error handling
+                window.ErrorHandler.displayError(listEl, error, 'טעינת רישומים');
+                
+                // Add retry functionality
+                listEl.addEventListener('retry', async () => {
+                    console.log('[Frontend] Retrying registration fetch...');
+                    await fetchRegistrations();
+                }, { once: true });
+
             } finally {
                 fetchBtn.disabled = false;
                 fetchBtn.textContent = '🔍 הצג רישומים';
@@ -2703,6 +3007,11 @@
             registrations.forEach((registration, index) => {
                 const statusText = getStatusText(registration.statusCode);
                 const statusClass = getStatusClass(registration.statusCode);
+                
+                // Debug logging for status format
+                if (index === 0) {
+                    console.log(`[Status Debug] Sample registration status - Code: ${registration.statusCode}, Text: ${statusText}, Class: ${statusClass}`);
+                }
                 html += `
                     <tr id="row-${registration.registrationId}" data-account-id="${registration.accountId}" onclick="showRegistrationDetails('${registration.registrationId}')">
                         <td class="row-number">${index + 1}</td>
@@ -2720,9 +3029,20 @@
                         </td>
                         <td class="status-cell">
                             <span class="display-mode status-badge ${statusClass}">${statusText}</span>
-                            <select class="edit-mode edit-select status-select" style="display: none;">
-                                ${generateStatusOptions(registration.statusCode)}
-                            </select>
+                            <div class="edit-mode modern-dropdown status-dropdown" id="statusDropdown-${registration.registrationId}" style="display: none;">
+                                <input type="text" 
+                                       class="status-dropdown-input" 
+                                       id="statusInput-${registration.registrationId}"
+                                       readonly
+                                       value="${statusText}"
+                                       data-value="${registration.statusCode}"
+                                       onclick="event.stopPropagation();"
+                                       autocomplete="off">
+                                <div class="dropdown-arrow" onclick="event.stopPropagation();">▼</div>
+                                <div class="dropdown-list" id="statusDropdownList-${registration.registrationId}">
+                                    ${generateStatusDropdownOptions(registration.statusCode)}
+                                </div>
+                            </div>
                         </td>
                         <td class="actions-cell">
                             <div style="display: flex; flex-direction: column; gap: 3px; align-items: center; padding: 2px;">
@@ -2777,16 +3097,49 @@
             return statusMap[statusCode] || `(${statusCode})`;
         }
 
-        // Get status CSS class based on status code
+        // Get status CSS class based on status code - Updated with comprehensive mapping
         function getStatusClass(statusCode) {
             const statusClassMap = {
-                1: 'status-active',
-                2: 'status-inactive', 
+                4: 'status-new',        // חדש (New)
+                8: 'status-registered', // נרשם (Registered) 
+                22: 'status-external',  // נרשם חיצוני (External Registration)
+                9: 'status-cancelled',  // ביטל (Cancelled)
+                23: 'status-waiting',   // מחכה לשיבוץ (Waiting for Assignment)
+                10: 'status-followup',  // פולואפ (Follow-up)
+                11: 'status-trial',     // הוזמנו לשיעור נסיון (Invited to Trial)
+                18: 'status-completed', // סיים (Completed)
+                // Legacy mappings for backward compatibility
+                1: 'status-registered',  // Changed to match registered status
+                2: 'status-waiting',     // Changed to match waiting status  
                 3: 'status-cancelled',
-                4: 'status-waiting',
                 5: 'status-completed'
             };
-            return statusClassMap[statusCode] || 'status-waiting';
+            
+            const mappedClass = statusClassMap[statusCode];
+            if (!mappedClass) {
+                console.log(`[Status] Unknown status code: ${statusCode}, using fallback`);
+            }
+            
+            return mappedClass || 'status-external'; // Default to external (orange) for unknown codes
+        }
+        
+        // Reverse mapping: get status code from text
+        function getStatusCodeFromText(statusText) {
+            const statusOption = statusOptions.find(option => option.label === statusText);
+            if (statusOption) {
+                return statusOption.value;
+            }
+            
+            // Fallback to hardcoded mapping if statusOptions not available
+            const reverseStatusMap = {
+                '✅ פעיל': 1,
+                '⏸️ לא פעיל': 2,
+                '❌ בוטל': 3,
+                '⏳ ממתין': 4,
+                '✅ מושלם': 5
+            };
+            
+            return reverseStatusMap[statusText] || null;
         }
 
         // Generate status dropdown options
@@ -2815,22 +3168,127 @@
             return options;
         }
 
+        // Generate modern status dropdown options with icons and colors
+        function generateStatusDropdownOptions(currentValue) {
+            let options = '';
+            const optionsToUse = statusOptions.length > 0 ? statusOptions : [
+                { value: 4, label: 'חדש', color: '#2196F3' },
+                { value: 8, label: 'נרשם', color: '#4CAF50' },
+                { value: 22, label: 'נרשם חיצוני', color: '#4CAF50' },
+                { value: 9, label: 'ביטל', color: '#F44336' },
+                { value: 23, label: 'מחכה לשיבוץ', color: '#00BCD4' },
+                { value: 10, label: 'שובץ', color: '#8BC34A' },
+                { value: 11, label: 'הוזמנו לשיעור נסיון', color: '#FF9800' },
+                { value: 18, label: 'סיים', color: '#9C27B0' }
+            ];
+            
+            optionsToUse.forEach(option => {
+                const color = option.color || '#666';
+                const icon = getStatusIcon(option.value);
+                const isSelected = option.value == currentValue;
+                options += `
+                    <div class="dropdown-item ${isSelected ? 'selected' : ''}" 
+                         data-value="${option.value}" 
+                         onclick="selectStatus(${option.value}, '${option.label}', event)">
+                        <span class="status-icon" style="color: ${color}">${icon}</span>
+                        <span class="status-label">${option.label}</span>
+                    </div>
+                `;
+            });
+            
+            return options;
+        }
+        
+        // Get status icon based on status code
+        function getStatusIcon(statusCode) {
+            const iconMap = {
+                4: '🆕',   // חדש
+                8: '✅',   // נרשם
+                22: '✅',  // נרשם חיצוני
+                9: '❌',   // ביטל
+                23: '⏳',  // מחכה לשיבוץ
+                10: '📍',  // שובץ
+                11: '🎯',  // הוזמנו לשיעור נסיון
+                18: '🏆'   // סיים
+            };
+            return iconMap[statusCode] || '⚪';
+        }
+
+        // Select status from dropdown and close it
+        function selectStatus(value, label, event) {
+            event.stopPropagation();
+            
+            // Find the dropdown that was clicked
+            const dropdownItem = event.target.closest('.dropdown-item');
+            const dropdownList = dropdownItem.closest('.dropdown-list');
+            const dropdown = dropdownList.closest('.status-dropdown');
+            const input = dropdown.querySelector('.status-dropdown-input');
+            
+            // Update the input with selected value
+            input.value = label;
+            input.setAttribute('data-value', value);
+            
+            // Update selection state
+            dropdown.querySelectorAll('.dropdown-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            dropdownItem.classList.add('selected');
+            
+            // Close dropdown
+            if (dropdown.statusDropdown) {
+                dropdown.statusDropdown.close();
+            } else {
+                dropdownList.style.display = 'none';
+                dropdown.classList.remove('open');
+            }
+        }
+
         // Edit registration functions
         function editRegistration(registrationId) {
+            console.log(`[Edit Mode] Starting edit for registration: ${registrationId}`);
             const row = document.getElementById(`row-${registrationId}`);
+            
+            if (!row) {
+                console.error(`[Edit Mode] Row not found for registration: ${registrationId}`);
+                return;
+            }
+            
+            // Log current status before edit
+            const currentStatusBadge = row.querySelector('.status-badge');
+            const currentStatus = currentStatusBadge ? currentStatusBadge.textContent : 'Unknown';
+            console.log(`[Edit Mode] Current status: ${currentStatus}`);
             
             // Hide display elements, show edit elements
             row.querySelectorAll('.display-mode').forEach(el => el.style.display = 'none');
             row.querySelectorAll('.edit-mode').forEach(el => el.style.display = 'block');
             
+            // Initialize status dropdown
+            const statusDropdownEl = row.querySelector('.status-dropdown');
+            if (statusDropdownEl && !statusDropdownEl.statusDropdown) {
+                statusDropdownEl.statusDropdown = new StatusDropdown(statusDropdownEl);
+                console.log(`[Edit Mode] Initialized status dropdown for: ${registrationId}`);
+            } else if (statusDropdownEl) {
+                console.log(`[Edit Mode] Status dropdown already exists for: ${registrationId}`);
+            } else {
+                console.error(`[Edit Mode] Status dropdown element not found for: ${registrationId}`);
+            }
+            
             // Hide edit button, show save/cancel buttons
             row.querySelector('.edit-btn').style.display = 'none';
             row.querySelector('.save-btn').style.display = 'inline-block';
             row.querySelector('.cancel-btn').style.display = 'inline-block';
+            
+            console.log(`[Edit Mode] Successfully entered edit mode for: ${registrationId}`);
         }
 
         function cancelEdit(registrationId) {
+            console.log(`[Cancel Edit] Exiting edit mode for registration: ${registrationId}`);
             const row = document.getElementById(`row-${registrationId}`);
+            
+            if (!row) {
+                console.error(`[Cancel Edit] Row not found for registration: ${registrationId}`);
+                return;
+            }
             
             // Show display elements, hide edit elements
             row.querySelectorAll('.display-mode').forEach(el => el.style.display = 'block');
@@ -2840,17 +3298,53 @@
             row.querySelector('.edit-btn').style.display = 'inline-block';
             row.querySelector('.save-btn').style.display = 'none';
             row.querySelector('.cancel-btn').style.display = 'none';
+            
+            // Verify status badge is still present after exiting edit mode
+            const statusBadge = row.querySelector('.status-badge');
+            if (statusBadge) {
+                console.log(`[Cancel Edit] Status badge verified: ${statusBadge.textContent} (${statusBadge.className})`);
+            } else {
+                console.error(`[Cancel Edit] Status badge missing after exiting edit mode for: ${registrationId}`);
+            }
+            
+            console.log(`[Cancel Edit] Successfully exited edit mode for: ${registrationId}`);
         }
 
         async function saveRegistration(registrationId) {
+            console.log(`[Save Registration] Starting save process for: ${registrationId}`);
             const row = document.getElementById(`row-${registrationId}`);
+            
+            if (!row) {
+                console.error(`[Save Registration] Row not found for: ${registrationId}`);
+                return;
+            }
+            
             const accountId = row.getAttribute('data-account-id');
+            console.log(`[Save Registration] Account ID: ${accountId}`);
             
             // Get all input values
             const accountNameInput = row.querySelector('.account-name-input');
             const phoneNumberInput = row.querySelector('.phone-number-input');
             const childNameInput = row.querySelector('.child-name-input');
-            const statusSelect = row.querySelector('.status-select');
+            const statusDropdownInput = row.querySelector('.status-dropdown-input');
+            
+            // Log input validation
+            if (!statusDropdownInput) {
+                console.error(`[Save Registration] Status dropdown input not found for: ${registrationId}`);
+                return;
+            }
+            
+            const newStatusCode = parseInt(statusDropdownInput.getAttribute('data-value'));
+            const newStatusText = getStatusText(newStatusCode);
+            console.log(`[Save Registration] New status selected: ${newStatusText} (code: ${newStatusCode})`);
+            
+            // Verify status badge exists before proceeding
+            const currentStatusBadge = row.querySelector('.status-badge');
+            if (!currentStatusBadge) {
+                console.error(`[Save Registration] Status badge not found before save for: ${registrationId}`);
+            } else {
+                console.log(`[Save Registration] Current status badge: ${currentStatusBadge.textContent} (${currentStatusBadge.className})`);
+            }
             
             const saveBtn = row.querySelector('.save-btn');
             const originalText = saveBtn.textContent;
@@ -2874,8 +3368,9 @@
                 
                 // Check if registration fields have changed
                 const originalChildName = row.querySelector('.child-name').textContent;
-                const originalStatus = row.querySelector('.status-badge').textContent;
-                const newStatus = getStatusText(parseInt(statusSelect.value));
+                const statusBadgeElement = row.querySelector('.status-badge');
+                const originalStatus = statusBadgeElement ? statusBadgeElement.textContent : '';
+                const newStatus = getStatusText(parseInt(statusDropdownInput.getAttribute('data-value')));
                 
                 if (childNameInput.value !== originalChildName || newStatus !== originalStatus) {
                     registrationUpdateNeeded = true;
@@ -2903,6 +3398,8 @@
                 
                 // Update registration information if needed
                 if (registrationUpdateNeeded) {
+                    console.log(`[API Call] Updating registration ${registrationId} with status: ${getStatusText(parseInt(statusDropdownInput.getAttribute('data-value')))}`);
+                    
                     const registrationResponse = await fetch('/api/update-registration', {
                         method: 'PUT',
                         headers: {
@@ -2911,36 +3408,141 @@
                         body: JSON.stringify({
                             registrationId: registrationId,
                             childName: childNameInput.value,
-                            statusCode: parseInt(statusSelect.value)
+                            statusCode: parseInt(statusDropdownInput.getAttribute('data-value'))
                         })
                     });
 
-                    const registrationResult = await registrationResponse.json();
-                    if (!registrationResponse.ok) {
-                        throw new Error(registrationResult.message || 'שגיאה בעדכון הרישום');
+                    let registrationResult;
+                    try {
+                        registrationResult = await registrationResponse.json();
+                    } catch (parseError) {
+                        console.error('[API Error] Failed to parse response:', parseError);
+                        throw new Error('שגיאה בעיבוד תגובת השרת');
                     }
+                    
+                    if (!registrationResponse.ok) {
+                        console.error('[API Error] Registration update failed:', {
+                            status: registrationResponse.status,
+                            statusText: registrationResponse.statusText,
+                            error: registrationResult
+                        });
+                        throw new Error(registrationResult.message || `שגיאה בעדכון הרישום (${registrationResponse.status})`);
+                    }
+                    
+                    console.log('[API Success] Registration updated successfully:', registrationResult);
                 }
 
                 // Update display text for all fields
                 row.querySelector('.account-name').textContent = accountNameInput.value;
                 row.querySelector('.phone-number').textContent = phoneNumberInput.value;
                 row.querySelector('.child-name').textContent = childNameInput.value;
-                row.querySelector('.status-badge').textContent = getStatusText(parseInt(statusSelect.value));
+                
+                // Update status badge with both text and proper CSS class
+                const statusBadge = row.querySelector('.status-badge');
+                const newStatusCode = parseInt(statusDropdownInput.getAttribute('data-value'));
+                const newStatusText = getStatusText(newStatusCode);
+                const newStatusClass = getStatusClass(newStatusCode);
+                
+                // Update status badge if it exists
+                if (statusBadge) {
+                    // Remove only existing status classes, preserve other classes including 'status-badge'
+                    const currentClasses = statusBadge.className.split(' ');
+                    const nonStatusClasses = currentClasses.filter(cls => !cls.startsWith('status-'));
+                    
+                    // Rebuild className with preserved classes plus new status class
+                    statusBadge.className = [...nonStatusClasses, newStatusClass].join(' ');
+                    statusBadge.textContent = newStatusText;
+                    
+                    console.log(`[Status Update] Updated status badge for ${registrationId}: ${newStatusText} (${newStatusClass})`);
+                } else {
+                    console.error('Status badge element not found for row:', registrationId);
+                    // Try to recreate the status badge if missing
+                    const statusCell = row.querySelector('.status-cell');
+                    if (statusCell) {
+                        const displayStatusBadge = statusCell.querySelector('.display-mode.status-badge');
+                        if (!displayStatusBadge) {
+                            console.log(`[DOM Recovery] Recreating missing status badge for row: ${registrationId}`);
+                            const newStatusBadge = document.createElement('span');
+                            newStatusBadge.className = `display-mode status-badge ${newStatusClass}`;
+                            newStatusBadge.textContent = newStatusText;
+                            statusCell.insertBefore(newStatusBadge, statusCell.firstChild);
+                        }
+                    }
+                }
+                
+                // Update currentRegistrations array to sync modal data
+                const registrationIndex = currentRegistrations.findIndex(r => r.registrationId === registrationId);
+                if (registrationIndex !== -1) {
+                    // Update the registration in the currentRegistrations array
+                    currentRegistrations[registrationIndex] = {
+                        ...currentRegistrations[registrationIndex],
+                        accountName: accountNameInput.value,
+                        phoneNumber: phoneNumberInput.value,
+                        childName: childNameInput.value,
+                        statusCode: parseInt(statusDropdownInput.getAttribute('data-value'))
+                    };
+                    console.log(`[Data Sync] Updated currentRegistrations for registration ${registrationId} with new status: ${getStatusText(currentRegistrations[registrationIndex].statusCode)}`);
+                }
+                
+                // DOM Integrity Check: Verify all critical elements are still present
+                const integrityCheck = {
+                    row: !!document.getElementById(`row-${registrationId}`),
+                    statusBadge: !!row.querySelector('.status-badge'),
+                    statusCell: !!row.querySelector('.status-cell'),
+                    editBtn: !!row.querySelector('.edit-btn'),
+                    saveBtn: !!row.querySelector('.save-btn'),
+                    cancelBtn: !!row.querySelector('.cancel-btn'),
+                    displayElements: row.querySelectorAll('.display-mode').length > 0,
+                    editElements: row.querySelectorAll('.edit-mode').length > 0
+                };
+                
+                const integrityIssues = Object.entries(integrityCheck)
+                    .filter(([key, value]) => !value)
+                    .map(([key]) => key);
+                
+                if (integrityIssues.length > 0) {
+                    console.error(`[DOM Integrity] Missing elements for row ${registrationId}:`, integrityIssues);
+                    // Attempt to refresh the row if critical elements are missing
+                    if (integrityIssues.includes('statusBadge') || integrityIssues.includes('editBtn')) {
+                        console.warn(`[DOM Recovery] Critical elements missing, may need row refresh for ${registrationId}`);
+                    }
+                } else {
+                    console.log(`[DOM Integrity] All elements validated for row ${registrationId}`);
+                }
                 
                 // Exit edit mode
                 cancelEdit(registrationId);
                 
-                let successMessage = '✅ ';
-                if (customerUpdateNeeded && registrationUpdateNeeded) {
-                    successMessage += 'פרטי הלקוח והרישום עודכנו בהצלחה!';
-                } else if (customerUpdateNeeded) {
-                    successMessage += 'פרטי הלקוח עודכנו בהצלחה!';
-                } else if (registrationUpdateNeeded) {
-                    successMessage += 'הרישום עודכן בהצלחה!';
+                // Final verification: Check if status badge is correct after all operations
+                const finalStatusBadge = row.querySelector('.status-badge');
+                if (finalStatusBadge) {
+                    const finalStatusText = finalStatusBadge.textContent;
+                    const expectedStatusText = getStatusText(newStatusCode);
+                    
+                    if (finalStatusText === expectedStatusText) {
+                        console.log(`[Save Verification] Status update successful: ${finalStatusText}`);
+                    } else {
+                        console.error(`[Save Verification] Status mismatch! Expected: ${expectedStatusText}, Got: ${finalStatusText}`);
+                    }
+                    
+                    // Verify CSS classes are correct
+                    const hasStatusBadgeClass = finalStatusBadge.classList.contains('status-badge');
+                    if (!hasStatusBadgeClass) {
+                        console.error(`[Save Verification] Missing 'status-badge' class! Current classes: ${finalStatusBadge.className}`);
+                    } else {
+                        console.log(`[Save Verification] Status badge classes validated: ${finalStatusBadge.className}`);
+                    }
                 } else {
-                    successMessage += 'לא נדרש עדכון';
+                    console.error(`[Save Verification] Status badge completely missing after save for: ${registrationId}`);
                 }
-                alert(successMessage);
+                
+                // Success - no alert notification needed, visual feedback is sufficient
+                console.log('[Save Registration] Registration saved successfully:', {
+                    customerUpdateNeeded,
+                    registrationUpdateNeeded,
+                    registrationId,
+                    finalStatus: finalStatusBadge ? finalStatusBadge.textContent : 'N/A'
+                });
                 
             } catch (error) {
                 console.error('Update error:', error);
@@ -3104,10 +3706,45 @@
         
         // Modal functions for registration details
         function showRegistrationDetails(registrationId) {
-            const registration = currentRegistrations.find(r => r.registrationId === registrationId);
+            let registration = currentRegistrations.find(r => r.registrationId === registrationId);
+            
             if (!registration) {
-                console.error('Registration not found:', registrationId);
+                console.error('Registration not found in currentRegistrations:', registrationId);
                 return;
+            }
+            
+            // Data integrity check: compare with table data to ensure sync
+            const tableRow = document.getElementById(`row-${registrationId}`);
+            if (tableRow) {
+                const tableStatus = tableRow.querySelector('.status-badge')?.textContent;
+                const modalStatus = getStatusText(registration.statusCode);
+                
+                if (tableStatus && tableStatus !== modalStatus) {
+                    console.warn(`[Data Sync Warning] Modal data may be stale for registration ${registrationId}. Table shows: "${tableStatus}", Modal data shows: "${modalStatus}"`);
+                    
+                    // Update registration data from table if available
+                    const tableAccountName = tableRow.querySelector('.account-name')?.textContent;
+                    const tablePhoneNumber = tableRow.querySelector('.phone-number')?.textContent;
+                    const tableChildName = tableRow.querySelector('.child-name')?.textContent;
+                    
+                    if (tableAccountName && tablePhoneNumber && tableChildName) {
+                        registration = {
+                            ...registration,
+                            accountName: tableAccountName,
+                            phoneNumber: tablePhoneNumber,
+                            childName: tableChildName,
+                            statusCode: getStatusCodeFromText(tableStatus)
+                        };
+                        
+                        // Also update the currentRegistrations array to prevent future sync issues
+                        const registrationIndex = currentRegistrations.findIndex(r => r.registrationId === registrationId);
+                        if (registrationIndex !== -1) {
+                            currentRegistrations[registrationIndex] = registration;
+                        }
+                        
+                        console.log(`[Data Sync] Synced modal data with current table data for registration ${registrationId}`);
+                    }
+                }
             }
             
             // Format payment status
