@@ -1398,6 +1398,242 @@
             box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.5);
         }
 
+        /* WhatsApp Button Styling */
+        .whatsapp-btn {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 4px 8px;
+            margin-right: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+            vertical-align: middle;
+        }
+
+        .whatsapp-btn:hover {
+            background: linear-gradient(135deg, #20BA5A 0%, #0F7A6B 100%);
+            transform: translateY(-1px) scale(1.02);
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+        }
+
+        .whatsapp-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .whatsapp-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+
+        /* WhatsApp Phone Number Cell Layout */
+        .phone-cell-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .phone-cell-container .phone-number {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        /* WhatsApp Modal Specific Styling */
+        #whatsappModal .modal-content {
+            max-width: 500px;
+        }
+
+        .whatsapp-modal-header {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+            margin: -24px -24px 20px -24px;
+            padding: 20px 24px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .whatsapp-modal-header h3 {
+            margin: 0;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .whatsapp-modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.2s ease;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .whatsapp-modal-close:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .whatsapp-contact-info {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-right: 4px solid #25D366;
+        }
+
+        .whatsapp-contact-info h4 {
+            margin: 0 0 8px 0;
+            color: #495057;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .whatsapp-contact-info p {
+            margin: 4px 0;
+            color: #6c757d;
+            font-size: 13px;
+        }
+
+        .whatsapp-message-area {
+            margin-bottom: 20px;
+        }
+
+        .whatsapp-message-area label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .whatsapp-message-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            direction: rtl;
+            text-align: right;
+            transition: border-color 0.2s ease;
+        }
+
+        .whatsapp-message-textarea:focus {
+            outline: none;
+            border-color: #25D366;
+            box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
+        }
+
+        .whatsapp-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .whatsapp-send-btn {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .whatsapp-send-btn:hover {
+            background: linear-gradient(135deg, #20BA5A 0%, #0F7A6B 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+        }
+
+        .whatsapp-send-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .whatsapp-cancel-btn {
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .whatsapp-cancel-btn:hover {
+            background: #e9ecef;
+            color: #495057;
+            border-color: #adb5bd;
+        }
+
+        /* Responsive WhatsApp Styling */
+        @media (max-width: 768px) {
+            .whatsapp-btn {
+                font-size: 10px;
+                padding: 3px 6px;
+            }
+
+            .whatsapp-btn svg {
+                width: 12px;
+                height: 12px;
+            }
+
+            .phone-cell-container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+
+            .whatsapp-actions {
+                flex-direction: column;
+            }
+
+            .whatsapp-send-btn,
+            .whatsapp-cancel-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Spinning animation for loading state */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         .admin-table .edit-input {
             width: 100%;
             border: 2px solid var(--border-color);
@@ -2037,9 +2273,45 @@
                 <h3>פרטי רישום</h3>
                 <button class="modal-close" onclick="closeRegistrationModal()">&times;</button>
             </div>
-            
+
             <div id="modalContent">
                 <!-- Content will be populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- WhatsApp Message Modal -->
+    <div id="whatsappModal" class="modal">
+        <div class="modal-content">
+            <div class="whatsapp-modal-header">
+                <h3>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+                    </svg>
+                    שלח הודעה ב-WhatsApp
+                </h3>
+                <button class="whatsapp-modal-close" onclick="closeWhatsAppModal()">&times;</button>
+            </div>
+
+            <div class="whatsapp-contact-info" id="whatsappContactInfo">
+                <!-- Contact info will be populated dynamically -->
+            </div>
+
+            <div class="whatsapp-message-area">
+                <label for="whatsappMessage">הודעה:</label>
+                <textarea id="whatsappMessage" class="whatsapp-message-textarea" placeholder="הקלד את ההודעה שברצונך לשלוח..."></textarea>
+            </div>
+
+            <div class="whatsapp-actions">
+                <button class="whatsapp-send-btn" onclick="sendWhatsAppMessage()" id="whatsappSendBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                    </svg>
+                    שלח הודעה
+                </button>
+                <button class="whatsapp-cancel-btn" onclick="closeWhatsAppModal()">
+                    בטל
+                </button>
             </div>
         </div>
     </div>
@@ -3020,7 +3292,14 @@
                             <input type="text" class="edit-mode edit-input account-name-input" value="${registration.accountName}" style="display: none;">
                         </td>
                         <td>
-                            <span class="display-mode phone-number">${registration.phoneNumber}</span>
+                            <div class="display-mode phone-cell-container">
+                                <span class="phone-number">${registration.phoneNumber}</span>
+                                <button class="whatsapp-btn" onclick="event.stopPropagation(); openWhatsAppModal('${registration.registrationId}', '${registration.phoneNumber}', '${registration.accountName}', '${registration.childName}')" title="שלח הודעת WhatsApp">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+                                    </svg>
+                                </button>
+                            </div>
                             <input type="text" class="edit-mode edit-input phone-number-input" value="${registration.phoneNumber}" style="display: none;">
                         </td>
                         <td>
@@ -3783,6 +4062,205 @@
             const modal = document.getElementById('registrationModal');
             modal.classList.remove('show');
         }
+
+        // WhatsApp functionality
+        let currentWhatsAppData = null;
+
+        function openWhatsAppModal(registrationId, phoneNumber, accountName, childName) {
+            console.log('[WhatsApp] Opening modal for:', { registrationId, phoneNumber, accountName, childName });
+
+            // Store current data
+            currentWhatsAppData = {
+                registrationId,
+                phoneNumber: phoneNumber.replace(/[^0-9]/g, ''), // Clean phone number
+                accountName,
+                childName
+            };
+
+            // Populate contact info
+            const contactInfo = document.getElementById('whatsappContactInfo');
+            contactInfo.innerHTML = `
+                <h4>פרטי הלקוח</h4>
+                <p><strong>שם ההורה:</strong> ${accountName}</p>
+                <p><strong>שם הילד/ה:</strong> ${childName}</p>
+                <p><strong>טלפון:</strong> ${phoneNumber}</p>
+            `;
+
+            // Set default message
+            const textarea = document.getElementById('whatsappMessage');
+            textarea.value = `שלום ${accountName},\n\nאני פונה אליך בנוגע לרישום של ${childName}.\n\nבברכה,\nצוות פיירברי`;
+
+            // Show modal
+            const modal = document.getElementById('whatsappModal');
+            modal.classList.add('show');
+
+            // Focus on textarea
+            setTimeout(() => textarea.focus(), 300);
+        }
+
+        function closeWhatsAppModal() {
+            const modal = document.getElementById('whatsappModal');
+            modal.classList.remove('show');
+
+            // Clear data and reset form
+            currentWhatsAppData = null;
+            document.getElementById('whatsappMessage').value = '';
+
+            // Reset send button
+            const sendBtn = document.getElementById('whatsappSendBtn');
+            sendBtn.disabled = false;
+            sendBtn.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+                שלח הודעה
+            `;
+        }
+
+        async function sendWhatsAppMessage() {
+            if (!currentWhatsAppData) {
+                console.error('[WhatsApp] No current data available');
+                return;
+            }
+
+            const message = document.getElementById('whatsappMessage').value.trim();
+            if (!message) {
+                alert('אנא הזן הודעה לשליחה');
+                return;
+            }
+
+            const sendBtn = document.getElementById('whatsappSendBtn');
+            const originalContent = sendBtn.innerHTML;
+
+            try {
+                // Show loading state
+                sendBtn.disabled = true;
+                sendBtn.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="animation: spin 1s linear infinite;">
+                        <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"/>
+                    </svg>
+                    שולח...
+                `;
+
+                // Format phone number for Green API
+                let formattedPhone = currentWhatsAppData.phoneNumber;
+
+                // Remove leading zero if exists and add 972 for Israel
+                if (formattedPhone.startsWith('0')) {
+                    formattedPhone = '972' + formattedPhone.substring(1);
+                } else if (!formattedPhone.startsWith('972')) {
+                    formattedPhone = '972' + formattedPhone;
+                }
+
+                // Add @c.us suffix for WhatsApp format
+                const whatsappPhone = formattedPhone + '@c.us';
+
+                console.log('[WhatsApp] Sending message to:', whatsappPhone);
+
+                // Green API credentials and endpoint
+                const idInstance = '7103104732';
+                const apiTokenInstance = '75e2c6fa07f0447792a45b3d92ae34702170655503044a0396';
+                const apiUrl = `https://7103.api.greenapi.com/waInstance${idInstance}/sendMessage/${apiTokenInstance}`;
+
+                // Prepare request body
+                const requestBody = {
+                    chatId: whatsappPhone,
+                    message: message
+                };
+
+                console.log('[WhatsApp] Request body:', requestBody);
+
+                // Send request
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const result = await response.json();
+                console.log('[WhatsApp] API Response:', result);
+
+                if (response.ok && result.idMessage) {
+                    // Success
+                    console.log('[WhatsApp] Message sent successfully:', result.idMessage);
+
+                    // Show success message
+                    sendBtn.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+                        </svg>
+                        נשלח בהצלחה!
+                    `;
+
+                    // Close modal after a short delay
+                    setTimeout(() => {
+                        closeWhatsAppModal();
+
+                        // Show success notification
+                        const notification = document.createElement('div');
+                        notification.style.cssText = `
+                            position: fixed;
+                            top: 20px;
+                            right: 20px;
+                            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+                            color: white;
+                            padding: 12px 20px;
+                            border-radius: 8px;
+                            z-index: 10000;
+                            font-weight: 500;
+                            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                        `;
+                        notification.innerHTML = `
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+                            </svg>
+                            הודעת WhatsApp נשלחה בהצלחה ל-${currentWhatsAppData.accountName}
+                        `;
+
+                        document.body.appendChild(notification);
+
+                        // Remove notification after 4 seconds
+                        setTimeout(() => {
+                            document.body.removeChild(notification);
+                        }, 4000);
+
+                    }, 1500);
+
+                } else {
+                    // Error response
+                    throw new Error(result.error || result.message || 'שגיאה לא ידועה בשליחת ההודעה');
+                }
+
+            } catch (error) {
+                console.error('[WhatsApp] Error sending message:', error);
+
+                // Reset button
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = originalContent;
+
+                // Show error message
+                let errorMessage = 'שגיאה בשליחת ההודעה. אנא נסה שוב.';
+
+                if (error.message) {
+                    if (error.message.includes('network')) {
+                        errorMessage = 'שגיאת רשת. אנא בדוק את החיבור לאינטרנט ונסה שוב.';
+                    } else if (error.message.includes('unauthorized')) {
+                        errorMessage = 'שגיאת הרשאה. אנא פנה למנהל המערכת.';
+                    } else if (error.message.includes('phone')) {
+                        errorMessage = 'מספר הטלפון אינו תקין או לא רשום ב-WhatsApp.';
+                    } else {
+                        errorMessage = `שגיאה: ${error.message}`;
+                    }
+                }
+
+                alert(errorMessage);
+            }
+        }
         
         function getPaymentStatusText(paymentStatus) {
             // You can customize these based on your actual payment status values
@@ -3812,6 +4290,16 @@
                 modal.addEventListener('click', function(e) {
                     if (e.target === this) {
                         closeRegistrationModal();
+                    }
+                });
+            }
+
+            // WhatsApp modal outside click
+            const whatsappModal = document.getElementById('whatsappModal');
+            if (whatsappModal) {
+                whatsappModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeWhatsAppModal();
                     }
                 });
             }

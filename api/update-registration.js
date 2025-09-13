@@ -40,24 +40,70 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'No fields to update' });
     }
 
-    // Update registration record in Fireberry
-    const updateResponse = await fetch(`https://api.fireberry.com/api/record/33/${registrationId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'tokenid': FIREBERRY_API_KEY,
-        'accept': 'application/json'
-      },
-      body: JSON.stringify(updatePayload)
-    });
+    // Update registration record in Fireberry with timeout and retry logic
+    const updateRegistrationWithRetry = async (retries = 3) => {
+      for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+          console.log(`[Fireberry API] Attempt ${attempt}/${retries} - Updating registration ${registrationId}`);
+          
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+          
+          const updateResponse = await fetch(`https://api.fireberry.com/api/record/33/${registrationId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'tokenid': FIREBERRY_API_KEY,
+              'accept': 'application/json'
+            },
+            body: JSON.stringify(updatePayload),
+            signal: controller.signal
+          });
 
-    if (!updateResponse.ok) {
-      const errorText = await updateResponse.text();
-      console.error('Registration update error:', errorText);
-      throw new Error(`Failed to update registration: ${updateResponse.status}`);
-    }
+          clearTimeout(timeoutId);
 
-    const updateData = await updateResponse.json();
+          if (!updateResponse.ok) {
+            const errorText = await updateResponse.text();
+            console.error(`[Fireberry API] Update failed (attempt ${attempt}):`, {
+              status: updateResponse.status,
+              statusText: updateResponse.statusText,
+              error: errorText
+            });
+            
+            if (attempt === retries) {
+              throw new Error(`Failed to update registration after ${retries} attempts: ${updateResponse.status} - ${errorText}`);
+            }
+            
+            // Wait before retry (exponential backoff)
+            const waitTime = Math.pow(2, attempt) * 1000;
+            console.log(`[Fireberry API] Waiting ${waitTime}ms before retry...`);
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+            continue;
+          }
+
+          const updateData = await updateResponse.json();
+          console.log(`[Fireberry API] Update successful on attempt ${attempt}:`, updateData);
+          return updateData;
+          
+        } catch (error) {
+          console.error(`[Fireberry API] Attempt ${attempt} failed:`, error.message);
+          
+          if (error.name === 'AbortError') {
+            console.error(`[Fireberry API] Request timed out on attempt ${attempt}`);
+          }
+          
+          if (attempt === retries) {
+            throw new Error(`Registration update failed after ${retries} attempts: ${error.message}`);
+          }
+          
+          // Wait before retry
+          const waitTime = Math.pow(2, attempt) * 1000;
+          await new Promise(resolve => setTimeout(resolve, waitTime));
+        }
+      }
+    };
+
+    const updateData = await updateRegistrationWithRetry();
 
     res.status(200).json({
       success: true,

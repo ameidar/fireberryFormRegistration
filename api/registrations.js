@@ -1,3 +1,5 @@
+import { rateLimiter, circuitBreaker } from '../utils/rateLimiter.js';
+
 export default async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -25,36 +27,78 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Cycle ID is required' });
     }
 
-    // Query registrations for the specified cycle
-    const registrationsQuery = {
-      objecttype: 33,
-      page_size: 500,
-      fields: "accountproductid,accountid,pcfsystemfield204,pcfsystemfield53,statuscode,pcfsystemfield56,pcfsystemfield289",
-      query: `pcfsystemfield53 = ${cycleId}`
+    console.log(`[Registrations API] Processing request for cycle: ${cycleId}`);
+    console.log(`[RateLimiter] Stats: ${JSON.stringify(rateLimiter.getCacheStats())}`);
+
+    // Create rate-limited API call functions
+    const fetchRegistrations = async () => {
+      const registrationsQuery = {
+        objecttype: 33,
+        page_size: 500,
+        fields: "accountproductid,accountid,pcfsystemfield204,pcfsystemfield53,statuscode,pcfsystemfield56,pcfsystemfield289",
+        query: `pcfsystemfield53 = ${cycleId}`
+      };
+
+      console.log('[Registrations API] Registration query:', JSON.stringify(registrationsQuery, null, 2));
+
+      const response = await fetch('https://api.fireberry.com/api/query', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'tokenid': FIREBERRY_API_KEY,
+          'accept': 'application/json'
+        },
+        body: JSON.stringify(registrationsQuery)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch registrations: ${response.status} ${response.statusText}`);
+      }
+
+      return await response.json();
     };
 
-    console.log('DEBUG MAIN BRANCH - Registration query:', JSON.stringify(registrationsQuery, null, 2));
-    console.log('DEBUG MAIN BRANCH - Cycle ID:', cycleId);
-    console.log('DEBUG MAIN BRANCH - Cycle ID type:', typeof cycleId);
+    const fetchCustomers = async (accountIds) => {
+      const accountConditions = accountIds.map(id => `(accountid = '${id}')`).join(' OR ');
+      
+      const customersQuery = {
+        objecttype: 1,
+        page_size: 500,
+        fields: "accountid,accountname,telephone1",
+        query: `(${accountConditions})`
+      };
 
-    const registrationsResponse = await fetch('https://api.fireberry.com/api/query', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'tokenid': FIREBERRY_API_KEY,
-        'accept': 'application/json'
-      },
-      body: JSON.stringify(registrationsQuery)
+      const response = await fetch('https://api.fireberry.com/api/query', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'tokenid': FIREBERRY_API_KEY,
+          'accept': 'application/json'
+        },
+        body: JSON.stringify(customersQuery)
+      });
+
+      if (!response.ok) {
+        console.warn(`[Registrations API] Customer fetch failed: ${response.status}`);
+        return { data: { Data: [] } };
+      }
+
+      return await response.json();
+    };
+
+    // Execute registrations query with rate limiting and circuit breaker
+    const registrationsCacheKey = `registrations_${cycleId}`;
+    const registrationsData = await circuitBreaker.execute(async () => {
+      return await rateLimiter.executeRequest(fetchRegistrations, registrationsCacheKey, 1);
     });
 
-    if (!registrationsResponse.ok) {
-      throw new Error(`Failed to fetch registrations: ${registrationsResponse.status}`);
-    }
-
-    const registrationsData = await registrationsResponse.json();
-
     if (!registrationsData.data || !registrationsData.data.Data) {
-      return res.status(200).json({ registrations: [] });
+      return res.status(200).json({ 
+        registrations: [],
+        cycleId: cycleId,
+        count: 0,
+        cached: false
+      });
     }
 
     const registrations = registrationsData.data.Data;
@@ -63,40 +107,27 @@ export default async function handler(req, res) {
     const accountIds = [...new Set(registrations.map(reg => reg.accountid).filter(id => id))];
     
     if (accountIds.length === 0) {
-      return res.status(200).json({ registrations: [] });
+      return res.status(200).json({ 
+        registrations: [],
+        cycleId: cycleId,
+        count: 0,
+        cached: false
+      });
     }
 
-    // Query customer names for all account IDs
-    const accountConditions = accountIds.map(id => `(accountid = '${id}')`).join(' OR ');
-    
-    const customersQuery = {
-      objecttype: 1,
-      page_size: 500,
-      fields: "accountid,accountname,telephone1",
-      query: `(${accountConditions})`
-    };
-
-    const customersResponse = await fetch('https://api.fireberry.com/api/query', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'tokenid': FIREBERRY_API_KEY,
-        'accept': 'application/json'
-      },
-      body: JSON.stringify(customersQuery)
+    // Execute customers query with rate limiting (lower priority than registrations)
+    const customersCacheKey = `customers_${accountIds.sort().join('_')}`;
+    const customersData = await circuitBreaker.execute(async () => {
+      return await rateLimiter.executeRequest(() => fetchCustomers(accountIds), customersCacheKey, 0);
     });
 
     let customerMap = {};
     let phoneMap = {};
-    if (customersResponse.ok) {
-      const customersData = await customersResponse.json();
-      
-      if (customersData.data && customersData.data.Data) {
-        customersData.data.Data.forEach(customer => {
-          customerMap[customer.accountid] = customer.accountname;
-          phoneMap[customer.accountid] = customer.telephone1;
-        });
-      }
+    if (customersData.data && customersData.data.Data) {
+      customersData.data.Data.forEach(customer => {
+        customerMap[customer.accountid] = customer.accountname;
+        phoneMap[customer.accountid] = customer.telephone1;
+      });
     }
 
     // Transform registrations with customer names
@@ -112,17 +143,45 @@ export default async function handler(req, res) {
       paymentAmount: registration.pcfsystemfield289
     }));
 
+    // Check if response was served from cache
+    const isCached = rateLimiter.cache.has(registrationsCacheKey);
+
+    console.log(`[Registrations API] Returning ${transformedRegistrations.length} registrations for cycle ${cycleId} (cached: ${isCached})`);
+
     res.status(200).json({ 
       registrations: transformedRegistrations,
       cycleId: cycleId,
-      count: transformedRegistrations.length
+      count: transformedRegistrations.length,
+      cached: isCached,
+      timestamp: new Date().toISOString(),
+      rateLimiterStats: rateLimiter.getCacheStats(),
+      circuitBreakerState: circuitBreaker.getState()
     });
 
   } catch (error) {
-    console.error('Error fetching registrations:', error);
-    res.status(500).json({ 
+    console.error('[Registrations API] Error:', error);
+    
+    // Provide more context for rate limiting errors
+    let errorMessage = error.message;
+    let statusCode = 500;
+    
+    if (error.message.includes('429') || error.message.includes('Too Many Requests')) {
+      errorMessage = 'API rate limit exceeded. Please wait a moment and try again.';
+      statusCode = 429;
+    } else if (error.message.includes('Circuit breaker is OPEN')) {
+      errorMessage = 'Service temporarily unavailable due to repeated errors. Please try again in a few moments.';
+      statusCode = 503;
+    } else if (error.message.includes('Failed to fetch')) {
+      errorMessage = 'Unable to connect to registration service. Please check your connection and try again.';
+      statusCode = 502;
+    }
+
+    res.status(statusCode).json({ 
       error: 'Failed to fetch registrations',
-      message: error.message 
+      message: errorMessage,
+      originalError: error.message,
+      timestamp: new Date().toISOString(),
+      retryAfter: error.message.includes('429') ? 30 : undefined // Suggest retry after 30 seconds for rate limits
     });
   }
 }
