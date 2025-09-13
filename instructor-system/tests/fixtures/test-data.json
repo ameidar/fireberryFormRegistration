@@ -1,0 +1,228 @@
+{
+  "instructors": [
+    {
+      "id": "1",
+      "name": "דוד כהן",
+      "idNumber": "123456789",
+      "email": "david.cohen@example.com",
+      "phone": "050-1234567",
+      "specialization": "מתמטיקה",
+      "isActive": true,
+      "createdAt": "2024-01-01T00:00:00Z",
+      "updatedAt": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "2",
+      "name": "שרה לוי",
+      "idNumber": "987654321",
+      "email": "sarah.levi@example.com",
+      "phone": "052-9876543",
+      "specialization": "פיזיקה",
+      "isActive": true,
+      "createdAt": "2024-01-01T00:00:00Z",
+      "updatedAt": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "3",
+      "name": "מיכל אברהם",
+      "idNumber": "555444333",
+      "email": "michal.abraham@example.com",
+      "phone": "054-5554443",
+      "specialization": "כימיה",
+      "isActive": true,
+      "createdAt": "2024-01-01T00:00:00Z",
+      "updatedAt": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "4",
+      "name": "יוסף רוזן",
+      "idNumber": "111222333",
+      "email": "yosef.rosen@example.com",
+      "phone": "053-1112223",
+      "specialization": "ביולוגיה",
+      "isActive": false,
+      "createdAt": "2024-01-01T00:00:00Z",
+      "updatedAt": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "5",
+      "name": "רחל מזרחי",
+      "idNumber": "666777888",
+      "email": "rachel.mizrahi@example.com",
+      "phone": "055-6667778",
+      "specialization": "היסטוריה",
+      "isActive": true,
+      "createdAt": "2024-01-01T00:00:00Z",
+      "updatedAt": "2024-01-01T00:00:00Z"
+    }
+  ],
+  "validCredentials": [
+    {
+      "name": "דוד כהן",
+      "idNumber": "123456789"
+    },
+    {
+      "name": "שרה לוי",
+      "idNumber": "987654321"
+    },
+    {
+      "name": "מיכל אברהם",
+      "idNumber": "555444333"
+    },
+    {
+      "name": "רחל מזרחי",
+      "idNumber": "666777888"
+    }
+  ],
+  "invalidCredentials": [
+    {
+      "name": "דוד כהן",
+      "idNumber": "123456788",
+      "error": "מספר זהות לא תקין"
+    },
+    {
+      "name": "שרה לוי",
+      "idNumber": "12345678",
+      "error": "מספר זהות חייב להכיל 9 ספרות"
+    },
+    {
+      "name": "לא קיים",
+      "idNumber": "123456789",
+      "error": "מדריך לא נמצא"
+    },
+    {
+      "name": "",
+      "idNumber": "123456789",
+      "error": "שדה חובה"
+    },
+    {
+      "name": "דוד כהן",
+      "idNumber": "",
+      "error": "שדה חובה"
+    }
+  ],
+  "hebrewTestStrings": [
+    "כניסת מדריכים",
+    "שם המדריך",
+    "מספר זהות",
+    "התחבר",
+    "התחברות הצליחה",
+    "שגיאה בהתחברות",
+    "מדריך לא נמצא במערכת",
+    "יותר מדי ניסיונות התחברות",
+    "פגה תוקף ההתחברות"
+  ],
+  "israeliIdTestCases": [
+    {
+      "id": "123456789",
+      "isValid": true,
+      "formatted": "123-456-789"
+    },
+    {
+      "id": "987654321",
+      "isValid": true,
+      "formatted": "987-654-321"
+    },
+    {
+      "id": "555444333",
+      "isValid": true,
+      "formatted": "555-444-333"
+    },
+    {
+      "id": "123456788",
+      "isValid": false,
+      "formatted": "123-456-788"
+    },
+    {
+      "id": "12345678",
+      "isValid": false,
+      "formatted": "12345678"
+    },
+    {
+      "id": "1234567890",
+      "isValid": false,
+      "formatted": "123456789"
+    }
+  ],
+  "apiEndpoints": {
+    "instructors": "/api/instructors",
+    "login": "/api/login",
+    "logout": "/api/logout",
+    "verifyToken": "/api/verify-token",
+    "refreshToken": "/api/refresh-token",
+    "sessionStatus": "/api/session-status",
+    "extendSession": "/api/extend-session"
+  },
+  "mockResponses": {
+    "loginSuccess": {
+      "success": true,
+      "instructor": {
+        "id": "1",
+        "name": "דוד כהן",
+        "idNumber": "123456789",
+        "specialization": "מתמטיקה"
+      },
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.mock",
+      "message": "התחברות הצליחה"
+    },
+    "loginFailure": {
+      "success": false,
+      "instructor": null,
+      "token": null,
+      "message": "נתונים לא נכונים"
+    },
+    "tokenValid": {
+      "valid": true,
+      "instructor": {
+        "id": "1",
+        "name": "דוד כהן"
+      }
+    },
+    "tokenInvalid": {
+      "valid": false,
+      "error": "Token expired",
+      "requiresLogin": true
+    },
+    "sessionExpiring": {
+      "status": "expiring",
+      "expiresIn": 300,
+      "warningThreshold": 600
+    },
+    "sessionExpired": {
+      "status": "expired",
+      "expiresIn": 0
+    }
+  },
+  "testViewports": [
+    {
+      "name": "mobile-portrait",
+      "width": 375,
+      "height": 667
+    },
+    {
+      "name": "mobile-landscape",
+      "width": 667,
+      "height": 375
+    },
+    {
+      "name": "tablet-portrait",
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "name": "tablet-landscape",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "name": "desktop-large",
+      "width": 1920,
+      "height": 1080
+    }
+  ]
+}
